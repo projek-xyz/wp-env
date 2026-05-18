@@ -22,9 +22,11 @@ spl_autoload_register(
 		$namespace = __NAMESPACE__ . '\\';
 
 		// Only handle classes within our namespace.
-		if ( str_starts_with( $class_name, $namespace ) ) {
-			$class_name = substr( $class_name, strlen( $namespace ) );
+		if ( ! str_starts_with( $class_name, $namespace ) ) {
+			return;
 		}
+
+		$class_name = substr( $class_name, strlen( $namespace ) );
 
 		// Convert namespace separators and underscores to directory separators and hyphens.
 		$pathname = str_replace(
