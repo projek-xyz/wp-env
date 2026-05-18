@@ -23,7 +23,7 @@ spl_autoload_register(
 
 		// Only handle classes within our namespace.
 		if ( ! str_starts_with( $class_name, $namespace ) ) {
-			return;
+			return; // @codeCoverageIgnore
 		}
 
 		$class_name = substr( $class_name, strlen( $namespace ) );

@@ -78,7 +78,7 @@ class Theme {
 			return $update;
 		}
 
-		$release = self::get_updates();
+		$release = static::get_updates();
 
 		// Check if remote version is newer than current version.
 		if ( ! $release || version_compare( $release->version, $theme_data['Version'], '<=' ) ) {

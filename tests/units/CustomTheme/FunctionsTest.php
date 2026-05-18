@@ -52,7 +52,7 @@ class FunctionsTest extends BaseTestCase
      *
      * @return void
      */
-    public function testCtActivationTriggeredOnAfterSwitchTheme()
+    public function testThemeActivationTriggeredOnAfterSwitchTheme()
     {
         Actions\expectAdded('after_switch_theme')
             ->once()
@@ -64,7 +64,6 @@ class FunctionsTest extends BaseTestCase
                 $this->addToAssertionCount(2);
             });
 
-        // Load the file to trigger add_action calls
         require $this->packageFile('custom-theme/functions.php');
     }
 
@@ -73,7 +72,7 @@ class FunctionsTest extends BaseTestCase
      *
      * @return void
      */
-    public function testCtDeactivationTriggeredOnSwitchTheme()
+    public function testThemeDeactivationTriggeredOnSwitchTheme()
     {
         Actions\expectAdded('switch_theme')
             ->once()
@@ -85,16 +84,12 @@ class FunctionsTest extends BaseTestCase
                 $this->addToAssertionCount(2);
             });
 
-        // Load the file (it will be loaded again but functions.php doesn't have class/function re-declarations)
-        // Actually require_once will skip it if already loaded, but it's fine for this test if we run them together.
-        // For proper isolation, we'd use separate test methods and ensure the file is loaded.
-        // Since it's all top-level add_action calls, they run on load.
         require $this->packageFile('custom-theme/functions.php');
     }
 
     public function testReturnFalseWhenCurrentlyCheckingAnotherTheme()
     {
-        $spy = Mockery::spy(Theme::class);
+        $spy = Mockery::spy(Theme::class)->makePartial();
 
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
@@ -111,7 +106,7 @@ class FunctionsTest extends BaseTestCase
 
     public function testReturnFalseWhenTheresErrorWhileCheckingUpdates()
     {
-        $spy = Mockery::spy(Theme::class);
+        $spy = Mockery::spy(Theme::class)->makePartial();
 
         Functions\when('get_site_transient')->justReturn(false);
         Functions\when('set_site_transient')->justReturn();
@@ -133,7 +128,7 @@ class FunctionsTest extends BaseTestCase
 
     public function testReturnFalseWhenTheresNoReleaseForCurrentTheme()
     {
-        $spy = Mockery::spy(Theme::class);
+        $spy = Mockery::spy(Theme::class)->makePartial();
         $release = (object) [
             'other-theme' => (object) [
                 'info_url' => '',
@@ -166,7 +161,7 @@ class FunctionsTest extends BaseTestCase
 
     public function testReturnArrayWhenTheresSiteTransient()
     {
-        $spy = Mockery::spy(Theme::class);
+        $spy = Mockery::spy(Theme::class)->makePartial();
         $updates = [
             'info_url' => '',
             'tag_name' => '',
@@ -199,7 +194,7 @@ class FunctionsTest extends BaseTestCase
 
     public function testReturnArrayWhenTheresAnUpdateAvailable()
     {
-        $spy = Mockery::spy(Theme::class);
+        $spy = Mockery::spy(Theme::class)->makePartial();
         $release = (object) [
             'custom-theme' => (object) [
                 'info_url' => '',
