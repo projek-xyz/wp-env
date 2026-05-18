@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.8](https://github.com/projek-xyz/wp-env/compare/v0.0.7...v0.0.8) (2026-05-18)
+
+
+### Features
+
+* **ci:** init static assets deployment using `github-pages` ([#22](https://github.com/projek-xyz/wp-env/issues/22)) ([383ecfd](https://github.com/projek-xyz/wp-env/commit/383ecfded3ed54657be8353d3398ab72197812e7))
+* **custom-theme:** add `Update URI` and streamlined distribution and release packaging ([#23](https://github.com/projek-xyz/wp-env/issues/23)) ([82a9811](https://github.com/projek-xyz/wp-env/commit/82a9811b842213155ce7b9a055218348e7673b4e))
+
+
+### Bug Fixes
+
+* **ci:** streamline a test suites ([5c806c5](https://github.com/projek-xyz/wp-env/commit/5c806c5fb5f275a0a73c2191944f58ea0c940d0d))
+* **custom-theme:** fix theme uri ([adf3d76](https://github.com/projek-xyz/wp-env/commit/adf3d76d9e3fd8b427e6a54e4b34a0613397175a))
+* missing the whole purpose of [#23](https://github.com/projek-xyz/wp-env/issues/23) ([c9a6d2f](https://github.com/projek-xyz/wp-env/commit/c9a6d2f3fa2efcff8c26d182af2e1772a7b5700e))
+
 ## [0.0.7](https://github.com/projek-xyz/wp-env/compare/v0.0.6...v0.0.7) (2026-05-17)
 
 
