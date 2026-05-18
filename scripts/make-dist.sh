@@ -6,7 +6,7 @@ shopt -s nullglob
 . "$(dirname "$0")/_util.sh"
 
 ASSET_DIR=${ASSET_DIR:-"$PWD/assets"}
-DIST_DIR="$ASSET_DIR/dist"
+DIST_DIR=${DIST_DIR:-"$ASSET_DIR/dist"}
 
 mkdir -p "$DIST_DIR"
 

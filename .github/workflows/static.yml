@@ -37,7 +37,6 @@ jobs:
         name: release-archives
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ github.token }}
-        merge-multiple: true
 
     - name: Prepare
       shell: bash

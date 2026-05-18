@@ -18,7 +18,7 @@ jobs:
     outputs:
       archive-dir: ${{ steps.make-archive.outputs.archive-dir }}
       for-release: ${{ steps.make-archive.outputs.for-release }}
-      has-archives: ${{ steps.make-archive.outputs.has-archives }}
+      has-files: ${{ steps.make-archive.outputs.has-files }}
       release-version: ${{ steps.make-archive.outputs.release-version }}
 
     env:
@@ -96,23 +96,23 @@ jobs:
     - name: Make dist archive
       id: make-archive
       env:
-        ARCHIVE_DIR: assets/dist
+        DIST_DIR: assets/dist
         COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
         FOR_RELEASE: ${{ startsWith(github.event.workflow_run.head_commit.message, 'chore(release):') && '1' || '0' }}
         FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       run: |
         scripts/make-dist.sh
 
-        HAS_ARCHIVES=$([[ `ls -1 $ARCHIVE_DIR/*.zip 2>/dev/null | wc -l` != 0 ]] && echo "1" || echo "0")
+        HAS_FILES=$([[ `ls -1 $DIST_DIR/* 2>/dev/null | wc -l` != 0 ]] && echo "1" || echo "0")
 
-        echo "has-archives=$HAS_ARCHIVES" >> $GITHUB_OUTPUT
+        echo "has-files=$HAS_FILES" >> $GITHUB_OUTPUT
         echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
-        echo "archive-dir=$ARCHIVE_DIR" >> $GITHUB_OUTPUT
+        echo "archive-dir=$DIST_DIR" >> $GITHUB_OUTPUT
         echo "release-version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
 
     - name: Store archive
       uses: actions/upload-artifact@v7
-      if: steps.make-archive.outputs.has-archives == '1'
+      if: steps.make-archive.outputs.has-files == '1'
       with:
         overwrite: true
         name: release-archives
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |-
       needs.archiving.outputs.for-release == '1' &&
-      needs.archiving.outputs.has-archives == '1' &&
+      needs.archiving.outputs.has-files == '1' &&
       needs.archiving.outputs.release-version != ''
 
     permissions:
@@ -170,7 +170,6 @@ jobs:
         path: ${{ needs.archiving.outputs.archive-dir }}
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ github.token }}
-        merge-multiple: true
 
     - name: Upload assets
       if: steps.release.outputs.is-available == '1'
