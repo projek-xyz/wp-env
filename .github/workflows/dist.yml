@@ -87,7 +87,8 @@ jobs:
         echo "has-archives=$HAS_ARCHIVES" >> $GITHUB_OUTPUT
         echo "archive-dir=$ARCHIVE_DIR" >> $GITHUB_OUTPUT
 
-    - uses: actions/upload-artifact@v7
+    - name: Store archive
+      uses: actions/upload-artifact@v7
       if: steps.make-archive.outputs.has-archives == '1'
       with:
         overwrite: true
