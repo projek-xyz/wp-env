@@ -90,9 +90,9 @@ class Theme {
 			'theme'        => $release->theme,
 			'package'      => $release->download_url,
 			'version'      => $release->version,
-			'url'          => $release->html_url,
-			'tested'       => $release->tested,
-			'requires_php' => $release->requires_php,
+			'url'          => $release->info_url,
+			'tested'       => $release->wp_version,
+			'requires_php' => $release->php_version,
 			'translations' => array(),
 		);
 	}
@@ -113,12 +113,12 @@ class Theme {
 			return $cached_data;
 		}
 
-		// Fetch the latest release from GitHub API.
+		// Fetch the latest release from our release manifest.
 		$response = \wp_remote_get(
-			'https://api.github.com/repos/projek-xyz/wp-env/releases/latest',
+			'https://projek-xyz.github.io/wp-env/release.json',
 			array(
 				'timeout' => 10,
-				'headers' => array( 'Accept' => 'application/vnd.github.v3+json' ),
+				'headers' => array( 'Accept' => 'application/json' ),
 			)
 		);
 
@@ -129,25 +129,24 @@ class Theme {
 			return false;
 		}
 
-		$data  = json_decode( \wp_remote_retrieve_body( $response ) );
-		$theme = \get_stylesheet();
+		$data = json_decode( \wp_remote_retrieve_body( $response ) );
+		$slug = \get_stylesheet();
 
-		$updates = array_filter(
-			$data->assets ?? array(),
-			static fn ( object $asset ) => str_starts_with( $asset->name, $theme )
-		)[0] ?? null;
+		// Check if our specific theme exists in the flat manifest.
+		if ( ! isset( $data->$slug ) ) {
+			\set_site_transient( $cache_key, null, \HOUR_IN_SECONDS );
+
+			return false;
+		}
 
 		$update = (object) array(
-			'theme'        => $theme,
-			'html_url'     => $data->html_url ?? '',
-			'prerelease'   => $data->prerelease ?? false,
-			'published_at' => $data->published_at ?? '',
-			'tag_name'     => $data->tag_name ?? '',
-			'version'      => $data->version ?? '',
-			'digest'       => $updates?->digest ?: '',
-			'download_url' => $updates?->browser_download_url ?: '',
-			'tested'       => '',
-			'requires_php' => '',
+			'theme'        => $theme_entry = $data->$slug,
+			'info_url'     => $theme_entry->info_url ?? '',
+			'tag_name'     => $theme_entry->tag_name ?? '',
+			'version'      => $theme_entry->version ?? '',
+			'download_url' => $theme_entry->download_url ?? '',
+			'wp_version'   => $theme_entry->wp_version ?? '',
+			'php_version'  => $theme_entry->php_version ?? '',
 		);
 
 		// Cache the response data for 12 hours.

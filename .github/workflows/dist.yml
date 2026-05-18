@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
     outputs:
+      for-release: ${{ steps.make-archive.outputs.for-release }}
       has-archives: ${{ steps.make-archive.outputs.has-archives }}
 
     env:
@@ -78,6 +79,8 @@ jobs:
       id: make-archive
       env:
         ARCHIVE_DIR: assets/dist
+        COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+        FOR_RELEASE: ${{ startsWith(github.event.workflow_run.head_commit.message, 'chore(release):') && '1' || '0' }}
         FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
       run: |
         scripts/make-dist.sh
@@ -85,6 +88,7 @@ jobs:
         HAS_ARCHIVES=$([[ `ls -1 $ARCHIVE_DIR/*.zip 2>/dev/null | wc -l` != 0 ]] && echo "1" || echo "0")
 
         echo "has-archives=$HAS_ARCHIVES" >> $GITHUB_OUTPUT
+        echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
         echo "archive-dir=$ARCHIVE_DIR" >> $GITHUB_OUTPUT
 
     - name: Store archive
@@ -99,8 +103,8 @@ jobs:
     name: Update assets
     needs: archiving
     if: |-
-      needs.archiving.outputs.has-archives == '1' &&
-      startsWith(github.event.head_commit.message, 'chore(release):')
+      needs.archiving.outputs.for-release == '1' &&
+      needs.archiving.outputs.has-archives == '1'
     uses: projek-xyz/actions/.github/workflows/uploads.yml@main
     with:
       workflow_name: ${{ github.workflow }}
