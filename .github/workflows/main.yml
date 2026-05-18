@@ -22,8 +22,6 @@ jobs:
     name: with WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     needs: [prepare]
-    outputs:
-      should-upload: ${{ steps.dist-archive.outputs.should-upload }}
 
     env:
       DB_NAME: ${{ github.repository_owner }}

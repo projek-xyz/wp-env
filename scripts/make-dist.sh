@@ -19,19 +19,23 @@ WP_VERSION=${WP_VERSION:-"6.9"}
 FOR_RELEASE=${FOR_RELEASE:-"0"}
 COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
 
+RELEASE_URL=${RELEASE_URL:-"https://projek-xyz.github.io/wp-env/release.json"}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
-release_url="https://projek-xyz.github.io/wp-env/release.json"
 
 if [[ "$FOR_RELEASE" == "1" && "$COMMIT_MESSAGE" != "" ]]; then
     tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
 fi
 
 e_start "Fetching previous manifest..."
-if curl -s -f "$release_url" -o "$DIST_DIR/release.json"; then
-    echo -e "\e[1;34mInfo:\e[0m Existing release manifest loaded."
+if [[ ! -f $DIST_DIR/release.json ]]; then
+    if curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
+        echo -e "\e[1;34mInfo:\e[0m Existing release manifest loaded."
+    else
+        echo -e "\e[1;35mNotice:\e[0m No existing manifest found at \e[1;33m$RELEASE_URL\e[0m. Starting fresh."
+        echo '{}' > "$DIST_DIR/release.json"
+    fi
 else
-    echo -e "\e[1;35mNotice:\e[0m No existing manifest found at $release_url. Starting fresh."
-    echo '{}' > "$DIST_DIR/release.json"
+    echo -e "\e[1;35mNotice:\e[0m Manifest already exists, use existing."
 fi
 e_end
 
@@ -40,10 +44,10 @@ for pkg_dir in packages/*/; do
     pkg="${pkg_dir##*/}"
     pkg_type=$(cat "$pkg_dir/composer.json" | jq -r '.type' | sed 's/wordpress-//')
 
-    e_start "Creating distribution for $pkg ($pkg_type)..."
+    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
     if [ ! -f "$pkg_dir/.distignore" ]; then
-        echo -e "\e[1;35mNotice:\e[0m No .distignore found for $pkg, skipping"
+        echo -e "\e[1;35mNotice:\e[0m No .distignore found for '\e[1;33m$pkg\e[0m', skipping"
 
         e_end
         continue
@@ -53,13 +57,13 @@ for pkg_dir in packages/*/; do
     manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
 
     if [[ "$pkg_version" == "$manifest_version" ]]; then
-        echo -e "\e[1;35mNotice:\e[0m $pkg is already at version $pkg_version"
+        echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
 
         e_end
         continue
     fi
 
-    echo -e "\e[1;34mInfo:\e[0m $pkg (v$pkg_version)..."
+    echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
 
     composer -d "$pkg_dir" install -q --no-dev
 
