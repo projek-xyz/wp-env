@@ -87,7 +87,6 @@ class Theme {
 
 		// Return the update metadata for WordPress to handle.
 		return array(
-			'theme'        => $release->theme,
 			'package'      => $release->download_url,
 			'version'      => $release->version,
 			'url'          => $release->info_url,
@@ -140,13 +139,12 @@ class Theme {
 		}
 
 		$update = (object) array(
-			'theme'        => $theme_entry = $data->$slug,
-			'info_url'     => $theme_entry->info_url ?? '',
-			'tag_name'     => $theme_entry->tag_name ?? '',
-			'version'      => $theme_entry->version ?? '',
-			'download_url' => $theme_entry->download_url ?? '',
-			'wp_version'   => $theme_entry->wp_version ?? '',
-			'php_version'  => $theme_entry->php_version ?? '',
+			'info_url'     => $data->$slug->info_url ?? '',
+			'tag_name'     => $data->$slug->tag_name ?? '',
+			'version'      => $data->$slug->version ?? '',
+			'download_url' => $data->$slug->download_url ?? '',
+			'wp_version'   => $data->$slug->wp_version ?? '',
+			'php_version'  => $data->$slug->php_version ?? '',
 		);
 
 		// Cache the response data for 12 hours.

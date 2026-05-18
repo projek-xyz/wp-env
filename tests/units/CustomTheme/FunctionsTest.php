@@ -130,23 +130,23 @@ class FunctionsTest extends BaseTestCase
     public function testReturnArrayWhenTheresSiteTransient()
     {
         $spy = Mockery::spy(Theme::class);
-        $updates = (object) [
-            'theme' => '',
-            'html_url' => '',
-            'download_url' => '',
+        $updates = [
+            'info_url' => '',
+            'tag_name' => '',
             'version' => '0.0.2',
-            'tested' => '6.9',
-            'requires_php' => '8.1',
+            'download_url' => '',
+            'wp_version' => '6.9',
+            'php_version' => '8.1',
         ];
 
-        Functions\when('get_site_transient')->justReturn($updates);
+        Functions\when('get_site_transient')->justReturn((object) $updates);
 
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
                 $return = $callback(false, ['Version' => '0.0.1'], 'custom-theme');
 
-                $this->assertArrayHasKey('theme', $return);
+                // $this->assertArrayHasKey('theme', $return);
                 $this->assertArrayHasKey('package', $return);
                 $this->assertArrayHasKey('version', $return);
                 $this->assertArrayHasKey('url', $return);
@@ -155,7 +155,7 @@ class FunctionsTest extends BaseTestCase
                 $this->assertArrayHasKey('translations', $return);
             });
 
-        $spy->shouldReceive('get_updates')->andReturn($updates);
+        $spy->shouldReceive('get_updates')->andReturn((object) ['custom-theme' => (object) $updates]);
 
         require $this->packageFile('custom-theme/functions.php');
     }
@@ -163,29 +163,29 @@ class FunctionsTest extends BaseTestCase
     public function testReturnArrayWhenTheresAnUpdateAvailable()
     {
         $spy = Mockery::spy(Theme::class);
-        $updates = (object) [
-            'theme' => '',
-            'html_url' => '',
-            'download_url' => '',
-            'version' => '0.0.2',
-            'tested' => '6.9',
-            'requires_php' => '8.1',
+        $release = (object) [
+            'custom-theme' => (object) [
+                'info_url' => '',
+                'tag_name' => '',
+                'version' => '0.0.2',
+                'download_url' => '',
+                'wp_version' => '6.9',
+                'php_version' => '8.1',
+            ],
         ];
 
         Functions\when('get_site_transient')->justReturn(false);
         Functions\when('set_site_transient')->justReturn();
         Functions\when('wp_remote_get')->justReturn([]);
         Functions\when('wp_remote_retrieve_response_code')->justReturn(200);
-        Functions\when('wp_remote_retrieve_body')->justReturn(
-            json_encode($updates)
-        );
+        Functions\when('wp_remote_retrieve_body')->justReturn(json_encode($release));
 
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
                 $return = $callback(false, ['Version' => '0.0.1'], 'custom-theme');
 
-                $this->assertArrayHasKey('theme', $return);
+                // $this->assertArrayHasKey('theme', $return);
                 $this->assertArrayHasKey('package', $return);
                 $this->assertArrayHasKey('version', $return);
                 $this->assertArrayHasKey('url', $return);
@@ -194,7 +194,7 @@ class FunctionsTest extends BaseTestCase
                 $this->assertArrayHasKey('translations', $return);
             });
 
-        $spy->shouldReceive('get_updates')->andReturn($updates);
+        $spy->shouldReceive('get_updates')->andReturn($release);
 
         require $this->packageFile('custom-theme/functions.php');
     }
