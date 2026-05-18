@@ -39,7 +39,7 @@
             "phpcs --standard=tests/phpcs.xml"
         ],
         "test": [
-            "phpunit --coverage-text"
+            "phpunit --coverage-text --colors=always"
         ]
     },
     "require": {

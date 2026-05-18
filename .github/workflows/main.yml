@@ -68,33 +68,38 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: xdebug
+          tools: composer, wp
+
+      - name: Retrieve cache dirs
+        id: caches
+        run: |
+          echo "composer-dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+          echo "wpcli-dir=$(wp cli info --format=json | jq -r '.wp_cli_cache_dir_path')" >> $GITHUB_OUTPUT
 
       - name: Set up Composer cache
         uses: actions/cache@v5
         with:
-          path: ${{ needs.prepare.outputs.composer-cache-dir }}
+          path: ${{ steps.caches.outputs.composer-dir }}
           key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
       - name: Set up WP-CLI cache
         uses: actions/cache@v5
         with:
-          path: /home/runner/.wp-cli/cache
-          key: wpcli-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: wpcli-wp${{ env.WP_VERSION }}-
+          path: ${{ steps.caches.outputs.wpcli-dir }}
+          key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
       - name: Install dependencies
         run: |
-          composer update
+          composer update --ansi --no-interaction --no-progress --prefer-dist
 
       - name: Set up WordPress
         shell: bash
         env:
           DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
-          MULTISITE_ENABLED: 0
-          SITE_PLUGINS: blocksy-companion,jetpack,contact-form-7,plugin-check,woocommerce
+          SITE_PLUGINS: blocksy-companion
           SITE_THEMES: blocksy
-          SITE_DEFAULT_THEME: custom-theme
         run: |
           scripts/init-wp.sh
 
@@ -104,34 +109,4 @@ jobs:
 
       - name: Unit Test
         run: |
-          vendor/bin/phpunit --coverage-text
-
-      - name: Make dist archive
-        id: dist-archive
-        if: github.event_name == 'push' && github.ref_name == 'main'
-        env:
-          FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-        run: |
-          scripts/make-dist.sh
-
-          echo "should-upload=1" >> $GITHUB_OUTPUT
-
-      - uses: actions/upload-artifact@v7
-        if: steps.dist-archive.outputs.should-upload == '1'
-        with:
-          name: release-archives
-          overwrite: true
-          path: assets/dist
-
-  update-releases:
-    name: Update assets
-    needs: tests
-    if: |-
-      needs.tests.outputs.should-upload == '1' &&
-      startsWith(github.event.head_commit.message, 'chore(release):')
-    uses: projek-xyz/actions/.github/workflows/uploads.yml@main
-    with:
-      workflow_name: ${{ github.workflow }}
-
-    permissions:
-      contents: write
+          composer test --ansi

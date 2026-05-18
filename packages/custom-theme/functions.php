@@ -7,45 +7,30 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 or higher
  */
 
+namespace Custom_Theme;
+
 defined( 'CUSTOM_THEME_VERSION' ) || define( 'CUSTOM_THEME_VERSION', '0.0.1' );
 
-add_action(
-	'wp_enqueue_scripts',
-	static function (): void {
-		$theme = wp_get_theme();
+require_once __DIR__ . '/includes/autoload.php';
 
-		wp_register_script(
-			$theme->stylesheet,
-			$theme->get_stylesheet_directory_uri() . '/assets/custom.js',
-			array(),
-			$theme->version,
-			array( 'strategy' => 'defer' )
-		);
-
-		wp_enqueue_script( $theme->stylesheet );
-	}
-);
+add_action( 'wp_enqueue_scripts', array( Theme::class, 'enqueue_scripts' ) );
 
 /**
  * Trigger custom theme activation hook.
  */
-add_action(
-	'after_switch_theme',
-	static function (): void {
-		do_action( 'ct_activation' );
-	},
-	10,
-	0
-);
+add_action( 'after_switch_theme', array( Theme::class, 'activation' ) );
 
 /**
  * Trigger custom theme deactivation hook.
  */
-add_action(
-	'switch_theme',
-	static function (): void {
-		do_action( 'ct_deactivation' );
-	},
+add_action( 'switch_theme', array( Theme::class, 'deactivation' ) );
+
+/**
+ * Check if theme update is available.
+ */
+add_filter(
+	'update_themes_projek-xyz.github.io',
+	array( Theme::class, 'check_updates' ),
 	10,
-	0
+	3
 );

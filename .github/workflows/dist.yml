@@ -1,0 +1,129 @@
+name: Distribution
+
+on:
+  workflow_run:
+    workflows: [Tests]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  archiving:
+    name: Archiving
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      for-release: ${{ steps.make-archive.outputs.for-release }}
+      has-archives: ${{ steps.make-archive.outputs.has-archives }}
+
+    env:
+      DB_NAME: ${{ github.repository_owner }}
+      DB_USER: ${{ github.repository_owner }}
+      DB_PASS: secret
+      PHP_VERSION: '8.1'
+      WP_VERSION: '6.9'
+
+    permissions:
+      id-token: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASS }}
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASS }}
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        coverage: none
+        tools: composer, wp
+
+    - name: Retrieve cache dirs
+      id: caches
+      run: |
+        echo "composer-dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        echo "wpcli-dir=$(wp cli info --format=json | jq -r '.wp_cli_cache_dir_path')" >> $GITHUB_OUTPUT
+
+    - name: Set up Composer cache
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.caches.outputs.composer-dir }}
+        key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
+
+    - name: Set up WP-CLI cache
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.caches.outputs.wpcli-dir }}
+        key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
+
+    - name: Install dependencies
+      run: |
+        composer update --ansi --no-interaction --no-progress --prefer-dist
+
+    - name: Set up WordPress
+      shell: bash
+      env:
+        DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
+        SITE_PLUGINS: blocksy-companion
+        SITE_THEMES: blocksy
+      run: |
+        scripts/init-wp.sh
+
+    - name: Make dist archive
+      id: make-archive
+      env:
+        ARCHIVE_DIR: assets/dist
+        COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+        FOR_RELEASE: ${{ startsWith(github.event.workflow_run.head_commit.message, 'chore(release):') && '1' || '0' }}
+        FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+      run: |
+        scripts/make-dist.sh
+
+        HAS_ARCHIVES=$([[ `ls -1 $ARCHIVE_DIR/*.zip 2>/dev/null | wc -l` != 0 ]] && echo "1" || echo "0")
+
+        echo "has-archives=$HAS_ARCHIVES" >> $GITHUB_OUTPUT
+        echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
+        echo "archive-dir=$ARCHIVE_DIR" >> $GITHUB_OUTPUT
+
+    - name: Store archive
+      uses: actions/upload-artifact@v7
+      if: steps.make-archive.outputs.has-archives == '1'
+      with:
+        overwrite: true
+        name: release-archives
+        path: ${{ steps.make-archive.outputs.archive-dir }}
+
+  release:
+    name: Update assets
+    needs: archiving
+    if: |-
+      needs.archiving.outputs.for-release == '1' &&
+      needs.archiving.outputs.has-archives == '1'
+    uses: projek-xyz/actions/.github/workflows/uploads.yml@main
+    with:
+      workflow_name: ${{ github.workflow }}
+
+    permissions:
+      contents: write
