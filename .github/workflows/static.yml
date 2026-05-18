@@ -25,6 +25,9 @@ jobs:
       pages: write
       id-token: write
 
+    env:
+      DIST_DIR: assets/dist
+
     steps:
     - name: Checkout
       uses: actions/checkout@v6
@@ -34,7 +37,7 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v8
       with:
-        path: assets/dist
+        path: ${{ env.DIST_DIR }}
         name: release-archives
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ github.token }}
@@ -42,13 +45,13 @@ jobs:
     - name: Prepare
       shell: bash
       run: |
-        cp assets/*.{html,png,svg,ico} assets/dist/
-        cp assets/.nojekyll assets/dist/
+        cp assets/*.{html,png,svg,ico} $DIST_DIR/
+        cp assets/.nojekyll $DIST_DIR/
 
     - name: Store
       uses: actions/upload-pages-artifact@v5
       with:
-        path: assets/dist
+        path: ${{ env.DIST_DIR }}
         include-hidden-files: true
 
     - name: Deploy
