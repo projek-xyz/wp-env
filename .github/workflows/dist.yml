@@ -135,13 +135,14 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Check release
+      id: release
       shell: bash
       env:
         ATTEMPTS: ${{ inputs.check_attempts }}
         GITHUB_TOKEN: ${{ github.token }}
         RELEASE_VERSION: ${{ needs.archiving.outputs.release-version }}
       run: |
-        RESULT=
+        AVAILABLE=0
 
         echo "Release version: $RELEASE_VERSION"
 
@@ -149,21 +150,21 @@ jobs:
           echo "Attempt ${a}/${ATTEMPTS}: waiting for release '$RELEASE_VERSION' to be available..."
           if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
             echo "Release $RELEASE_VERSION found!"
-            RESULT=$RELEASE_VERSION
+            AVAILABLE=1
             break
           fi
           sleep 5s
         done
 
-        if [[ -z "$RESULT" ]]; then
+        if [[ -z "$AVAILABLE" ]]; then
           echo "Release '$RELEASE_VERSION' not found after $ATTEMPTS attempts."
-          exit 0
         fi
 
-        echo "result=$RESULT" >> $GITHUB_OUTPUT
+        echo "is-available=$AVAILABLE" >> $GITHUB_OUTPUT
 
     - name: Download artifacts
       uses: actions/download-artifact@v8
+      if: steps.release.outputs.is-available == '1'
       with:
         name: release-archives
         path: ${{ needs.archiving.outputs.archive-dir }}
@@ -172,7 +173,7 @@ jobs:
         merge-multiple: true
 
     - name: Upload assets
-      if: (steps.artifact-files.outputs.result != '' || inputs.files != '')
+      if: steps.release.outputs.is-available == '1'
       shell: bash
       env:
         GITHUB_TOKEN: ${{ github.token }}
