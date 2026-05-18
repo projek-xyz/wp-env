@@ -93,3 +93,5 @@ for pkg_dir in packages/*/; do
 
     e_end
 done
+
+export RELEASE_VERSION=$tag_name

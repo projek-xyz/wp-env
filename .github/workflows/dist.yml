@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
     outputs:
+      archive-dir: ${{ steps.make-archive.outputs.archive-dir }}
       for-release: ${{ steps.make-archive.outputs.for-release }}
       has-archives: ${{ steps.make-archive.outputs.has-archives }}
+      release-version: ${{ steps.make-archive.outputs.release-version }}
 
     env:
       DB_NAME: ${{ github.repository_owner }}
@@ -106,6 +108,7 @@ jobs:
         echo "has-archives=$HAS_ARCHIVES" >> $GITHUB_OUTPUT
         echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
         echo "archive-dir=$ARCHIVE_DIR" >> $GITHUB_OUTPUT
+        echo "release-version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
 
     - name: Store archive
       uses: actions/upload-artifact@v7
@@ -115,15 +118,78 @@ jobs:
         name: release-archives
         path: ${{ steps.make-archive.outputs.archive-dir }}
 
-  release:
-    name: Update assets
+  uploads:
+    name: Uploads
     needs: archiving
+    runs-on: ubuntu-latest
     if: |-
       needs.archiving.outputs.for-release == '1' &&
-      needs.archiving.outputs.has-archives == '1'
-    uses: projek-xyz/actions/.github/workflows/uploads.yml@main
-    with:
-      workflow_name: ${{ github.workflow }}
+      needs.archiving.outputs.has-archives == '1' &&
+      needs.archiving.outputs.release-version != ''
 
     permissions:
       contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Check release
+      shell: bash
+      env:
+        ATTEMPTS: ${{ inputs.check_attempts }}
+        GITHUB_TOKEN: ${{ github.token }}
+        RELEASE_VERSION: ${{ needs.archiving.outputs.release-version }}
+      run: |
+        RESULT=
+
+        echo "Release version: $RELEASE_VERSION"
+
+        for a in $(seq 1 "${ATTEMPTS}"); do
+          echo "Attempt ${a}/${ATTEMPTS}: waiting for release '$RELEASE_VERSION' to be available..."
+          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo "Release $RELEASE_VERSION found!"
+            RESULT=$RELEASE_VERSION
+            break
+          fi
+          sleep 5s
+        done
+
+        if [[ -z "$RESULT" ]]; then
+          echo "Release '$RELEASE_VERSION' not found after $ATTEMPTS attempts."
+          exit 0
+        fi
+
+        echo "result=$RESULT" >> $GITHUB_OUTPUT
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: release-archives
+        path: ${{ needs.archiving.outputs.archive-dir }}
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ github.token }}
+        merge-multiple: true
+
+    - name: Upload assets
+      if: (steps.artifact-files.outputs.result != '' || inputs.files != '')
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        RELEASE_VERSION: ${{ needs.archiving.outputs.release-version }}
+        ARCHIVE_DIR: ${{ needs.archiving.outputs.archive-dir }}
+      run: |
+        shopt -s nullglob
+
+        for file in "$ARCHIVE_DIR"/*; do
+          [[ -z "$file" || ! -r "$file" ]] && continue
+
+          file_name=$(basename "$file")
+
+          echo -e "::group::Uploading '\e[1;33m$file_name\e[0m'..."
+
+          gh release upload "$RELEASE_VERSION" "$file" --clobber
+          echo -e "\e[1;32mSuccesse[0m: '\e[1;33m$file\e[0m' uploaded to '\e[1;33m$RELEASE_VERSION\e[0m' release"
+
+          echo '::endgroup::'
+        done
