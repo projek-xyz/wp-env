@@ -1,5 +1,7 @@
 <?php
 /**
+ * Theme autoloader following WordPress coding standards.
+ *
  * This follows a specific convention where namespaces are converted to directory
  * paths and class names are converted to lowercase with hyphens, prefixed with 'class-'.
  *
@@ -47,11 +49,13 @@ spl_autoload_register(
 	}
 );
 
-$dirs = array(
-	$theme_dir = \get_stylesheet_directory(),
+$theme_dir = \get_stylesheet_directory();
+$dirs      = array(
+	$theme_dir,
 	dirname( dirname( $theme_dir ) ),
 );
 
+// Check for Composer autoloader in both the theme root and the project root.
 foreach ( $dirs as $dir ) {
 	if ( file_exists( $dir . '/vendor/autoload.php' ) ) {
 		require_once $dir . '/vendor/autoload.php';

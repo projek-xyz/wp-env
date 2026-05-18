@@ -16,17 +16,17 @@ require_once __DIR__ . '/includes/autoload.php';
 add_action( 'wp_enqueue_scripts', array( Theme::class, 'enqueue_scripts' ) );
 
 /**
- * Trigger custom theme activation hook.
+ * Triggers the custom theme activation hook.
  */
 add_action( 'after_switch_theme', array( Theme::class, 'activation' ) );
 
 /**
- * Trigger custom theme deactivation hook.
+ * Triggers the custom theme deactivation hook.
  */
 add_action( 'switch_theme', array( Theme::class, 'deactivation' ) );
 
 /**
- * Check if theme update is available.
+ * Checks if a theme update is available.
  */
 add_filter(
 	'update_themes_projek-xyz.github.io',

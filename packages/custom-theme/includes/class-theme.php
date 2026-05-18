@@ -60,13 +60,14 @@ class Theme {
 	 * Checks if a theme update is available.
 	 *
 	 * This method filters the theme update transient to include custom theme updates
-	 * from a remote source (e.g., GitHub).
+	 * from a remote manifest file.
 	 *
 	 * @param array|false $update           The update transient data.
 	 * @param array       $theme_data       Information about the current theme.
 	 * @param string      $theme_stylesheet The stylesheet name of the theme being checked.
 	 *
-	 * @return array|false Updated transient data if a new version is available, otherwise the original data.
+	 * @return array|false Updated transient data with update metadata if a new version is available,
+	 *                     otherwise the original transient data.
 	 */
 	public static function check_updates(
 		array|false $update,
@@ -85,7 +86,7 @@ class Theme {
 			return $update;
 		}
 
-		// Return the update metadata for WordPress to handle.
+		// Return the update metadata for WordPress to handle the update process.
 		return array(
 			'package'      => $release->download_url,
 			'version'      => $release->version,
@@ -99,9 +100,10 @@ class Theme {
 	/**
 	 * Retrieves the latest update information from the remote repository.
 	 *
-	 * Uses site transients to cache the results and avoid excessive API calls.
+	 * Uses site transients to cache the results for 12 hours to minimize external HTTP requests.
 	 *
-	 * @return object|false The update data from GitHub on success, or false on failure.
+	 * @return object|false The update metadata object on success, or false if the update information
+	 *                      could not be retrieved or is unavailable.
 	 */
 	public static function get_updates(): object|false {
 		$cache_key   = 'custom-theme_updates';
