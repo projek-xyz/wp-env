@@ -6,6 +6,15 @@ shopt -s nullglob
 . "$(dirname "$0")/_util.sh"
 
 ASSET_DIR=${ASSET_DIR:-"$PWD/assets"}
+DIST_DIR="$ASSET_DIR/dist"
+
+mkdir -p "$DIST_DIR"
+
+# Detect GitHub context for URLs
+REPO=${GITHUB_REPOSITORY:-"your-user/your-repo"}
+TAG=${GITHUB_REF_NAME:-"v0.0.0"}
+
+echo '{}' > "$DIST_DIR/release.json"
 
 for pkg_dir in packages/*/; do
     pkg_dir="${pkg_dir%/}"
@@ -21,15 +30,27 @@ for pkg_dir in packages/*/; do
 
     composer -d "$pkg_dir" install -q --no-dev
 
-    rm -f "$ASSET_DIR/dist/$pkg"*.zip
+    rm -f "$DIST_DIR/$pkg"*.zip
 
     cp LICENSE-GPL "$pkg_dir/license.txt"
 
     _wp i18n make-pot "$pkg_dir" "$pkg_dir/languages/$pkg.pot"
 
-    _wp dist-archive "$pkg_dir" "$ASSET_DIR/dist" --force --create-target-dir --filename-format="{name}"
+    _wp dist-archive "$pkg_dir" "$DIST_DIR" --force --create-target-dir --filename-format="{name}"
 
-    mv "$ASSET_DIR/dist/$pkg.zip" "$ASSET_DIR/dist/$pkg.$pkg_version.zip"
+    pkg_archive="$pkg.$pkg_version.zip"
+    mv "$DIST_DIR/$pkg.zip" "$DIST_DIR/$pkg_archive"
+
+    # 2. Update the manifest entry
+    download_url="https://github.com/$REPO/release/download/$TAG/$pkg_archive"
+    info_url="https://github.com/$REPO/blob/main/packages/$pkg/CHANGELOG.md"
+
+    jq ".[\"$pkg\"] = {
+        \"version\": \"$pkg_version\",
+        \"type\": \"$pkg_type\",
+        \"package\": \"$download_url\",
+        \"url\": \"$info_url\"
+    }" "$DIST_DIR/release.json" > "$DIST_DIR/release.tmp" && mv "$DIST_DIR/release.tmp" "$DIST_DIR/release.json"
 
     rm "$pkg_dir"/{license.txt,composer.lock}
 done
