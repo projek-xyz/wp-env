@@ -127,6 +127,39 @@ class FunctionsTest extends BaseTestCase
         require $this->packageFile('custom-theme/functions.php');
     }
 
+    public function testReturnFalseWhenTheresNoReleaseForCurrentTheme()
+    {
+        $spy = Mockery::spy(Theme::class);
+        $release = (object) [
+            'other-theme' => (object) [
+                'info_url' => '',
+                'tag_name' => '',
+                'version' => '0.0.2',
+                'download_url' => '',
+                'wp_version' => '6.9',
+                'php_version' => '8.1',
+            ],
+        ];
+
+        Functions\when('get_site_transient')->justReturn(false);
+        Functions\when('set_site_transient')->justReturn();
+        Functions\when('wp_remote_get')->justReturn([]);
+        Functions\when('wp_remote_retrieve_response_code')->justReturn(200);
+        Functions\when('wp_remote_retrieve_body')->justReturn(json_encode($release));
+
+        Filters\expectAdded('update_themes_projek-xyz.github.io')
+            ->once()
+            ->whenHappen(function ($callback) {
+                $return = $callback(false, [], 'custom-theme');
+
+                $this->assertFalse($return);
+            });
+
+        $spy->shouldReceive('get_updates')->andReturn($release);
+
+        require $this->packageFile('custom-theme/functions.php');
+    }
+
     public function testReturnArrayWhenTheresSiteTransient()
     {
         $spy = Mockery::spy(Theme::class);
