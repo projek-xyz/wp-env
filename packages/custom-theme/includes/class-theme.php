@@ -47,7 +47,7 @@ class Theme {
 
 		\wp_register_script(
 			$theme->stylesheet,
-			$theme->stylesheet_dir . '/assets/custom.js',
+			$theme->get_stylesheet_directory_uri() . '/assets/custom.js',
 			array(),
 			$theme->version,
 			array( 'strategy' => 'defer' )
@@ -123,7 +123,7 @@ class Theme {
 
 		// Handle fetch errors or non-200 responses.
 		if ( is_wp_error( $response ) || 200 !== \wp_remote_retrieve_response_code( $response ) ) {
-			\set_site_transient( $cache_key, null, \HOUR_IN_SECONDS );
+			\set_site_transient( $cache_key, false, \HOUR_IN_SECONDS );
 
 			return false;
 		}
@@ -133,7 +133,7 @@ class Theme {
 
 		// Check if our specific theme exists in the flat manifest.
 		if ( ! isset( $data->$slug ) ) {
-			\set_site_transient( $cache_key, null, \HOUR_IN_SECONDS );
+			\set_site_transient( $cache_key, false, \HOUR_IN_SECONDS );
 
 			return false;
 		}
