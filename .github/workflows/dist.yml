@@ -1,5 +1,5 @@
 name: Distribution
-run-name: "dist: creating archive from `${{ github.event.workflow_run.head_branch }}` branch"
+run-name: "dist(${{ github.event.workflow_run.head_branch }}): archiving `${{ github.event.workflow_run.head_sha }}`"
 
 on:
   workflow_run:
@@ -25,7 +25,7 @@ jobs:
       DB_USER: ${{ github.repository_owner }}
       DB_PASS: secret
       DIST_DIR: assets/dist
-      # RELEASE_URL: https://projek-xyz.github.io/wp-env/release.json
+      RELEASE_URL: https://projek-xyz.github.io/wp-env/release.json
       PHP_VERSION: '8.1'
       WP_VERSION: '6.9'
 

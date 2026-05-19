@@ -1,5 +1,5 @@
 name: Static
-run-name: "static: deploying assets from `${{ github.event.workflow_run.head_branch }}` branch"
+run-name: "static(${{ github.event.workflow_run.head_branch }}): deploying `${{ github.event.workflow_run.head_sha }}`"
 
 on:
   workflow_run:
