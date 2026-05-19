@@ -9,10 +9,9 @@ on:
 jobs:
   prepare:
     name: Prepare
-    uses: projek-xyz/actions/.github/workflows/configure.yml@main
-    secrets: inherit
-    with:
-      php-version: 8.1
+    uses: projek-xyz/actions/.github/workflows/prepare.yml@main
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     permissions:
       pull-requests: write
@@ -21,7 +20,7 @@ jobs:
   tests:
     name: with WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
-    needs: [prepare]
+    needs: prepare
 
     env:
       DB_NAME: ${{ github.repository_owner }}
@@ -68,23 +67,17 @@ jobs:
           coverage: xdebug
           tools: composer, wp
 
-      - name: Retrieve cache dirs
-        id: caches
-        run: |
-          echo "composer-dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-          echo "wpcli-dir=$(wp cli info --format=json | jq -r '.wp_cli_cache_dir_path')" >> $GITHUB_OUTPUT
-
       - name: Set up Composer cache
         uses: actions/cache@v5
         with:
-          path: ${{ steps.caches.outputs.composer-dir }}
+          path: ${{ needs.prepare.outputs.composer-cache-dir }}
           key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
       - name: Set up WP-CLI cache
         uses: actions/cache@v5
         with:
-          path: ${{ steps.caches.outputs.wpcli-dir }}
+          path: ${{ needs.prepare.outputs.wpcli-cache-dir }}
           key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
@@ -108,3 +101,9 @@ jobs:
       - name: Unit Test
         run: |
           composer test --ansi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: tests/coverage
