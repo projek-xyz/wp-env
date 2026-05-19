@@ -1,3 +1,6 @@
+![CodeRabbit](https://img.shields.io/coderabbit/prs/github/projek-xyz/wp-env?style=flat-square)
+![Codecov](https://img.shields.io/codecov/c/github/projek-xyz/wp-env?style=flat-square)
+
 # 📦 WordPress Evaluation Environment
 
 **Zero-config, Docker-based local environment for rapid theme and plugin evaluation.**
