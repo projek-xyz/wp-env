@@ -111,6 +111,7 @@ jobs:
           report_type: coverage
 
       - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
