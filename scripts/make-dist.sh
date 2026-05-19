@@ -20,7 +20,7 @@ FOR_RELEASE=${FOR_RELEASE:-"0"}
 COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
 GITHUB_OUTPUT=${GITHUB_OUTPUT:-"/dev/null"}
 
-RELEASE_URL=${RELEASE_URL:-"https://projek-xyz.github.io/wp-env/release.json"}
+RELEASE_URL=${RELEASE_URL:-""}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
 
 if [[ "$FOR_RELEASE" == "1" && "$COMMIT_MESSAGE" != "" ]]; then
@@ -29,10 +29,10 @@ fi
 
 e_start "Fetching previous manifest..."
 if [[ ! -f $DIST_DIR/release.json ]]; then
-    if curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
-        echo -e "\e[1;34mInfo:\e[0m Existing release manifest loaded."
+    if [[ -n "$RELEASE_URL" ]] && $(curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"); then
+        echo -e "\e[1;36mInfo:\e[0m Fetched existing manifest from \e[1;33m$RELEASE_URL\e[0m."
     else
-        echo -e "\e[1;35mNotice:\e[0m No existing manifest found at \e[1;33m$RELEASE_URL\e[0m. Starting fresh."
+        echo -e "\e[1;35mNotice:\e[0m No existing manifest found. Starting fresh."
         echo '{}' > "$DIST_DIR/release.json"
     fi
 else
@@ -64,7 +64,7 @@ for pkg_dir in packages/*/; do
         continue
     fi
 
-    echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
+    echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
 
     composer -d "$pkg_dir" install -q --no-dev
 
@@ -95,7 +95,7 @@ for pkg_dir in packages/*/; do
 
         echo -e "\e[1;32mSuccess:\e[0m '\e[1;33m$pkg\e[0m' manifest updated"
     else
-        echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
+        echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
 
     rm "$pkg_dir"/{license.txt,composer.lock}
