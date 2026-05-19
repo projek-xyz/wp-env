@@ -213,7 +213,7 @@ jobs:
           sleep 5s
         done
 
-        if [[ -z "$AVAILABLE" ]]; then
+        if [[ "$AVAILABLE" == "0" ]]; then
           echo -e "No release '\e[1;33mv$RELEASE_VERSION\e[0m' found after \e[1;33m$ATTEMPTS\e[0m attempts."
         fi
 
