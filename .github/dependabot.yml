@@ -56,6 +56,5 @@ updates:
     groups:
       commitlint:
         patterns: ['@commitlint/*']
-        update-types: [minor]
     labels:
       - dependencies
