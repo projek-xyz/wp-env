@@ -91,6 +91,10 @@ for pkg_dir in packages/*/; do
             \"php_version\": \"$PHP_VERSION\",
             \"wp_version\": \"$WP_VERSION\"
         }" "$DIST_DIR/release.json" > "$DIST_DIR/release.tmp" && mv "$DIST_DIR/release.tmp" "$DIST_DIR/release.json"
+
+        echo -e "\e[1;32mSuccess:\e[0m '\e[1;33m$pkg\e[0m' manifest updated"
+    else
+        echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
 
     rm "$pkg_dir"/{license.txt,composer.lock}

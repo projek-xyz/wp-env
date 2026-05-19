@@ -166,6 +166,12 @@ jobs:
         echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
         echo "release-version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
 
+        if [[ "$FOR_RELEASE" == '1' ]]; then
+          echo -e "\e[1;32mSuccess:\e[0m Prepare for `\e[1;33m$RELEASE_VERSION\e[0m`"
+        else
+          echo -e "\e[1;35mNotice:\e[0m Prepare for \e[1;33m$RELEASE_VERSION\e[0m"
+        fi
+
     - name: Store archive
       uses: actions/upload-artifact@v7
       with:
@@ -177,9 +183,7 @@ jobs:
     name: Uploads
     needs: archive
     runs-on: ubuntu-latest
-    if: |-
-      needs.archive.outputs.for-release == '1' &&
-      needs.archive.outputs.release-version != ''
+    if: needs.archive.outputs.for-release == '1'
 
     env:
       DIST_DIR: assets/dist
