@@ -107,3 +107,13 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: tests/coverage
+          env_vars: PHP_VERSION,WP_VERSION
+          report_type: coverage
+
+      - name: Upload test results to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: tests/coverage
+          env_vars: PHP_VERSION,WP_VERSION
+          report_type: test_results
