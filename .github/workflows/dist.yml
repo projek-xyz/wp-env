@@ -229,7 +229,6 @@ jobs:
       with:
         name: release-archives
         path: ${{ env.DIST_DIR }}
-        run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ github.token }}
 
     - name: Upload assets

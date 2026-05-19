@@ -37,8 +37,8 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v8
       with:
-        path: ${{ env.DIST_DIR }}
         name: release-archives
+        path: ${{ env.DIST_DIR }}
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ github.token }}
 
