@@ -101,3 +101,9 @@ jobs:
       - name: Unit Test
         run: |
           composer test --ansi
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: tests/coverage
