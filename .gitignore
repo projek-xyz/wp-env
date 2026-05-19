@@ -44,10 +44,6 @@ conductor
 vendor
 node_modules
 
-# code coverage
-coverage
-*.lcov
-
 # Additional plugins and themes
 scripts/init-*.txt
 

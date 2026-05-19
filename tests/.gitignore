@@ -1,0 +1,4 @@
+# code coverage
+coverage
+reports
+*.lcov

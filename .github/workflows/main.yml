@@ -106,7 +106,7 @@ jobs:
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: tests/coverage
+          directory: tests/reports
           env_vars: PHP_VERSION,WP_VERSION
           report_type: coverage
 
@@ -114,6 +114,6 @@ jobs:
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: tests/coverage
+          directory: tests/reports
           env_vars: PHP_VERSION,WP_VERSION
           report_type: test_results

@@ -19,11 +19,14 @@
         </testsuite>
     </testsuites>
 
+    <logging>
+        <junit outputFile="tests/reports/junit.xml"/>
+    </logging>
+
     <coverage>
         <report>
-            <junit outputFile="tests/coverage/junit.xml"/>
-            <clover outputFile="tests/coverage/clover.xml"/>
-            <html outputDirectory="tests/coverage" lowUpperBound="50" highLowerBound="90"/>
+            <clover outputFile="tests/reports/clover.xml"/>
+            <html outputDirectory="tests/reports/html" lowUpperBound="50" highLowerBound="90"/>
         </report>
     </coverage>
 
