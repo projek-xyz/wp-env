@@ -198,12 +198,15 @@ jobs:
       run: |
         AVAILABLE=0
 
-        echo "Release version: $RELEASE_VERSION"
-
         for a in $(seq 1 "${ATTEMPTS}"); do
-          echo "Attempt ${a}/${ATTEMPTS}: waiting for release '$RELEASE_VERSION' to be available..."
-          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
-            echo "Release $RELEASE_VERSION found!"
+          if (( $a < $ATTEMPTS )); then
+            a=" $a"
+          fi
+
+          echo -e "Waiting for release '\e[1;33mv$RELEASE_VERSION\e[0m' to be available... ${a}/${ATTEMPTS}"
+
+          if gh release view "v$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo -e "Found '\e[1;33mv$RELEASE_VERSION\e[0m'"
             AVAILABLE=1
             break
           fi
@@ -211,7 +214,7 @@ jobs:
         done
 
         if [[ -z "$AVAILABLE" ]]; then
-          echo "Release '$RELEASE_VERSION' not found after $ATTEMPTS attempts."
+          echo -e "No release '\e[1;33mv$RELEASE_VERSION\e[0m' found after \e[1;33m$ATTEMPTS\e[0m attempts."
         fi
 
         echo "is-available=$AVAILABLE" >> $GITHUB_OUTPUT
@@ -239,8 +242,8 @@ jobs:
 
           echo -e "::group::Uploading '\e[1;33m$file_name\e[0m'..."
 
-          gh release upload "$RELEASE_VERSION" "$file" --clobber
-          echo -e "\e[1;32mSuccesse[0m: '\e[1;33m$file\e[0m' uploaded to '\e[1;33m$RELEASE_VERSION\e[0m' release"
+          gh release upload "v$RELEASE_VERSION" "$file" --clobber
+          echo -e "\e[1;32mSuccess\e[0m: '\e[1;33m$file_name\e[0m' uploaded to '\e[1;33mv$RELEASE_VERSION\e[0m' release"
 
           echo '::endgroup::'
         done
