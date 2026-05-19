@@ -18,7 +18,6 @@ WP_VERSION=${WP_VERSION:-"6.9"}
 
 FOR_RELEASE=${FOR_RELEASE:-"0"}
 COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
-GITHUB_OUTPUT=${GITHUB_OUTPUT:-"/dev/null"}
 
 RELEASE_URL=${RELEASE_URL:-""}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
@@ -27,23 +26,10 @@ if [[ "$FOR_RELEASE" == "1" && "$COMMIT_MESSAGE" != "" ]]; then
     tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
 fi
 
-e_start "Fetching previous manifest..."
-if [[ ! -f $DIST_DIR/release.json ]]; then
-    if [[ -n "$RELEASE_URL" ]] && curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
-        echo -e "\e[1;36mInfo:\e[0m Fetched existing manifest from \e[1;33m$RELEASE_URL\e[0m."
-    else
-        echo -e "\e[1;35mNotice:\e[0m No existing manifest found. Starting fresh."
-        echo '{}' > "$DIST_DIR/release.json"
-    fi
-else
-    echo -e "\e[1;35mNotice:\e[0m Manifest already exists, use existing."
-fi
-e_end
-
-for pkg_dir in packages/*/; do
-    pkg_dir="${pkg_dir%/}"
-    pkg="${pkg_dir##*/}"
-    pkg_type=$(cat "$pkg_dir/composer.json" | jq -r '.type' | sed 's/wordpress-//')
+make_dist() {
+    local pkg_dir="${1%/}"
+    local pkg="${pkg_dir##*/}"
+    local pkg_type=$(cat "$pkg_dir/composer.json" | jq -r '.type' | sed 's/wordpress-//')
 
     e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
@@ -54,8 +40,8 @@ for pkg_dir in packages/*/; do
         continue
     fi
 
-    pkg_version=$(cat "$pkg_dir/package.json" | jq -r '.version')
-    manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
+    local pkg_version=$(cat "$pkg_dir/package.json" | jq -r '.version')
+    local manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
 
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
@@ -76,7 +62,7 @@ for pkg_dir in packages/*/; do
 
     _wp dist-archive "$pkg_dir" "$DIST_DIR" --force --create-target-dir --filename-format="{name}"
 
-    pkg_archive="$pkg.$pkg_version.zip"
+    local pkg_archive="$pkg.$pkg_version.zip"
     mv "$DIST_DIR/$pkg.zip" "$DIST_DIR/$pkg_archive"
 
     if [[ "$FOR_RELEASE" == "1" ]]; then
@@ -101,9 +87,34 @@ for pkg_dir in packages/*/; do
     rm "$pkg_dir"/{license.txt,composer.lock}
 
     e_end
+}
+
+if [[ -n $1 ]]; then
+    make_dist "$1"
+    exit 0
+fi
+
+e_start "Fetching previous manifest..."
+if [[ ! -f $DIST_DIR/release.json ]]; then
+    if [[ -n "$RELEASE_URL" ]] && curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
+        echo -e "\e[1;36mInfo:\e[0m Fetched existing manifest from \e[1;33m$RELEASE_URL\e[0m."
+    else
+        echo -e "\e[1;35mNotice:\e[0m No existing manifest found. Starting fresh."
+        echo '{}' > "$DIST_DIR/release.json"
+    fi
+else
+    echo -e "\e[1;35mNotice:\e[0m Manifest already exists, use existing."
+fi
+e_end
+
+for pkg_dir in packages/*/; do
+    make_dist "$pkg_dir"
 done
 
-echo "release-version=$tag_name" >> $GITHUB_OUTPUT
+if [[ -n "${CI:-}" ]]; then
+    GITHUB_OUTPUT=${GITHUB_OUTPUT:-"/dev/null"}
+    echo "release-version=$tag_name" >> $GITHUB_OUTPUT
+fi
 
 if [[ "$FOR_RELEASE" == '1' ]]; then
   echo -e "\e[1;32mSuccess:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
