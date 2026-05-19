@@ -29,7 +29,7 @@ fi
 
 e_start "Fetching previous manifest..."
 if [[ ! -f $DIST_DIR/release.json ]]; then
-    if [[ -n "$RELEASE_URL" ]] && $(curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"); then
+    if [[ -n "$RELEASE_URL" ]] && curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
         echo -e "\e[1;36mInfo:\e[0m Fetched existing manifest from \e[1;33m$RELEASE_URL\e[0m."
     else
         echo -e "\e[1;35mNotice:\e[0m No existing manifest found. Starting fresh."
