@@ -164,13 +164,6 @@ jobs:
         scripts/make-dist.sh
 
         echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
-        echo "release-version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
-
-        if [[ "$FOR_RELEASE" == '1' ]]; then
-          echo -e "\e[1;32mSuccess:\e[0m Prepare for `\e[1;33m$RELEASE_VERSION\e[0m`"
-        else
-          echo -e "\e[1;35mNotice:\e[0m Prepare for \e[1;33m$RELEASE_VERSION\e[0m"
-        fi
 
     - name: Store archive
       uses: actions/upload-artifact@v7

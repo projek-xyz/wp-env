@@ -102,4 +102,10 @@ for pkg_dir in packages/*/; do
     e_end
 done
 
-export RELEASE_VERSION=$tag_name
+echo "release-version=$tag_name" >> $GITHUB_OUTPUT
+
+if [[ "$FOR_RELEASE" == '1' ]]; then
+  echo -e "\e[1;32mSuccess:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
+else
+  echo -e "\e[1;35mNotice:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
+fi
