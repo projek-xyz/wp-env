@@ -45,6 +45,8 @@ jobs:
     - name: Prepare
       shell: bash
       run: |
+        shopt -s nullglob
+
         cp assets/*.{html,png,svg,ico} $DIST_DIR/
         cp assets/.nojekyll $DIST_DIR/
 
