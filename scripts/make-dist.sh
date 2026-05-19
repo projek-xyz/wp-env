@@ -57,7 +57,7 @@ for pkg_dir in packages/*/; do
     pkg_version=$(cat "$pkg_dir/package.json" | jq -r '.version')
     manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
 
-    if [[ "$pkg_version" == "$manifest_version" ]]; then
+    if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
 
         e_end
