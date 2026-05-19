@@ -18,6 +18,7 @@ WP_VERSION=${WP_VERSION:-"6.9"}
 
 FOR_RELEASE=${FOR_RELEASE:-"0"}
 COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
+GITHUB_OUTPUT=${GITHUB_OUTPUT:-"/dev/null"}
 
 RELEASE_URL=${RELEASE_URL:-"https://projek-xyz.github.io/wp-env/release.json"}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
