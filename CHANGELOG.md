@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.9](https://github.com/projek-xyz/wp-env/compare/v0.0.8...v0.0.9) (2026-05-19)
+
+
+### Features
+
+* **ci:** early manifest check and skip entire setup when no new release available ([0d75eca](https://github.com/projek-xyz/wp-env/commit/0d75eca3b9481b53d5e5530b19d0010cd45d6b2c))
+
+
+### Bug Fixes
+
+* **ci:** incorrect `release-version` outputs from Archive job ([e51b0e5](https://github.com/projek-xyz/wp-env/commit/e51b0e5c835320393f6ce5efa257beaaa65a238e))
+* **ci:** incorrect download-artifact `workflow.id` ([9bf8733](https://github.com/projek-xyz/wp-env/commit/9bf8733c44ec1a72fa1192d884cba5a8afe7eaa4))
+* **ci:** make sure `dist.yml` workflow always has artifact ([17b0086](https://github.com/projek-xyz/wp-env/commit/17b0086185836f500c7f7cc7808098a95122a01f))
+* **ci:** missing `v` in distribution upload job ([b958017](https://github.com/projek-xyz/wp-env/commit/b95801730a7b15771e6a674765465c457d896cd9))
+* **ci:** optimized release distribution workflow ([#24](https://github.com/projek-xyz/wp-env/issues/24)) ([0ae0229](https://github.com/projek-xyz/wp-env/commit/0ae0229b440ea6e08defba7173aed80b15af0a6a))
+
 ## [0.0.8](https://github.com/projek-xyz/wp-env/compare/v0.0.7...v0.0.8) (2026-05-18)
 
 
