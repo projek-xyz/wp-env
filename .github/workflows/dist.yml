@@ -27,7 +27,7 @@ jobs:
       DIST_DIR: assets/dist
       RELEASE_URL: ${{ vars.RELEASE_URL }}
       PHP_VERSION: '8.1'
-      WP_VERSION: '6.9'
+      WP_VERSION: '7.0'
 
     permissions:
       id-token: write
