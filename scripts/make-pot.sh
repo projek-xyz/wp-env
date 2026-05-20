@@ -29,10 +29,13 @@ make_pot() {
 
     if [ -f "$pot_file" ]; then
         # Capture ONLY the date value, removing labels, quotes, and the trailing \n
-        local creation_date=$(grep "POT-Creation-Date:" "$pot_file" | head -n 1 | sed 's/.*POT-Creation-Date: \(.*\)\\n.*/\1/')
+        local creation_date
+        creation_date=$(grep "POT-Creation-Date:" "$pot_file" | head -n 1 | sed 's/.*POT-Creation-Date: \(.*\)\\n.*/\1/')
 
         if [[ -n "$creation_date" ]]; then
-            local pot_temp_fixed=$(mktemp)
+            local pot_temp_fixed
+            pot_temp_fixed=$(mktemp)
+
             # Use | as delimiter and match the exact PO header format
             sed "s|\"POT-Creation-Date: .*\\\\n\"|\"POT-Creation-Date: $creation_date\\\\n\"|" "$pot_temp" > "$pot_temp_fixed"
             mv "$pot_temp_fixed" "$pot_temp"
