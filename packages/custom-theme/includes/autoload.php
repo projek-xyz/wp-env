@@ -33,7 +33,7 @@ spl_autoload_register(
 		// Convert namespace separators and underscores to directory separators and hyphens.
 		$pathname = str_replace(
 			array( '\\', '_' ),
-			array( '/', '-' ),
+			array( DIRECTORY_SEPARATOR, '-' ),
 			strtolower( $class_name )
 		);
 
@@ -41,24 +41,24 @@ spl_autoload_register(
 		$filename = basename( $pathname );
 
 		// Construct the final file path.
-		$file = __DIR__ . "/{$dirname}/class-{$filename}.php";
-
-		if ( file_exists( $file ) ) {
+		if ( $file = realpath( __DIR__ . "/{$dirname}/class-{$filename}.php" ) ) {
 			require_once $file;
 		}
 	}
 );
 
-$theme_dir = \get_stylesheet_directory();
-$dirs      = array(
-	$theme_dir,
-	dirname( dirname( $theme_dir ) ),
-);
+( static function () {
+	$theme_dir = \get_stylesheet_directory();
+	$dirs      = array(
+		$theme_dir,
+		dirname( dirname( $theme_dir ) ),
+	);
 
-// Check for Composer autoloader in both the theme root and the project root.
-foreach ( $dirs as $dir ) {
-	if ( file_exists( $dir . '/vendor/autoload.php' ) ) {
-		require_once $dir . '/vendor/autoload.php';
-		break;
+	// Check for Composer autoloader in both the theme root and the project root.
+	foreach ( $dirs as $dir ) {
+		if ( $file = realpath( $dir . '/vendor/autoload.php' ) ) {
+			require_once $file;
+			break;
+		}
 	}
-}
+} )();
