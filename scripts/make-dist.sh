@@ -77,7 +77,7 @@ make_dist() {
 
     cp LICENSE-GPL "$pkg_dir/license.txt"
 
-    _wp i18n make-pot "$pkg_dir" "$pkg_dir/languages/$pkg.pot"
+    "$(dirname "$0")/make-pot.sh" "$pkg_dir"
 
     _wp dist-archive "$pkg_dir" "$DIST_DIR" --force --create-target-dir --filename-format="{name}"
 
