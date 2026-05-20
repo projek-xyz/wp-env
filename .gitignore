@@ -29,13 +29,14 @@ nbproject
 .vscode
 .project
 .zed
-GEMINI.md
 *.sublime-*
 
-# AI Agent
+# AI Agents
 # --------------------------
+.agents
 .gemini
 conductor
+GEMINI.md
 
 # Development
 # --------------------------
