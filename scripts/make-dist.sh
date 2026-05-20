@@ -31,7 +31,7 @@ make_dist() {
     local pkg="${pkg_dir##*/}"
     local pkg_type
     local pkg_version
-    local manifest_version"none"
+    local manifest_version="none"
 
     pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
 
