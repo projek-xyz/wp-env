@@ -9,7 +9,9 @@ make_pot() {
     local pkg_dir="${1%/}"
     local pkg="${pkg_dir##*/}"
     local pot_file="$pkg_dir/languages/$pkg.pot"
-    local pot_temp=$(mktemp)
+    local pot_temp
+
+    pot_temp=$(mktemp)
 
     if [ ! -d "$pkg_dir" ]; then
         echo -e "\e[1;33mNotice:\e[0m No such directory: $pkg_dir, skipping"

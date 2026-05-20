@@ -31,7 +31,7 @@ make_dist() {
     local pkg="${pkg_dir##*/}"
     local pkg_type
     local pkg_version
-    local manifest_version
+    local manifest_version"none"
 
     pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
 
@@ -45,7 +45,10 @@ make_dist() {
     fi
 
     pkg_version=$(jq -r '.version' "$pkg_dir/package.json")
-    manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
+
+    if [[ -f "$DIST_DIR/release.json" ]]; then
+        manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
+    fi
 
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
