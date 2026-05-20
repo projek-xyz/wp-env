@@ -29,7 +29,11 @@ fi
 make_dist() {
     local pkg_dir="${1%/}"
     local pkg="${pkg_dir##*/}"
-    local pkg_type=$(cat "$pkg_dir/composer.json" | jq -r '.type' | sed 's/wordpress-//')
+    local pkg_type
+    local pkg_version
+    local manifest_version
+
+    pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
 
     e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
@@ -40,8 +44,8 @@ make_dist() {
         return 0
     fi
 
-    local pkg_version=$(cat "$pkg_dir/package.json" | jq -r '.version')
-    local manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
+    pkg_version=$(jq -r '.version' "$pkg_dir/package.json")
+    manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
 
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
@@ -89,7 +93,7 @@ make_dist() {
     e_end
 }
 
-if [[ -n $1 ]]; then
+if [[ -n ${1:-} ]]; then
     make_dist "$1"
     exit 0
 fi
