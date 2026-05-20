@@ -22,7 +22,7 @@ class Theme {
 	 *
 	 * @return void
 	 */
-	public static function activation(): void {
+	public static function activate(): void {
 		\do_action( 'ct_activation' );
 	}
 
@@ -33,7 +33,7 @@ class Theme {
 	 *
 	 * @return void
 	 */
-	public static function deactivation(): void {
+	public static function deactivate(): void {
 		\do_action( 'ct_deactivation' );
 	}
 

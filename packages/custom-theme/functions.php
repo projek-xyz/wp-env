@@ -18,12 +18,12 @@ add_action( 'wp_enqueue_scripts', array( Theme::class, 'enqueue_scripts' ) );
 /**
  * Triggers the custom theme activation hook.
  */
-add_action( 'after_switch_theme', array( Theme::class, 'activation' ) );
+add_action( 'after_switch_theme', array( Theme::class, 'activate' ) );
 
 /**
  * Triggers the custom theme deactivation hook.
  */
-add_action( 'switch_theme', array( Theme::class, 'deactivation' ) );
+add_action( 'switch_theme', array( Theme::class, 'deactivate' ) );
 
 /**
  * Checks if a theme update is available.
