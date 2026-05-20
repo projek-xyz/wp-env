@@ -21,6 +21,7 @@ COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
 
 RELEASE_URL=${RELEASE_URL:-""}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
+new_releases=0
 
 if [[ "$FOR_RELEASE" == "1" && "$COMMIT_MESSAGE" != "" ]]; then
     tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
@@ -28,6 +29,8 @@ fi
 
 make_dist() {
     local pkg_dir="${1%/}"
+    local is_check="${2:-0}"
+
     local pkg="${pkg_dir##*/}"
     local pkg_type
     local pkg_version
@@ -52,6 +55,15 @@ make_dist() {
 
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
+
+        e_end
+        return 0
+    fi
+
+    # On check mode: if runs locally it should always be a new release.
+    if [[ $is_check -eq 1 ]]; then
+        echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' new version \e[1;33m$pkg_version\e[0m available"
+        new_releases=$((new_releases+1))
 
         e_end
         return 0
@@ -96,11 +108,6 @@ make_dist() {
     e_end
 }
 
-if [[ -n ${1:-} ]]; then
-    make_dist "$1"
-    exit 0
-fi
-
 e_start "Fetching previous manifest..."
 if [[ ! -f $DIST_DIR/release.json ]]; then
     if [[ -n "$RELEASE_URL" ]] && curl -s -f "$RELEASE_URL" -o "$DIST_DIR/release.json"; then
@@ -114,13 +121,41 @@ else
 fi
 e_end
 
-for pkg_dir in packages/*/; do
-    make_dist "$pkg_dir"
+declare -A pkgs
+
+is_check=0
+pkgs=()
+
+for arg in "$@"; do
+    if [[ "$arg" == "--check" ]]; then
+        is_check=1
+        pkgs=() # Clear out existing pkgs
+
+        continue
+    fi
+
+    # Capture the path up to and including the first directory after 'packages/'
+    if [[ "$arg" =~ (.*packages/[^/]+) ]]; then
+        pkgs["${BASH_REMATCH[1]}"]=1
+    fi
 done
 
-if [[ -n "${CI:-}" ]]; then
-    GITHUB_OUTPUT=${GITHUB_OUTPUT:-"/dev/null"}
+if [ ${#pkgs[@]} -gt 0 ]; then
+    # Get unique keys and sort them for consistency
+    IFS=$'\n' sorted_pkgs=($(sort <<<"${!pkgs[*]}"))
+    unset IFS
+else
+    sorted_pkgs=(packages/*/)
+fi
+
+for pkg_dir in ${sorted_pkgs[@]}; do
+    echo -e "\e[1;36mInfo:\e[0m Processing[$is_check] \e[1;33m$pkg_dir\e[0m"
+    make_dist "$pkg_dir" "$is_check"
+done
+
+if [[ -n "${CI:-}" && -n "${GITHUB_OUTPUT}" ]]; then
     echo "release-version=$tag_name" >> $GITHUB_OUTPUT
+    echo "new-releases=$new_releases" >> $GITHUB_OUTPUT
 fi
 
 if [[ "$FOR_RELEASE" == '1' ]]; then
