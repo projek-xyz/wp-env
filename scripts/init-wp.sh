@@ -32,19 +32,20 @@ SITE_DEFAULT_THEME=${SITE_DEFAULT_THEME:-}
 
 declare -A plugins_map
 
-# ----------------- Blocksy Plugin Contact        Woo
-# ----------------- Comp.   Check  Form7  JetPack Comm.
-plugins_map['5.9']='2.0.86  0.2.0  5.7.7  11.2.2  7.5.2'
-plugins_map['6.0']='2.0.86  0.2.3  5.7.7  12.0.1  7.7.3'
-plugins_map['6.1']='2.0.86  0.2.3  5.7.7  12.5.1  7.9.2'
-plugins_map['6.2']='2.0.86  0.2.3  5.8.7  12.7.1  8.2.5'
-plugins_map['6.3']='2.0.86  1.9.0  5.9.8  13.2.1  8.7.3'
-plugins_map['6.4']='2.0.86  1.9.0  5.9.8  13.6.1  9.0.4'
-plugins_map['6.5']='2.1.41  1.9.0  5.9.8  13.9.1  9.4.5'
-plugins_map['6.6']='2.1.41  1.9.0  6.0.6  14.4.1  9.8.7'
-plugins_map['6.7']='2.1.41  1.9.0  6.1.5  15.1.1  10.3.8'
-plugins_map['6.8']='2.1.41  1.9.0  6.1.5  15.7.1  10.7.0'
-plugins_map['6.9']='2.1.41  1.9.0  6.1.5  15.7.1  10.7.0'
+# ----------------- Blocksy Plugin  Contact         Woo
+# ----------------- Comp.   Check   Form7   JetPack Comm.
+plugins_map['5.9']='2.0.86  0.2.0   5.7.7   11.2.2  7.5.2'
+plugins_map['6.0']='2.0.86  0.2.3   5.7.7   12.0.1  7.7.3'
+plugins_map['6.1']='2.0.86  0.2.3   5.7.7   12.5.1  7.9.2'
+plugins_map['6.2']='2.0.86  0.2.3   5.8.7   12.7.1  8.2.5'
+plugins_map['6.3']='2.0.86  1.9.0   5.9.8   13.2.1  8.7.3'
+plugins_map['6.4']='2.0.86  latest  5.9.8   13.6.1  9.0.4'
+plugins_map['6.5']='2.1.42  latest  5.9.8   13.9.1  9.4.5'
+plugins_map['6.6']='latest  latest  6.0.6   14.4.1  9.8.7'
+plugins_map['6.7']='latest  latest  6.1.6   15.1.1  10.3.8'
+plugins_map['6.8']='latest  latest  latest  15.7.1  10.7.0'
+plugins_map['6.9']='latest  latest  latest  latest  latest'
+plugins_map['7.0']='latest  latest  latest  latest  latest'
 
 # ==============================================================================
 
@@ -57,11 +58,12 @@ themes_map['6.1']='2.0.86'
 themes_map['6.2']='2.0.86'
 themes_map['6.3']='2.0.86'
 themes_map['6.4']='2.0.86'
-themes_map['6.5']='2.1.41'
-themes_map['6.6']='2.1.41'
-themes_map['6.7']='2.1.41'
-themes_map['6.8']='2.1.41'
-themes_map['6.9']='2.1.41'
+themes_map['6.5']='2.1.42'
+themes_map['6.6']='latest'
+themes_map['6.7']='latest'
+themes_map['6.8']='latest'
+themes_map['6.9']='latest'
+themes_map['7.0']='latest'
 
 # ==============================================================================
 
@@ -133,12 +135,14 @@ theme_supports['blocksy']="${wp_themes[0]:-2.0.86}"
 if [[ ${WP_RESET:-0} -eq 1 ]]; then
     e_start "Reset WordPress Core"
     rm -rf "$INSTALL_DIR"
+    echo -e "\e[1;32mSuccess:\e[0m WordPress has been reset."
     e_end
 fi
 
 if [[ ! -d "${INSTALL_DIR}" ]]; then
     e_start 'Download WordPress Core'
-    _wp core download --version=${WP_VERSION}
+    result=$(_wp core download --version=${WP_VERSION} | tail -n 1)
+    echo -e "$result"
     e_end
 fi
 
@@ -193,7 +197,7 @@ if [[ -n "${SITE_PLUGINS:-}" ]]; then
 
         plugins_to_activate+=("$plugin")
 
-        if [[ -n "$plugin_version" ]]; then
+        if [[ -n "$plugin_version" && $plugin_version != 'latest' ]]; then
             result=$(_wp plugin install "$plugin" --version="$plugin_version" | head -n 1 | sed 's/^Installing\s\(.*\)$/\1/')
             echo -e "\e[1;32mSuccess:\e[0m Installed $result"
 
@@ -292,7 +296,7 @@ if [[ -n "${SITE_THEMES:-}" ]]; then
             continue
         fi
 
-        if [[ -n "$theme_version" ]]; then
+        if [[ -n "$theme_version" && $theme_version != 'latest' ]]; then
             result=$(_wp theme install "$theme" --version="$theme_version" | head -n 1 | sed 's/^Installing\s\(.*\)$/\1/')
             echo -e "\e[1;32mSuccess:\e[0m Installed $result"
 
