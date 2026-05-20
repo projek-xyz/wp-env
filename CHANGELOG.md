@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.10](https://github.com/projek-xyz/wp-env/compare/v0.0.9...v0.0.10) (2026-05-20)
+
+
+### Features
+
+* add ability to run `make-pot` and `make-dist` to individual package ([e7da2b4](https://github.com/projek-xyz/wp-env/commit/e7da2b4a7c43fba0bc5eadff7f16075d0864b48f))
+* **ci:** init usage of `codecov` ([#28](https://github.com/projek-xyz/wp-env/issues/28)) ([4758bde](https://github.com/projek-xyz/wp-env/commit/4758bded8e6f6dcc8cdaa84f443dafc684318b5c))
+* **ci:** make use of repo variables for `RELEASE_URL` ([08e2c30](https://github.com/projek-xyz/wp-env/commit/08e2c307ea98ba956c3d239616b23da646312d74))
+* **ci:** update `dependabot` config ([4b899b5](https://github.com/projek-xyz/wp-env/commit/4b899b52a7bf124b4c909b18b5a4b16a5b968309))
+
+
+### Bug Fixes
+
+* **ci:** no need to "wrap" `curl` command here ([5ba303c](https://github.com/projek-xyz/wp-env/commit/5ba303c0a324cef9d591f6383e0f79b80a5268a4))
+* **ci:** prevent failing when the asset not exists ([4ebc7a2](https://github.com/projek-xyz/wp-env/commit/4ebc7a2812a17d9eede31d194e60f0eb6daed61c))
+* **ci:** release availability check should against `0` as it initial value ([a6de6e6](https://github.com/projek-xyz/wp-env/commit/a6de6e6fe5c90157b71652a1b213505dc2247e55))
+* unbound `GITHUB_OUTPUT` variable when running `make-dist` locally ([683278b](https://github.com/projek-xyz/wp-env/commit/683278b75401f15a79fb4a69d3d6432f1131e64c))
+
 ## [0.0.9](https://github.com/projek-xyz/wp-env/compare/v0.0.8...v0.0.9) (2026-05-19)
 
 
