@@ -9,7 +9,7 @@
 
 namespace Custom_Theme;
 
-defined( 'CUSTOM_THEME_VERSION' ) || define( 'CUSTOM_THEME_VERSION', '0.0.2' );
+defined( 'CUSTOM_THEME_VERSION' ) || define( 'CUSTOM_THEME_VERSION', '0.0.3' );
 
 require_once __DIR__ . '/includes/autoload.php';
 
