@@ -37,7 +37,7 @@ make_dist() {
         echo -e "\e[1;35mNotice:\e[0m No .distignore found for '\e[1;33m$pkg\e[0m', skipping"
 
         e_end
-        continue
+        return 0
     fi
 
     local pkg_version=$(cat "$pkg_dir/package.json" | jq -r '.version')
@@ -47,7 +47,7 @@ make_dist() {
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
 
         e_end
-        continue
+        return 0
     fi
 
     echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
