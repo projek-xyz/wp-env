@@ -34,6 +34,7 @@ nbproject
 # AI Agents
 # --------------------------
 .agents
+.antigravitycli
 .gemini
 conductor
 GEMINI.md
