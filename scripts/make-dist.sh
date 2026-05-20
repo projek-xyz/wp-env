@@ -155,7 +155,8 @@ done
 
 if [[ -n "${CI:-}" && -n "${GITHUB_OUTPUT}" ]]; then
     echo "release-version=$tag_name" >> $GITHUB_OUTPUT
-    echo "new-releases=$new_releases" >> $GITHUB_OUTPUT
+    echo "new-release=$new_releases" >> $GITHUB_OUTPUT
+fi
 fi
 
 if [[ "$FOR_RELEASE" == '1' ]]; then
