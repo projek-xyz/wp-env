@@ -7,6 +7,7 @@ namespace UnitTests;
 use Brain\Monkey\Functions;
 use Closure;
 use Fixtures\TestCase;
+use ReturnTypeWillChange;
 
 /**
  * Base Test Case for all unit tests.
@@ -49,9 +50,10 @@ abstract class BaseTestCase extends TestCase
      * @param string $name
      * @param 'library'|'plugin'|'theme'|null $type
      * @param string|null $version
-     * @return null|false
+     * @return void|false
      */
-    protected static function packageAutoload(string $name, ?string $type, ?string $version): ?false
+    #[ReturnTypeWillChange]
+    protected static function packageAutoload(string $name, ?string $type, ?string $version)
     {
         static::setUpCallback(function ($next) use ($name, $type) {
             $dir = static::packageFile($name);
@@ -78,7 +80,9 @@ abstract class BaseTestCase extends TestCase
             $next();
         });
 
-        return static::$loadAutoloader ? null : false;
+        if (!static::$loadAutoloader) {
+            return false;
+        }
     }
 
     /**
