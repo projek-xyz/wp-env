@@ -43,6 +43,9 @@
         <!-- Allows: Short ternary operator, e.g. `$var = $a ?: $b` -->
         <exclude name="Universal.Operators.DisallowShortTernary.Found" />
 
+        <!-- Allows: Use generic variable names, e.g. `$default`, `$class` -->
+        <exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound"/>
+
         <!-- Allows: Assignment in ternary condition, e.g. `( $var = $a ) ? $b : $c` -->
         <exclude name="WordPress.CodeAnalysis.AssignmentInTernaryCondition.FoundInTernaryCondition" />
     </rule>
