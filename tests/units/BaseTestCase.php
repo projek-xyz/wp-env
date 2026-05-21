@@ -100,6 +100,9 @@ abstract class BaseTestCase extends TestCase
                 );
 
                 Functions\when('plugin_dir_path')->justReturn($dir);
+                Functions\when('plugin_dir_url')->justReturn(
+                    "http://example.com/wp-content/plugins/$name"
+                );
             }
 
             $next();
