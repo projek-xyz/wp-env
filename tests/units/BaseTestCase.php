@@ -155,6 +155,26 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
+     * Create mock for a static method.
+     * @template M of object
+     * @template E of \Mockery\ExpectationInterface
+     *
+     * @param class-string<M> $className
+     * @param array<string, Closure(E):E> $methods
+     * @return \Mockery\MockInterface
+     */
+    protected function mockStaticMethods(string $className, array $methods)
+    {
+        $mock = mock('alias:' . $className);
+
+        foreach ($methods as $method => $callback) {
+            $callback($mock->shouldReceive($method));
+        }
+
+        return $mock;
+    }
+
+    /**
      * Setup the test environment.
      *
      * @return void
