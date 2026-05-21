@@ -14,7 +14,7 @@ use Fixtures\TestCase;
 abstract class BaseTestCase extends TestCase
 {
     /**
-     * @var null|Closure
+     * @var null|Closure($this):void
      */
     private static ?Closure $setUpCallback = null;
 
@@ -31,9 +31,16 @@ abstract class BaseTestCase extends TestCase
     final protected static function setUpCallback(Closure $callback): void
     {
         $next = static::$setUpCallback ?? function () {
+            // noop
         };
 
-        static::$setUpCallback = fn () => $callback($next);
+        static::$setUpCallback = function ($newThis) use ($callback, $next) {
+            if (!(new \ReflectionFunction($callback))->isStatic()) {
+                $callback->bindTo($newThis);
+            }
+
+            $callback($next);
+        };
     }
 
     /**
@@ -120,7 +127,7 @@ abstract class BaseTestCase extends TestCase
         );
 
         if ($callback = static::$setUpCallback) {
-            $callback();
+            $callback($this);
         }
 
         if (!class_exists(\WP_Error::class)) {
