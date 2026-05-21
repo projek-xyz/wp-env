@@ -24,6 +24,8 @@ abstract class BaseTestCase extends TestCase
      */
     private static ?Closure $tearDownCallback = null;
 
+    private bool $resetWpVersion = false;
+
     protected static bool $loadAutoloader = false;
 
     protected static function packageName(): ?string
@@ -212,7 +214,9 @@ abstract class BaseTestCase extends TestCase
 
         // Set WP version global if not available
         if (! isset($GLOBALS['wp_version'])) {
-            $GLOBALS['wp_version'] = getenv('WP_VERSION') ?: '6.9';
+            $GLOBALS['wp_version'] = getenv('WP_VERSION') ?: '7.0';
+
+            $this->resetWpVersion = true;
         }
     }
 
@@ -224,6 +228,8 @@ abstract class BaseTestCase extends TestCase
             $callback($this);
         }
 
-        unset($GLOBALS['wp_version']);
+        if ($this->resetWpVersion) {
+            unset($GLOBALS['wp_version']);
+        }
     }
 }
