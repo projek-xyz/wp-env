@@ -156,5 +156,17 @@ abstract class BaseTestCase extends TestCase
         defined('WEEK_IN_SECONDS') || define('WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS);
         defined('MONTH_IN_SECONDS') || define('MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS);
         defined('YEAR_IN_SECONDS') || define('YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS);
+
+        // Set WP version global if not available
+        if (! isset($GLOBALS['wp_version'])) {
+            $GLOBALS['wp_version'] = getenv('WP_VERSION') ?: '6.9';
+        }
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        unset($GLOBALS['wp_version']);
     }
 }
