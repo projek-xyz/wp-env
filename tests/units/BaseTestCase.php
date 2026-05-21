@@ -155,6 +155,7 @@ abstract class BaseTestCase extends TestCase
         parent::tearDownAfterClass();
 
         static::$setUpCallback = null;
+        static::$tearDownCallback = null;
     }
 
     /**
