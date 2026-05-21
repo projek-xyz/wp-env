@@ -19,6 +19,11 @@ abstract class BaseTestCase extends TestCase
      */
     private static ?Closure $setUpCallback = null;
 
+    /**
+     * @var null|Closure($this):void
+     */
+    private static ?Closure $tearDownCallback = null;
+
     protected static bool $loadAutoloader = false;
 
     protected static function packageName(): ?string
@@ -38,6 +43,26 @@ abstract class BaseTestCase extends TestCase
         };
 
         static::$setUpCallback = function ($newThis) use ($callback, $next) {
+            if (!(new \ReflectionFunction($callback))->isStatic()) {
+                $callback->bindTo($newThis);
+            }
+
+            $callback($next);
+        };
+    }
+
+    /**
+     * @template T of Closure():void
+     * @param Closure(T):void $callback
+     * @return void
+     */
+    final protected static function tearDownCallback(Closure $callback): void
+    {
+        $next = static::$tearDownCallback ?? function () {
+            // noop
+        };
+
+        static::$tearDownCallback = function ($newThis) use ($callback, $next) {
             if (!(new \ReflectionFunction($callback))->isStatic()) {
                 $callback->bindTo($newThis);
             }
@@ -170,6 +195,10 @@ abstract class BaseTestCase extends TestCase
     public function tearDown(): void
     {
         parent::tearDown();
+
+        if ($callback = static::$tearDownCallback) {
+            $callback($this);
+        }
 
         unset($GLOBALS['wp_version']);
     }
