@@ -70,8 +70,16 @@ abstract class BaseTestCase extends TestCase
         if ($name = static::packageName()) {
             $dir = static::packageFile($name);
 
-            $packageJson = json_decode(file_get_contents($dir . '/package.json'));
-            $composerJson = json_decode(file_get_contents($dir . '/composer.json'));
+            [$packageJson, $composerJson] = array_map(
+                static function ($file) use ($dir, $name) {
+                    if (!($path = realpath($dir . $file))) {
+                        throw new \RuntimeException("Could not find $file for $name package");
+                    }
+
+                    return json_decode(file_get_contents($path));
+                },
+                ['/package.json', '/composer.json']
+            );
 
             $type = $composerJson->type ?? null;
 
