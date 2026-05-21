@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UnitTests;
 
 use Brain\Monkey\Functions;
+use Closure;
 use Fixtures\TestCase;
 
 /**
@@ -12,6 +13,95 @@ use Fixtures\TestCase;
  */
 abstract class BaseTestCase extends TestCase
 {
+    /**
+     * @var null|Closure
+     */
+    private static ?Closure $setUpCallback = null;
+
+    protected static function packageName(): ?string
+    {
+        return defined(static::class . '::PACKAGE_NAME') ? static::PACKAGE_NAME : null;
+    }
+
+    /**
+     * @template T of Closure():void
+     * @param Closure(T):void $callback
+     * @return void
+     */
+    final protected static function setUpCallback(Closure $callback): void
+    {
+        $next = static::$setUpCallback ?? function () {
+        };
+
+        static::$setUpCallback = fn () => $callback($next);
+    }
+
+    /**
+     * @param string $name
+     * @param 'library'|'plugin'|'theme'|null $type
+     * @param string|null $version
+     * @return null|false
+     */
+    protected static function packageAutoload(string $name, ?string $type, ?string $version): ?false
+    {
+        static::setUpCallback(function ($next) use ($name, $type) {
+            if ($type === 'theme') {
+                Functions\when('get_stylesheet')->justReturn($name);
+                Functions\when('get_stylesheet_directory')->justReturn(
+                    static::packageFile($name)
+                );
+            }
+
+            $next();
+        });
+
+        return false;
+    }
+
+    /**
+     * Setup before any test in this class runs.
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        if ($name = static::packageName()) {
+            $dir = static::packageFile($name);
+
+            [$packageJson, $composerJson] = array_map(
+                static function ($file) use ($dir, $name) {
+                    if (!($path = realpath($dir . $file))) {
+                        throw new \RuntimeException("Could not find $file for $name package");
+                    }
+
+                    return json_decode(file_get_contents($path));
+                },
+                ['/package.json', '/composer.json']
+            );
+
+            $type = $composerJson->type ?? null;
+
+            if ($type && str_contains($type, 'wordpress-')) {
+                $type = substr($type, 10);
+            }
+
+            $autoload = static::packageAutoload($name, $type, $packageJson->version);
+
+            if ($autoload !== false) {
+                require_once $dir . '/includes/autoload.php';
+            }
+        }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        parent::tearDownAfterClass();
+
+        static::$setUpCallback = null;
+    }
+
     /**
      * Setup the test environment.
      *
@@ -29,10 +119,9 @@ abstract class BaseTestCase extends TestCase
             fn($a, $b) => array_merge($b, $a)
         );
 
-        Functions\when('get_stylesheet')->justReturn('custom-theme');
-        Functions\when('get_stylesheet_directory')->justReturn(
-            BASE_PATH . '/packages/custom-theme'
-        );
+        if ($callback = static::$setUpCallback) {
+            $callback();
+        }
 
         if (!class_exists(\WP_Error::class)) {
             require_once ABSPATH . 'wp-includes/class-wp-error.php';
