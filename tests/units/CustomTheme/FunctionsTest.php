@@ -9,13 +9,12 @@ use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Custom_Theme\Theme;
 use Mockery;
-use UnitTests\BaseTestCase;
 use WP_Error;
 
 /**
  * Unit tests for the custom theme's functions.php.
  */
-class FunctionsTest extends BaseTestCase
+class FunctionsTest extends TestCase
 {
     /**
      * Verifies that the 'ct_activation' action is fired when the 'after_switch_theme' hook is triggered.
