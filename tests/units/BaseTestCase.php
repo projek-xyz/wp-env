@@ -18,6 +18,8 @@ abstract class BaseTestCase extends TestCase
      */
     private static ?Closure $setUpCallback = null;
 
+    protected static bool $loadAutoloader = false;
+
     protected static function packageName(): ?string
     {
         return defined(static::class . '::PACKAGE_NAME') ? static::PACKAGE_NAME : null;
@@ -62,7 +64,7 @@ abstract class BaseTestCase extends TestCase
             $next();
         });
 
-        return false;
+        return static::$loadAutoloader ? null : false;
     }
 
     /**
