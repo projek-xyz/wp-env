@@ -54,11 +54,25 @@ abstract class BaseTestCase extends TestCase
     protected static function packageAutoload(string $name, ?string $type, ?string $version): ?false
     {
         static::setUpCallback(function ($next) use ($name, $type) {
+            $dir = static::packageFile($name);
+
             if ($type === 'theme') {
-                Functions\when('get_stylesheet')->justReturn($name);
-                Functions\when('get_stylesheet_directory')->justReturn(
-                    static::packageFile($name)
+                static::assertFileExists(
+                    "$dir/functions.php",
+                    sprintf('Theme functions.php not found: %s', $name)
                 );
+
+                Functions\when('get_stylesheet')->justReturn($name);
+                Functions\when('get_stylesheet_directory')->justReturn($dir);
+            }
+
+            if ($type === 'plugin') {
+                static::assertFileExists(
+                    "$dir/$name.php",
+                    sprintf('Plugin %s.php not found: %s', $name, $name)
+                );
+
+                Functions\when('plugin_dir_path')->justReturn($dir);
             }
 
             $next();
