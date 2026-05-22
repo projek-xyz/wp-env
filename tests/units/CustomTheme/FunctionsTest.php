@@ -23,16 +23,6 @@ class FunctionsTest extends TestCase
      */
     public function testThemeShouldQueueACustomScripts()
     {
-        Functions\when('wp_get_theme')->justReturn(new class {
-            public $stylesheet = 'custom-theme';
-            public $version = '0.0.1';
-
-            public function get_stylesheet_directory_uri()
-            {
-                return 'http://example.com/wp-content/themes/custom-theme';
-            }
-        });
-
         Functions\when('wp_register_script')->justReturn();
         Functions\when('wp_enqueue_script')->justReturn();
 

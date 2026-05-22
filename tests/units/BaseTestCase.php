@@ -117,7 +117,7 @@ abstract class BaseTestCase extends TestCase
      */
     protected static function packageAutoload(string $name, ?string $type, ?string $version)
     {
-        static::setUpCallback(function ($next) use ($name, $type) {
+        static::setUpCallback(function ($next) use ($name, $type, $version) {
             $path = static::packageFile($name);
 
             if ($type === 'theme') {
@@ -131,6 +131,20 @@ abstract class BaseTestCase extends TestCase
                 Functions\when('get_stylesheet_directory_uri')->justReturn(
                     "http://example.com/wp-content/themes/$name"
                 );
+
+                Functions\when('wp_get_theme')->justReturn(new class ($name, $version) {
+                    public function __construct(
+                        public string $stylesheet,
+                        public string $version
+                    ) {
+                        // .
+                    }
+
+                    public function get_stylesheet_directory_uri()
+                    {
+                        return \get_stylesheet_directory_uri();
+                    }
+                });
             }
 
             if ($type === 'plugin') {
