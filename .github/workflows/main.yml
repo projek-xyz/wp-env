@@ -1,4 +1,5 @@
 name: Tests
+run-name: "tests(${{ github.ref_name }}): quality check against `${{ github.sha }}`"
 
 on:
   pull_request:
