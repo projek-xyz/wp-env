@@ -39,7 +39,13 @@
             "phpcs --standard=tests/phpcs.xml"
         ],
         "test": [
-            "phpunit --coverage-text --colors=always"
+            "phpunit --coverage-text --colors=always --display-warnings"
+        ],
+        "test:unit": [
+            "phpunit --testsuite \"Unit Tests\" --coverage-text --colors=always --display-warnings"
+        ],
+        "test:integration": [
+            "phpunit --testsuite \"Integration Tests\" --coverage-text --colors=always --display-warnings"
         ]
     },
     "require": {

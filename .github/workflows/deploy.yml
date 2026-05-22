@@ -1,9 +1,9 @@
-name: Static
-run-name: "static(${{ github.event.workflow_run.head_branch }}): deploying `${{ github.event.workflow_run.head_sha }}`"
+name: Deploy
+run-name: "deploy(${{ github.event.workflow_run.head_branch }}): deploying `${{ github.event.workflow_run.head_sha }}`"
 
 on:
   workflow_run:
-    workflows: [Distribution]
+    workflows: [Distribute]
     types: [completed]
     branches: [main]
 
@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Deploy
+  pages:
+    name: GitHub Pages
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
 
