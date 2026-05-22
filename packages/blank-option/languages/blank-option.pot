@@ -46,19 +46,19 @@ msgstr ""
 msgid "<strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>WordPress</strong> and has been paused."
 msgstr ""
 
-#: includes/class-admin.php:97
-#: includes/class-admin.php:98
+#: includes/class-admin.php:102
+#: includes/class-admin.php:103
 msgid "Blank Options"
 msgstr ""
 
-#: includes/class-admin.php:122
+#: includes/class-admin.php:127
 msgid "Blank Help"
 msgstr ""
 
-#: includes/class-admin.php:124
+#: includes/class-admin.php:129
 msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
 msgstr ""
 
-#: includes/class-admin.php:135
+#: includes/class-admin.php:140
 msgid "For more information:"
 msgstr ""
