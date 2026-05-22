@@ -37,16 +37,13 @@ make_dist() {
     local manifest_version="none"
 
     if [[ ! -f "$pkg_dir/composer.json" || ! -f "$pkg_dir/package.json" ]]; then
-        echo -e "\e[1;35mNotice:\e[0m No .distignore found for '\e[1;33m$pkg\e[0m', skipping"
+        echo -e "\e[1;35mNotice:\e[0m No '\e[1;34mcomposer.json\e[0m' or '\e[1;34mpackage.json\e[0m' found for '\e[1;33m$pkg\e[0m', skipping"
 
         e_end
         return 0
     fi
 
     pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
-
-    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
-
     pkg_version=$(jq -r '.version' "$pkg_dir/package.json")
 
     if [[ -f "$DIST_DIR/release.json" ]]; then
@@ -56,7 +53,6 @@ make_dist() {
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
 
-        e_end
         return 0
     fi
 
@@ -65,9 +61,10 @@ make_dist() {
         echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' new version \e[1;33m$pkg_version\e[0m available"
         new_releases=$((new_releases+1))
 
-        e_end
         return 0
     fi
+
+    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
     echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
 
