@@ -23,8 +23,8 @@ jobs:
     needs: prepare
 
     env:
-      PHP_VERSION: ${{ matrix.php }}
-      WP_VERSION: ${{ matrix.wp }}
+      PHP_VERSION: ${{ vars.PHP_VERSION || '8.2' }}
+      WP_VERSION: ${{ vars.WP_VERSION || '7.0' }}
 
     steps:
       - name: Checkout
