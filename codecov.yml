@@ -1,6 +1,9 @@
 coverage:
   status:
     project:
+      blank-option:
+        paths:
+          - packages/blank-option
       custom-theme:
         paths:
           - packages/custom-theme

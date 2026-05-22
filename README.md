@@ -20,8 +20,8 @@ Spin up a fully installed WordPress site in seconds, bypassing the setup wizard 
 2. **Start**: `docker compose up -d`
 3. **Evaluate**: Visit [http://localhost:8080](http://localhost:8080)
 
-> **Default Credentials:**  
-> **User:** `admin` | **Password:** `password`
+> [!NOTE] 
+> **Default Credentials:** User: `admin` | Password: `password`
 
 ## 🔋 Built-in Evaluation Tools
 
@@ -64,7 +64,8 @@ Add slugs to `SITE_PLUGINS` or `SITE_THEMES` in your `.env`:
 SITE_PLUGINS=akismet,woocommerce,contact-form-7
 ```
 
-> **Note:** For bulk installation, you can also list slugs (one per line) in `scripts/init-plugins.txt` or `scripts/init-themes.txt`.
+> [!NOTE] 
+> For bulk installation, you can also list slugs (one per line) in `scripts/init-plugins.txt` or `scripts/init-themes.txt`.
 
 ## 🏗️ Project Architecture
 

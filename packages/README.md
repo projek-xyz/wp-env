@@ -30,4 +30,4 @@ This project handles dependencies at the root level using a monorepo approach:
 - **custom-theme**: A starter theme for local development.
 
 ### Plugins
-- _SOON_
+- **blank-option**: A starter plugin for local development.
