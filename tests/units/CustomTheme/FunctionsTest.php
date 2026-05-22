@@ -9,6 +9,7 @@ use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Custom_Theme\Theme;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use WP_Error;
 
 /**
@@ -21,7 +22,8 @@ class FunctionsTest extends TestCase
      *
      * @return void
      */
-    public function testThemeShouldQueueACustomScripts()
+    #[Test]
+    public function shouldEnqueueACustomScripts()
     {
         Functions\when('wp_register_script')->justReturn();
         Functions\when('wp_enqueue_script')->justReturn();
@@ -41,7 +43,8 @@ class FunctionsTest extends TestCase
      *
      * @return void
      */
-    public function testThemeActivationTriggeredOnAfterSwitchTheme()
+    #[Test]
+    public function activationShouldBeTriggeredAfterSwitchTheme()
     {
         Actions\expectAdded('after_switch_theme')
             ->once()
@@ -61,7 +64,8 @@ class FunctionsTest extends TestCase
      *
      * @return void
      */
-    public function testThemeDeactivationTriggeredOnSwitchTheme()
+    #[Test]
+    public function deactivationShouldBeTriggeredOnSwitchTheme()
     {
         Actions\expectAdded('switch_theme')
             ->once()
@@ -76,7 +80,8 @@ class FunctionsTest extends TestCase
         require $this->packageFile('custom-theme/functions.php');
     }
 
-    public function testReturnFalseWhenCurrentlyCheckingAnotherTheme()
+    #[Test]
+    public function shouldReturnFalseWhenCurrentlyCheckingAnotherTheme()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
 
@@ -93,7 +98,8 @@ class FunctionsTest extends TestCase
         require $this->packageFile('custom-theme/functions.php');
     }
 
-    public function testReturnFalseWhenTheresErrorWhileCheckingUpdates()
+    #[Test]
+    public function shouldReturnsFalseWhenTheresErrorWhileCheckingUpdates()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
 
@@ -105,7 +111,7 @@ class FunctionsTest extends TestCase
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
-                $return = $callback(false, [], 'custom-theme');
+                $return = $callback(false, [], static::PACKAGE_NAME);
 
                 $this->assertFalse($return);
             });
@@ -115,7 +121,8 @@ class FunctionsTest extends TestCase
         require $this->packageFile('custom-theme/functions.php');
     }
 
-    public function testReturnFalseWhenTheresNoReleaseForCurrentTheme()
+    #[Test]
+    public function shouldReturnsFalseWhenTheresNoReleaseForCurrentTheme()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
         $release = (object) [
@@ -138,7 +145,7 @@ class FunctionsTest extends TestCase
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
-                $return = $callback(false, [], 'custom-theme');
+                $return = $callback(false, [], static::PACKAGE_NAME);
 
                 $this->assertFalse($return);
             });
@@ -148,7 +155,8 @@ class FunctionsTest extends TestCase
         require $this->packageFile('custom-theme/functions.php');
     }
 
-    public function testReturnArrayWhenTheresSiteTransient()
+    #[Test]
+    public function shouldReturnsArrayWhenTheresSiteTransient()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
         $updates = [
@@ -165,7 +173,7 @@ class FunctionsTest extends TestCase
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
-                $return = $callback(false, ['Version' => '0.0.1'], 'custom-theme');
+                $return = $callback(false, ['Version' => '0.0.1'], static::PACKAGE_NAME);
 
                 // $this->assertArrayHasKey('theme', $return);
                 $this->assertArrayHasKey('package', $return);
@@ -176,16 +184,19 @@ class FunctionsTest extends TestCase
                 $this->assertArrayHasKey('translations', $return);
             });
 
-        $spy->shouldReceive('get_updates')->andReturn((object) ['custom-theme' => (object) $updates]);
+        $spy->shouldReceive('get_updates')->andReturn((object) [
+            static::PACKAGE_NAME => (object) $updates,
+        ]);
 
         require $this->packageFile('custom-theme/functions.php');
     }
 
-    public function testReturnArrayWhenTheresAnUpdateAvailable()
+    #[Test]
+    public function shouldReturnsArrayWhenTheresAnUpdateAvailable()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
         $release = (object) [
-            'custom-theme' => (object) [
+            static::PACKAGE_NAME => (object) [
                 'info_url' => '',
                 'tag_name' => '',
                 'version' => '0.0.2',
@@ -204,7 +215,7 @@ class FunctionsTest extends TestCase
         Filters\expectAdded('update_themes_projek-xyz.github.io')
             ->once()
             ->whenHappen(function ($callback) {
-                $return = $callback(false, ['Version' => '0.0.1'], 'custom-theme');
+                $return = $callback(false, ['Version' => '0.0.1'], static::PACKAGE_NAME);
 
                 // $this->assertArrayHasKey('theme', $return);
                 $this->assertArrayHasKey('package', $return);
