@@ -6,7 +6,9 @@ github_actions:
 'pkg: custom-theme':
   - changed-files:
       - any-glob-to-any-file:
+          - 'assets/custom-theme/**'
           - 'packages/custom-theme/**'
+          - 'tests/*/CustomTheme/**'
 
 assets:
   - changed-files:
