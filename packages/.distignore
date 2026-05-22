@@ -11,7 +11,6 @@ Desktop.ini
 # caches
 .cache
 *.cache
-*.tsbuildinfo
 *~
 
 .distignore
@@ -20,5 +19,4 @@ Desktop.ini
 
 node_modules
 vendor/bin
-package.json
 composer.lock

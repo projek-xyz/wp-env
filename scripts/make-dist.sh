@@ -36,16 +36,16 @@ make_dist() {
     local pkg_version
     local manifest_version="none"
 
-    pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
-
-    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
-
-    if [ ! -f "$pkg_dir/.distignore" ]; then
+    if [[ ! -f "$pkg_dir/composer.json" || ! -f "$pkg_dir/package.json" ]]; then
         echo -e "\e[1;35mNotice:\e[0m No .distignore found for '\e[1;33m$pkg\e[0m', skipping"
 
         e_end
         return 0
     fi
+
+    pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
+
+    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
     pkg_version=$(jq -r '.version' "$pkg_dir/package.json")
 
@@ -75,7 +75,8 @@ make_dist() {
 
     rm -f "$DIST_DIR/$pkg"*.zip
 
-    cp LICENSE-GPL "$pkg_dir/license.txt"
+    cp -f LICENSE-GPL "$pkg_dir/license.txt"
+    cp -f packages/.distignore "$pkg_dir/.distignore"
 
     "$(dirname "$0")/make-pot.sh" "$pkg_dir"
 
@@ -103,7 +104,7 @@ make_dist() {
         echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
 
-    rm "$pkg_dir"/{license.txt,composer.lock}
+    rm "$pkg_dir"/{.distignore,license.txt,composer.lock}
 
     e_end
 }
