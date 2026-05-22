@@ -119,6 +119,9 @@ abstract class BaseTestCase extends TestCase
     {
         static::setUpCallback(function ($next) use ($name, $type, $version) {
             $path = static::packageFile($name);
+            $dir_url = in_array($type, ['plugin', 'theme'], true)
+                ? sprintf('http://example.com/wp-content/%ss/%s', $type, $name)
+                : null;
 
             if ($type === 'theme') {
                 static::assertFileExists(
@@ -128,9 +131,7 @@ abstract class BaseTestCase extends TestCase
 
                 Functions\when('get_stylesheet')->justReturn($name);
                 Functions\when('get_stylesheet_directory')->justReturn($path);
-                Functions\when('get_stylesheet_directory_uri')->justReturn(
-                    "http://example.com/wp-content/themes/$name"
-                );
+                Functions\when('get_stylesheet_directory_uri')->justReturn($dir_url);
 
                 Functions\when('wp_get_theme')->justReturn(new class ($name, $version) {
                     public function __construct(
@@ -151,13 +152,11 @@ abstract class BaseTestCase extends TestCase
             if ($type === 'plugin') {
                 static::assertFileExists(
                     "$path/$name.php",
-                    sprintf('Plugin %s.php not found: %s', $name, $name)
+                    sprintf('Plugin %1$s.php not found: %1$s', $name)
                 );
 
                 Functions\when('plugin_dir_path')->justReturn($path);
-                Functions\when('plugin_dir_url')->justReturn(
-                    "http://example.com/wp-content/plugins/$name"
-                );
+                Functions\when('plugin_dir_url')->justReturn($dir_url);
             }
 
             $next();
