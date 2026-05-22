@@ -121,7 +121,7 @@ class AdminTest extends TestCase
             }
         );
 
-        Admin::enqueue_scripts('plugin_blank-option');
+        Admin::enqueue_scripts('plugins_page_blank-option');
     }
 
     #[Test]
