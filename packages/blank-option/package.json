@@ -1,0 +1,24 @@
+{
+  "name": "@projek-xyz/wp-blank-option",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "author": "Fery Wardiyanto <ferywardiyanto@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "directory": "packages/blank-option"
+  },
+  "scripts": {
+    "release": "commit-and-tag-version"
+  },
+  "devDependencies": {
+    "commit-and-tag-version": "catalog:"
+  },
+  "commit-and-tag-version": {
+    "config": "../../scripts/versionrc.js",
+    "path": ".",
+    "skip": {
+      "tag": true
+    }
+  }
+}

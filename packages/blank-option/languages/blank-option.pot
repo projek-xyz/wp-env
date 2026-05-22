@@ -1,0 +1,64 @@
+# Copyright (C) 2026 Fery Wardiyanto
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Blank Option for Nothing 0.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/blank-option\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-05-22T00:33:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: blank-option\n"
+
+#. Plugin Name of the plugin
+#: blank-option.php:10
+msgid "Blank Option for Nothing"
+msgstr ""
+
+#. Description of the plugin
+#: blank-option.php:11
+msgid "Something awesome is about to come."
+msgstr ""
+
+#. Author of the plugin
+#: blank-option.php:18
+msgid "Fery Wardiyanto"
+msgstr ""
+
+#. Author URI of the plugin
+#: blank-option.php:19
+msgid "https://feryardiant.id"
+msgstr ""
+
+#. translators: %s: version of PHP required by Blank WordPress Plugin.
+#: includes/class-admin.php:43
+#, php-format
+msgid "<strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>PHP</strong> and has been paused."
+msgstr ""
+
+#. translators: %s: version of PHP required by Blank WordPress Plugin.
+#: includes/class-admin.php:48
+#, php-format
+msgid "<strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>WordPress</strong> and has been paused."
+msgstr ""
+
+#: includes/class-admin.php:102
+#: includes/class-admin.php:103
+msgid "Blank Options"
+msgstr ""
+
+#: includes/class-admin.php:127
+msgid "Blank Help"
+msgstr ""
+
+#: includes/class-admin.php:129
+msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
+msgstr ""
+
+#: includes/class-admin.php:140
+msgid "For more information:"
+msgstr ""

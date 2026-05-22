@@ -140,6 +140,7 @@ abstract class BaseTestCase extends TestCase
                         // .
                     }
 
+                    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
                     public function get_stylesheet_directory_uri()
                     {
                         return \get_stylesheet_directory_uri();
