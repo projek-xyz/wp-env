@@ -26,8 +26,7 @@ Soon
 
 1. Upload the plugin folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Edit your Contact Form 7 form and look for the new "Submissions" tab.
-4. Enable "Record" and map your fields.
+3. You're good to go!
 
 == Frequently Asked Questions ==
 

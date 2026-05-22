@@ -64,9 +64,14 @@ final class Admin {
 	/**
 	 * Enqueue admin scripts and styles.
 	 *
+	 * @param string $hook The current admin page hook.
 	 * @return void
 	 */
-	public static function enqueue_scripts(): void {
+	public static function enqueue_scripts( string $hook ): void {
+		if ( ! str_contains( $hook, Plugin::BASE_NAME ) ) {
+			return;
+		}
+
 		$css = Plugin::asset( 'admin.blank.css' );
 		$js  = Plugin::asset( 'admin.blank.js' );
 
@@ -129,19 +134,19 @@ final class Admin {
 		);
 
 		$json = Plugin::get_file_contents( 'composer.json' );
-		$data = json_decode( $json, true );
+		$data = $json ? json_decode( $json ?: array(), true ) : array();
 
 		$links = array(
 			sprintf( '<strong>%s</strong>', \__( 'For more information:', 'blank-option' ) ),
 		);
 
-		foreach ( $data['support'] as $type => $url ) {
+		foreach ( ( $data['support'] ?? array() ) as $type => $url ) {
 			if ( 'email' === $type ) {
 				continue;
 			}
 
 			$links[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
+				'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
 				\esc_url( $url ),
 				ucfirst( $type )
 			);

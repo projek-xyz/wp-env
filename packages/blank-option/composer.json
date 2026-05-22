@@ -30,7 +30,7 @@
     },
     "extra": {
         "version-constants": {
-            "BLANK_OPTION_VERSION": "functions.php"
+            "BLANK_OPTION_VERSION": "blank-option.php"
         }
     },
     "minimum-stability": "beta",

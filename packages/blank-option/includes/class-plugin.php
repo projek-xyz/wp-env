@@ -41,7 +41,7 @@ class Plugin {
 	 *
 	 * @var string
 	 */
-	public const MINIMUM_PHP_VERSION = '8.1';
+	public const MINIMUM_PHP_VERSION = '8.2';
 
 	/**
 	 * Minimum required WordPress version.
@@ -82,9 +82,6 @@ class Plugin {
 	 */
 	public static function deactivate(): void {
 		do_action( 'blank_option_deactivate' );
-
-		// Clear any cached data that has been removed.
-		wp_cache_flush();
 	}
 
 	/**
@@ -96,7 +93,7 @@ class Plugin {
 		/**
 		 * Enqueue scripts and styles.
 		 */
-		add_action( 'enqueue_scripts', array( self::class, 'enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_scripts' ) );
 
 		/**
 		 * Enqueue admin scripts and styles.
@@ -220,9 +217,9 @@ class Plugin {
 	 * Get the content of a file from the plugin directory.
 	 *
 	 * @param string $path The path to the file relative to the plugin directory.
-	 * @return string The content of the file.
+	 * @return string|false The content of the file.
 	 */
-	public static function get_file_contents( string $path ): string {
+	public static function get_file_contents( string $path ): string|false {
 		return static::filesystem()->get_contents( static::dir( $path ) );
 	}
 

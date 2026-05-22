@@ -25,7 +25,7 @@ class PluginTest extends TestCase
     #[Test]
     public function shouldBeInitialized()
     {
-        Actions\expectAdded('enqueue_scripts')->once()->whenHappen(function ($callback) {
+        Actions\expectAdded('wp_enqueue_scripts')->once()->whenHappen(function ($callback) {
             $this->assertIsArray($callback);
 
             $this->assertSame(Plugin::class, $callback[0]);
@@ -95,8 +95,6 @@ class PluginTest extends TestCase
     public function shouldDoingActionsOnDeactivation()
     {
         Actions\doing('blank_plugin_deactivate');
-
-        Functions\expect('wp_cache_flush')->once();
 
         Plugin::deactivate();
     }

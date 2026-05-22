@@ -39,13 +39,13 @@ class OptionTest extends TestCase
 
         $stub->justReturn(false);
 
-        $actual = Option::get('key', $expected = 'default');
+        $actual = Option::get('key_false', $expected = 'default');
 
         $this->assertSame($expected, $actual);
 
         $stub->justReturn([]);
 
-        $actual = Option::get('key', $expected = 'default');
+        $actual = Option::get('key_empty', $expected = 'default');
 
         $this->assertSame($expected, $actual);
     }

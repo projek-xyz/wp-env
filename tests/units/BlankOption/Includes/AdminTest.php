@@ -51,7 +51,10 @@ class AdminTest extends TestCase
         // phpcs:disable Generic.Files.LineLength.TooLong
         $this->expectOutputString(implode('', [
             '<div class="notice notice-error is-dismissible">',
-            '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>8.1</strong> of <strong>PHP</strong> and has been paused.</p>',
+            sprintf(
+                '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>PHP</strong> and has been paused.</p>',
+                Plugin::MINIMUM_PHP_VERSION
+            ),
             '</div>'
         ]));
         // phpcs:enable Generic.Files.LineLength.TooLong
@@ -68,7 +71,10 @@ class AdminTest extends TestCase
         // phpcs:disable Generic.Files.LineLength.TooLong
         $this->expectOutputString(implode('', [
             '<div class="notice notice-error is-dismissible">',
-            '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>6.0</strong> of <strong>WordPress</strong> and has been paused.</p>',
+            sprintf(
+                '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>WordPress</strong> and has been paused.</p>',
+                Plugin::MINIMUM_WP_VERSION
+            ),
             '</div>'
         ]));
         // phpcs:enable Generic.Files.LineLength.TooLong
@@ -80,7 +86,16 @@ class AdminTest extends TestCase
     }
 
     #[Test]
-    public function shouldAbleToEnqueueAdminScripts()
+    public function shouldNotEnqueueAdminScriptsOnOtherAdminScreens()
+    {
+        Functions\expect('wp_enqueue_style')->never();
+        Functions\expect('wp_enqueue_script')->never();
+
+        Admin::enqueue_scripts('other-admin-screen');
+    }
+
+    #[Test]
+    public function shouldAbleToEnqueueAdminScriptsOnPluginScreen()
     {
         Functions\expect('wp_enqueue_style')->once()->andReturnUsing(
             function (string $handle, string $src, array $deps, string $version) {
@@ -106,7 +121,7 @@ class AdminTest extends TestCase
             }
         );
 
-        Admin::enqueue_scripts();
+        Admin::enqueue_scripts('plugin_blank-option');
     }
 
     #[Test]
