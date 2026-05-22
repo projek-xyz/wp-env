@@ -1,9 +1,9 @@
-name: Distribution
+name: Distribute
 run-name: "dist(${{ github.event.workflow_run.head_branch }}): archiving `${{ github.event.workflow_run.head_sha }}`"
 
 on:
   workflow_run:
-    workflows: [Tests]
+    workflows: [CI]
     types: [completed]
     branches: [main]
 

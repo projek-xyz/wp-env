@@ -1,5 +1,5 @@
-name: Tests
-run-name: "tests(${{ github.ref_name }}): quality check against `${{ github.sha }}`"
+name: CI
+run-name: "ci(${{ github.ref_name }}): quality check against `${{ github.sha }}`"
 
 on:
   pull_request:
