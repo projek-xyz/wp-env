@@ -1,5 +1,5 @@
 ![CodeRabbit](https://img.shields.io/coderabbit/prs/github/projek-xyz/wp-env?style=flat-square)
-![Codecov](https://img.shields.io/codecov/c/github/projek-xyz/wp-env?style=flat-square)
+[![Codecov](https://img.shields.io/codecov/c/github/projek-xyz/wp-env?style=flat-square)](https://app.codecov.io/github/projek-xyz/wp-env)
 
 # 📦 WordPress Evaluation Environment
 
