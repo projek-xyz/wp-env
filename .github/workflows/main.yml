@@ -52,8 +52,8 @@ jobs:
         run: |
           composer lint
 
-  tests:
-    name: with WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
+  units:
+    name: Unit test on PHP ${{ matrix.php }} with WP ${{ vars.WP_VERSION }}
     runs-on: ubuntu-latest
     needs: [prepare, lint]
 
@@ -62,7 +62,7 @@ jobs:
       DB_USER: ${{ github.repository_owner }}
       DB_PASS: secret
       PHP_VERSION: ${{ matrix.php }}
-      WP_VERSION: ${{ matrix.wp }}
+      WP_VERSION: ${{ vars.WP_VERSION }}
 
     services:
       mysql:
@@ -83,8 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2']
-        wp: ['7.0']
+        php: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout
@@ -126,7 +125,7 @@ jobs:
 
       - name: Unit Test
         run: |
-          composer test --ansi
+          composer test:unit --ansi
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6
