@@ -8,10 +8,13 @@ shopt -s nullglob
 make_pot() {
     local pkg_dir="${1%/}"
     local pkg="${pkg_dir##*/}"
+    local contains_php=()
 
-    local contains_php=(`find "$pkg_dir" -maxdepth 1 -name "*.php"`)
+    if [ -d "$pkg_dir" ]; then
+        mapfile -d '' -t contains_php < <(find "$pkg_dir" -maxdepth 1 -type f -name "*.php" -print0)
+    fi
 
-    if [[ -d "$pkg_dir" && "${#contains_php[@]}" -eq 0 ]]; then
+    if [[ "${#contains_php[@]}" -eq 0 ]]; then
         echo -e "\e[1;35mNotice:\e[0m No PHP files found for '\e[1;33m$pkg\e[0m', skipping"
         return 0
     fi
