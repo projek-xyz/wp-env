@@ -8,30 +8,30 @@ shopt -s nullglob
 make_pot() {
     local pkg_dir="${1%/}"
     local pkg="${pkg_dir##*/}"
+    local contains_php=()
+
+    if [ -d "$pkg_dir" ]; then
+        mapfile -d '' -t contains_php < <(find "$pkg_dir" -maxdepth 1 -type f -name "*.php" -print0)
+    fi
+
+    if [[ "${#contains_php[@]}" -eq 0 ]]; then
+        echo -e "\e[1;35mNotice:\e[0m No PHP files found for '\e[1;33m$pkg\e[0m', skipping"
+        return 0
+    fi
+
     local pot_file="$pkg_dir/languages/$pkg.pot"
     local pot_temp
 
     pot_temp=$(mktemp)
-
-    if [ ! -d "$pkg_dir" ]; then
-        echo -e "\e[1;33mNotice:\e[0m No such directory: $pkg_dir, skipping"
-        rm "$pot_temp"
-        return 0
-    fi
-
-    if [ ! -f "$pkg_dir/.distignore" ]; then
-        echo -e "\e[1;33mNotice:\e[0m No .distignore found for $pkg, skipping"
-        rm "$pot_temp"
-        return 0
-    fi
 
     mkdir -p "$pkg_dir/languages"
 
     _wp i18n make-pot "$pkg_dir" "$pot_temp"
 
     if [ -f "$pot_file" ]; then
-        # Capture ONLY the date value, removing labels, quotes, and the trailing \n
         local creation_date
+
+        # Capture ONLY the date value, removing labels, quotes, and the trailing \n
         creation_date=$(grep "POT-Creation-Date:" "$pot_file" | head -n 1 | sed 's/.*POT-Creation-Date: \(.*\)\\n.*/\1/')
 
         if [[ -n "$creation_date" ]]; then

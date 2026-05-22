@@ -36,18 +36,20 @@ make_dist() {
     local pkg_version
     local manifest_version="none"
 
-    pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
+    if [[ ! -f "$pkg_dir/composer.json" || ! -f "$pkg_dir/package.json" ]]; then
+        echo -e "\e[1;35mNotice:\e[0m No '\e[1;34mcomposer.json\e[0m' or '\e[1;34mpackage.json\e[0m' found for '\e[1;33m$pkg\e[0m', skipping"
 
-    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
-
-    if [ ! -f "$pkg_dir/.distignore" ]; then
-        echo -e "\e[1;35mNotice:\e[0m No .distignore found for '\e[1;33m$pkg\e[0m', skipping"
-
-        e_end
         return 0
     fi
 
+    pkg_type=$(jq -r '.type' "$pkg_dir/composer.json" | sed 's/wordpress-//')
     pkg_version=$(jq -r '.version' "$pkg_dir/package.json")
+
+    if [[ "$pkg_type" != "plugin" && "$pkg_type" != "theme" ]]; then
+        echo -e "\e[1;35mNotice:\e[0m Unsupported package type '\e[1;33m$pkg_type\e[0m' for '\e[1;33m$pkg\e[0m', skipping"
+
+        return 0
+    fi
 
     if [[ -f "$DIST_DIR/release.json" ]]; then
         manifest_version=$(jq -r ".[\"$pkg\"].version // \"none\"" "$DIST_DIR/release.json")
@@ -56,7 +58,6 @@ make_dist() {
     if [[ -n "${CI:-}" && "$pkg_version" == "$manifest_version" ]]; then
         echo -e "\e[1;35mNotice:\e[0m '\e[1;33m$pkg\e[0m' is already at version \e[1;33m$pkg_version\e[0m, skipping"
 
-        e_end
         return 0
     fi
 
@@ -65,9 +66,10 @@ make_dist() {
         echo -e "\e[1;34mInfo:\e[0m '\e[1;33m$pkg\e[0m' new version \e[1;33m$pkg_version\e[0m available"
         new_releases=$((new_releases+1))
 
-        e_end
         return 0
     fi
+
+    e_start "Creating distribution for\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33m$pkg_type\e[0m)..."
 
     echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' (\e[1;33mv$pkg_version\e[0m)..."
 
@@ -75,7 +77,8 @@ make_dist() {
 
     rm -f "$DIST_DIR/$pkg"*.zip
 
-    cp LICENSE-GPL "$pkg_dir/license.txt"
+    cp -f LICENSE-GPL "$pkg_dir/license.txt"
+    cp -f packages/.distignore "$pkg_dir/.distignore"
 
     "$(dirname "$0")/make-pot.sh" "$pkg_dir"
 
@@ -103,7 +106,7 @@ make_dist() {
         echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
 
-    rm "$pkg_dir"/{license.txt,composer.lock}
+    rm "$pkg_dir"/{.distignore,license.txt,composer.lock}
 
     e_end
 }
