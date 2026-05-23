@@ -152,6 +152,37 @@ class AdminTest extends TestCase
     }
 
     #[Test]
+    public function actionLinksShouldReturnEmptyOnEmptyScreen()
+    {
+        Functions\expect('current_user_can')->once()->andReturn(false);
+
+        $actual = Admin::action_links([], '', []);
+
+        $this->assertSame([], $actual);
+    }
+
+    #[Test]
+    public function actionLinksShouldPrependAdditionalLinks()
+    {
+        Functions\when('current_user_can')->justReturn(true);
+
+        $actualLinks = Admin::action_links([], '', []);
+
+        $this->assertSame([
+            '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>'
+        ], $actualLinks);
+
+        $actualLinks = Admin::action_links([], '', [
+            'PluginURI' => 'http://example.com/support'
+        ]);
+
+        $this->assertSame([
+            '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>',
+            '<a href="http://example.com/support">Supports</a>',
+        ], $actualLinks);
+    }
+
+    #[Test]
     public function loadHookShouldDoingNothingOnEmptyScreen()
     {
         Functions\expect('get_current_screen')->once()->andReturnNull();
