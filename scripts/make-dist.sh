@@ -80,6 +80,10 @@ make_dist() {
     cp -f LICENSE-GPL "$pkg_dir/license.txt"
     cp -f packages/.distignore "$pkg_dir/.distignore"
 
+    # Copy the blank `index.php` file to distributable dirs before archiving (only if not present)
+    find "$pkg_dir" -type d \( ! -name "$pkg" ! -name "node_modules" ! -path "*/node_modules/*" \) \
+        -exec sh -c 'test ! -f "$1/index.php" && cp packages/index.php "$1/" || true' _ {} \;
+
     "$(dirname "$0")/make-pot.sh" "$pkg_dir"
 
     _wp dist-archive "$pkg_dir" "$DIST_DIR" --force --create-target-dir --filename-format="{name}"
@@ -105,6 +109,10 @@ make_dist() {
     else
         echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
+
+    # Remove only the blank template `index.php` files (not pre-existing custom ones)
+    find "$pkg_dir" -type f \( -name "index.php" ! -path "*/$pkg/index.php" \) \
+        -exec sh -c 'cmp -s "$1" packages/index.php && rm "$1" || true' _ {} \;
 
     rm "$pkg_dir"/{.distignore,license.txt,composer.lock}
 
