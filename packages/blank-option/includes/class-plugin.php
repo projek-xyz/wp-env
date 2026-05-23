@@ -104,6 +104,11 @@ class Plugin {
 		 * Register the admin menu.
 		 */
 		\add_action( 'admin_menu', array( Admin::class, 'menu' ) );
+
+		/**
+		 * Register the action links.
+		 */
+		\add_filter( 'plugin_action_links_' . \plugin_basename( BLANK_OPTION_FILE ), array( Admin::class, 'action_links' ), 10, 3 );
 	}
 
 	/**

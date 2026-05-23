@@ -92,6 +92,49 @@ final class Admin {
 	}
 
 	/**
+	 * Add custom action links to the plugin row.
+	 *
+	 * @param array  $actions The existing action links.
+	 * @param string $_ The plugin file path.
+	 * @param array  $plugin_data The plugin data.
+	 * @return array The modified action links.
+	 */
+	public static function action_links( array $actions, string $_, array $plugin_data ): array {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return $actions;
+		}
+
+		$links = array();
+
+		$links[] = sprintf(
+			'<a href="%1$s">%2$s</a>',
+			self::url(),
+			\esc_html__( 'Settings', 'blank-option' )
+		);
+
+		if ( ! empty( $plugin_data['PluginURI'] ) ) {
+			$links[] = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				\esc_url( $plugin_data['PluginURI'] ),
+				\esc_html__( 'Supports', 'blank-option' )
+			);
+		}
+
+		return array_merge( $links, $actions );
+	}
+
+	/**
+	 * Get the URL for the plugin settings page.
+	 *
+	 * @return string
+	 */
+	public static function url(): string {
+		$base_name = Plugin::BASE_NAME;
+
+		return esc_url( admin_url( "plugins.php?page={$base_name}" ) );
+	}
+
+	/**
 	 * Register the admin menu.
 	 *
 	 * @return void
@@ -102,7 +145,7 @@ final class Admin {
 			__( 'Blank Options', 'blank-option' ),
 			__( 'Blank Options', 'blank-option' ),
 			'activate_plugins',
-			'blank-option',
+			Plugin::BASE_NAME,
 			array( self::class, 'render' ),
 		);
 
