@@ -100,7 +100,7 @@ final class Admin {
 	 * @return array The modified action links.
 	 */
 	public static function action_links( array $actions, string $_, array $plugin_data ): array {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
+		if ( ! \current_user_can( 'activate_plugins' ) ) {
 			return $actions;
 		}
 
@@ -131,7 +131,7 @@ final class Admin {
 	public static function url(): string {
 		$base_name = Plugin::BASE_NAME;
 
-		return esc_url( admin_url( "plugins.php?page={$base_name}" ) );
+		return \esc_url( \admin_url( "plugins.php?page={$base_name}" ) );
 	}
 
 	/**
