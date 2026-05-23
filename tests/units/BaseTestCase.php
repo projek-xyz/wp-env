@@ -123,6 +123,13 @@ abstract class BaseTestCase extends TestCase
                 ? sprintf('http://example.com/wp-content/%ss/%s', $type, $name)
                 : null;
 
+            Functions\when('wp_normalize_path')->alias(
+                static fn (string $path) => str_replace('\\', '/', $path)
+            );
+            Functions\when('admin_url')->alias(
+                static fn (string $path = '', string $scheme = 'admin') => "http://example.com/wp-admin/$path"
+            );
+
             if ($type === 'theme') {
                 static::assertFileExists(
                     "$path/functions.php",
@@ -157,6 +164,9 @@ abstract class BaseTestCase extends TestCase
 
                 Functions\when('plugin_dir_path')->justReturn($path);
                 Functions\when('plugin_dir_url')->justReturn($dir_url);
+                Functions\when('plugin_basename')->alias(
+                    static fn (string $file) => str_replace(dirname($path), '', $file)
+                );
             }
 
             $next();
