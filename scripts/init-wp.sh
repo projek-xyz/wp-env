@@ -17,6 +17,9 @@ ASSET_DIR=${ASSET_DIR:-"$SETUP_DIR/assets"}
 SCRIPTS_DIR=${SCRIPTS_DIR:-"$SETUP_DIR/scripts"}
 INSTALL_DIR=${INSTALL_DIR:-"$PWD/docker/volumes/wordpress"}
 
+MEDIA_DIR=${MEDIA_DIR:-$ASSET_DIR}
+MEDIA_EXTS=${MEDIA_EXTS:-gif,jpg,jpeg,png}
+
 if [[ ! -d "${ASSET_DIR}" ]]; then
     echo -e "\e[1;31mError:\e[0m Unable to continue installation."
     echo -e "       Asset directory '\e[33m${ASSET_DIR}\e[0m' is missing."
@@ -25,8 +28,15 @@ fi
 
 SITE_URL=${SITE_URL:-"http://localhost"}
 SITE_ADMIN_USER=${SITE_ADMIN_USER:-admin}
-SITE_ICON_FILENAME=${SITE_ICON_FILENAME:-"WordPress-Logo.png"}
 SITE_DEFAULT_THEME=${SITE_DEFAULT_THEME:-}
+SITE_ICON_FILENAME=${SITE_ICON_FILENAME:-"WordPress-Logo.png"}
+
+SKIP_MEDIA=${SKIP_MEDIA:-0}
+SKIP_OPTIONS=${SKIP_OPTIONS:-0}
+
+if [[ "$SKIP_MEDIA" -eq 1 && -n "$SITE_ICON_FILENAME" ]]; then
+    echo -e "\e[1;36mNotice:\e[0m '\e[1;33m\$SKIP_MEDIA\e[0m' is set to \e[1;33m1\e[0m, '\e[1;33m\$SITE_ICON_FILENAME\e[0m' will not be imported."
+fi
 
 # ==============================================================================
 
@@ -344,49 +354,75 @@ e_end
 for site_url in $site_urls; do
     site_title=$(_wp --url="$site_url" option get blogname)
 
-    e_start "Set up media:\e[1;0m $site_title"
+    if [[ "$SKIP_MEDIA" -eq 0 ]]; then
+        e_start "Set up media:\e[1;0m $site_title"
 
-    for img in "$ASSET_DIR"/*.png; do
-        filename=$(basename "$img")
+        assets=()
 
-        img_id=$(_wp --url="$site_url" media import "$img" --porcelain)
-
-        if [[ "$filename" == "$SITE_ICON_FILENAME" ]]; then
-            options['site_icon']=$img_id
-        fi
-
-        echo -e "\e[1;32mSuccess:\e[0m '$filename' imported (ID: $img_id)"
-    done
-
-    e_end
-
-    e_start "Set up options:\e[1;0m $site_title"
-
-    for key in "${!options[@]}"; do
-        _wp --url="$site_url" option update "$key" "${options[$key]}"
-    done
-
-    if _wp --url="$site_url" plugin is-active woocommerce || _wp --url="$site_url" plugin is-active woocommerce --network; then
-        for key in "${!woo_options[@]}"; do
-            format=$([[ "${woo_options[$key]}" == '['*']' ]] && echo 'json' || echo 'plaintext')
-
-            _wp --url="$site_url" option update "woocommerce_$key" "${woo_options[$key]}" --format="$format"
+        for ext in ${MEDIA_EXTS//,/ }; do
+            for asset in "$MEDIA_DIR"/*.$ext; do
+                if [[ -f "$asset" ]]; then
+                    assets+=("$asset")
+                fi
+            done
         done
 
-        # Skip the onboarding profile
-        timestamp="{\"completed_at\":\"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
-        _wp --url="$site_url" option update woocommerce_onboarding_profile '{"skipped":true}' --format=json
-        _wp --url="$site_url" option update woocommerce_onboarding_profile_progress \
-            "{\"core_profiler_completed_steps\":{\"intro-opt-in\":${timestamp},\"skip-guided-setup\":${timestamp}}}" --format=json
-        unset timestamp
+        if [[ -f "$SCRIPTS_DIR/init-assets.txt" ]]; then
+            while read -r asset; do
+                if [[ -n $asset ]]; then
+                    # $asset: can be url from or file path relative to root project
+                    # As it supported by `wp media import`
+                    assets+=("$asset")
+                fi
+            done < "$SCRIPTS_DIR/init-assets.txt"
+        fi
 
-        # Install default woocommerce pages
-        _wp --url="$site_url" wc --user="$SITE_ADMIN_USER" tool run install_pages
+        unset asset
+
+        for media in "${assets[@]}"; do
+            filename=$(basename "$media")
+
+            media_id=$(_wp --url="$site_url" media import "$media" --porcelain)
+
+            if [[ "$filename" == "$SITE_ICON_FILENAME" ]]; then
+                options['site_icon']=$media_id
+            fi
+
+            echo -e "\e[1;32mSuccess:\e[0m '\e[0;33m$filename\e[0m' imported (ID: \e[1;33m$media_id\e[0m)"
+        done
+
+        e_end
     fi
 
-    unset key
+    if [[ "$SKIP_OPTIONS" -eq 0 ]]; then
+        e_start "Set up options:\e[1;0m $site_title"
 
-    e_end
+        for key in "${!options[@]}"; do
+            _wp --url="$site_url" option update "$key" "${options[$key]}"
+        done
+
+        if _wp --url="$site_url" plugin is-active woocommerce || _wp --url="$site_url" plugin is-active woocommerce --network; then
+            for key in "${!woo_options[@]}"; do
+                format=$([[ "${woo_options[$key]}" == '['*']' ]] && echo 'json' || echo 'plaintext')
+
+                _wp --url="$site_url" option update "woocommerce_$key" "${woo_options[$key]}" --format="$format"
+            done
+
+            # Skip the onboarding profile
+            timestamp="{\"completed_at\":\"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
+            _wp --url="$site_url" option update woocommerce_onboarding_profile '{"skipped":true}' --format=json
+            _wp --url="$site_url" option update woocommerce_onboarding_profile_progress \
+                "{\"core_profiler_completed_steps\":{\"intro-opt-in\":${timestamp},\"skip-guided-setup\":${timestamp}}}" --format=json
+            unset timestamp
+
+            # Install default woocommerce pages
+            _wp --url="$site_url" wc --user="$SITE_ADMIN_USER" tool run install_pages
+        fi
+
+        unset key
+
+        e_end
+    fi
 done
 
 unset options woo_options site_url site_urls
