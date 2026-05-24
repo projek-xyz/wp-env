@@ -29,6 +29,7 @@ jobs:
   lint:
     name: Linting
     runs-on: ubuntu-latest
+    if: ${{ needs.prepare.outputs.should-tests == '1' }}
     needs: prepare
 
     steps:
@@ -60,6 +61,7 @@ jobs:
   units:
     name: "Unit test: PHP-${{ matrix.php }} WP-${{ vars.WP_VERSION || '7.0' }}"
     runs-on: ubuntu-latest
+    if: ${{ needs.prepare.outputs.should-tests == '1' }}
     needs: [prepare, lint]
 
     env:

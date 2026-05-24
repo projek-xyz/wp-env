@@ -1,3 +1,2 @@
 <?php
-// phpcs:ignoreFile
-// Silence is golden.
+// phpcs:ignoreFile -- Silence is golden.
