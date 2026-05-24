@@ -1,5 +1,5 @@
 name: CI
-# run-name: "ci(${{ github.ref_name }}): quality check against `${{ github.sha }}`"
+run-name: "ci(${{ github.ref_name }}): quality check against `${{ github.sha }}`"
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ env:
 jobs:
   prepare:
     name: Prepare
-    uses: projek-xyz/actions/.github/workflows/prepare.yml@fb7b201c6c645547675eb0d3bc28782740b69676
+    uses: projek-xyz/actions/.github/workflows/prepare.yml@main
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -55,16 +55,8 @@ jobs:
           composer update --ansi --no-interaction --no-progress --prefer-dist
 
       - name: Lint
-        env:
-          SHOULD_BUILD: ${{ needs.prepare.outputs.should-build }}
-          SHOULD_DEPLOY: ${{ needs.prepare.outputs.should-deploy }}
-          SHOULD_TESTS: ${{ needs.prepare.outputs.should-tests }}
         run: |
           composer lint
-
-          echo "$SHOULD_BUILD"
-          echo "$SHOULD_DEPLOY"
-          echo "$SHOULD_TESTS"
 
   units:
     name: "Unit test: PHP-${{ matrix.php }} WP-${{ vars.WP_VERSION || '7.0' }}"
