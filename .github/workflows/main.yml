@@ -54,8 +54,16 @@ jobs:
           composer update --ansi --no-interaction --no-progress --prefer-dist
 
       - name: Lint
+        env:
+          SHOULD_BUILD: ${{ needs.prepare.outputs.should-build }}
+          SHOULD_DEPLOY: ${{ needs.prepare.outputs.should-deploy }}
+          SHOULD_TESTS: ${{ needs.prepare.outputs.should-tests }}
         run: |
           composer lint
+
+          echo "$SHOULD_BUILD"
+          echo "$SHOULD_DEPLOY"
+          echo "$SHOULD_TESTS"
 
   units:
     name: "Unit test: PHP-${{ matrix.php }} WP-${{ vars.WP_VERSION || '7.0' }}"
