@@ -18,7 +18,7 @@ env:
 jobs:
   prepare:
     name: Prepare
-    uses: projek-xyz/actions/.github/workflows/prepare.yml@256e296c8e7bca60ac5373a2bd14f72cb777dd22
+    uses: projek-xyz/actions/.github/workflows/prepare.yml@3b7ac6239facc53f3a3cfecc86b7f371a9fb3457
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
