@@ -1,4 +1,4 @@
-name: Deploy
+name: Static
 run-name: "deploy(${{ github.event.workflow_run.head_branch }}): deploying `${{ github.event.workflow_run.head_sha }}`"
 
 on:

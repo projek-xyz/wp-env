@@ -12,10 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pages:
-    name: GitHub Pages
+  static:
+    name: Static Pages
     if: github.event.workflow_run.conclusion == 'success'
-    uses: ./.github/workflows/gh-pages.yml
+    uses: ./.github/workflows/static.yml
     with:
       ref: ${{ github.event.workflow_run.head_sha }}
       dist-dir: assets/dist
