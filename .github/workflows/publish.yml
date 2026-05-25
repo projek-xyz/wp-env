@@ -1,0 +1,227 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      commit-message:
+        required: false
+        type: string
+      dist-dir:
+        description: Dist directory
+        default: assets/dist
+        type: string
+      ref:
+        description: The branch, tag or SHA that will be passed to `ref` input in `actions/checkout`
+        required: false
+        type: string
+
+jobs:
+  archive:
+    name: Archive
+    runs-on: ubuntu-latest
+    outputs:
+      for-release: ${{ steps.make-archive.outputs.for-release }}
+      release-version: ${{ steps.make-archive.outputs.release-version }}
+
+    env:
+      DB_NAME: ${{ github.repository_owner }}
+      DB_USER: ${{ github.repository_owner }}
+      DB_PASS: secret
+      DIST_DIR: ${{ inputs.dist-dir }}
+      RELEASE_URL: ${{ vars.RELEASE_URL }}
+      PHP_VERSION: '8.2'
+      WP_VERSION: '7.0'
+
+    permissions:
+      id-token: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASS }}
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASS }}
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.ref }}
+        persist-credentials: false
+
+    - name: Checkout actions repo
+      uses: actions/checkout@v6
+      if: github.repository != 'projek-xyz/wp-env'
+      with:
+        fetch-depth: 1
+        repository: projek-xyz/wp-env
+        persist-credentials: false
+        path: .github/xyz-actions
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          scripts
+
+    - name: Prepare scripts
+      if: github.repository != 'projek-xyz/wp-env'
+      shell: bash
+      run: |
+        mkdir -p scripts
+        cp -r .github/xyz-actions/scripts/ scripts/
+
+    - name: Check package releases
+      id: packages
+      shell: bash
+      run: |
+        scripts/make-dist.sh --check
+
+    - name: Set up PHP
+      if: steps.packages.outputs.new-release > 0
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        coverage: none
+        tools: composer, wp
+
+    - name: Retrieve cache dirs
+      if: steps.packages.outputs.new-release > 0
+      id: caches
+      run: |
+        echo "composer-dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        echo "wpcli-dir=$(wp cli info --format=json | jq -r '.wp_cli_cache_dir_path')" >> $GITHUB_OUTPUT
+
+    - name: Set up Composer cache
+      if: steps.packages.outputs.new-release > 0
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.caches.outputs.composer-dir }}
+        key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
+
+    - name: Set up WP-CLI cache
+      if: steps.packages.outputs.new-release > 0
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.caches.outputs.wpcli-dir }}
+        key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
+
+    - name: Install dependencies
+      if: steps.packages.outputs.new-release > 0
+      run: |
+        composer update --ansi --no-interaction --no-progress --prefer-dist
+
+    - name: Set up WordPress
+      if: steps.packages.outputs.new-release > 0
+      shell: bash
+      env:
+        DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
+        SITE_PLUGINS: blocksy-companion
+        SITE_THEMES: blocksy
+      run: |
+        scripts/init-wp.sh
+
+    - name: Make dist archive
+      if: steps.packages.outputs.new-release > 0
+      id: make-archive
+      env:
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+      run: |
+        COMMIT_MESSAGE=$(echo "$COMMIT_MESSAGE" | head -n 1)
+        FOR_RELEASE=$([[ $COMMIT_MESSAGE =~ "chore(release)" ]] && echo "1" || echo "0")
+
+        scripts/make-dist.sh
+
+        echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
+
+    - name: Store archive
+      uses: actions/upload-artifact@v7
+      with:
+        overwrite: true
+        name: release-archives
+        path: ${{ env.DIST_DIR }}
+
+  uploads:
+    name: Uploads
+    needs: archive
+    runs-on: ubuntu-latest
+    if: needs.archive.outputs.for-release == '1'
+
+    env:
+      DIST_DIR: ${{ inputs.dist-dir }}
+      RELEASE_VERSION: ${{ needs.archive.outputs.release-version }}
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Check release
+      id: release
+      shell: bash
+      env:
+        ATTEMPTS: 10
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        AVAILABLE=0
+
+        for a in $(seq 1 "${ATTEMPTS}"); do
+          if (( $a < $ATTEMPTS )); then
+            a=" $a"
+          fi
+
+          echo -e "Waiting for release '\e[1;33mv$RELEASE_VERSION\e[0m' to be available... ${a}/${ATTEMPTS}"
+
+          if gh release view "v$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo -e "Found '\e[1;33mv$RELEASE_VERSION\e[0m'"
+            AVAILABLE=1
+            break
+          fi
+          sleep 5s
+        done
+
+        if [[ "$AVAILABLE" == "0" ]]; then
+          echo -e "No release '\e[1;33mv$RELEASE_VERSION\e[0m' found after \e[1;33m$ATTEMPTS\e[0m attempts."
+        fi
+
+        echo "is-available=$AVAILABLE" >> $GITHUB_OUTPUT
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v8
+      if: steps.release.outputs.is-available == '1'
+      with:
+        name: release-archives
+        path: ${{ env.DIST_DIR }}
+        github-token: ${{ github.token }}
+
+    - name: Upload assets
+      if: steps.release.outputs.is-available == '1'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        shopt -s nullglob
+
+        for file in "$DIST_DIR"/*; do
+          [[ -z "$file" || ! -r "$file" ]] && continue
+
+          file_name=$(basename "$file")
+
+          echo -e "::group::Uploading '\e[1;33m$file_name\e[0m'..."
+
+          gh release upload "v$RELEASE_VERSION" "$file" --clobber
+          echo -e "\e[1;32mSuccess\e[0m: '\e[1;33m$file_name\e[0m' uploaded to '\e[1;33mv$RELEASE_VERSION\e[0m' release"
+
+          echo '::endgroup::'
+        done
