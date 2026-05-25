@@ -1,0 +1,60 @@
+name: Deploy
+run-name: "deploy(${{ github.event.workflow_run.head_branch }}): deploying `${{ github.event.workflow_run.head_sha }}`"
+
+on:
+  workflow_call:
+    inputs:
+      dist-dir:
+        description: 'Dist directory'
+        default: assets/dist
+        type: string
+      ref:
+        description: The branch, tag or SHA that will be passed to `ref` input in `actions/checkout`
+        required: false
+        type: string
+
+jobs:
+  pages:
+    name: GitHub Pages
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployed.outputs.page_url }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.ref }}
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: release-archives
+        path: ${{ inputs.dist-dir }}
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ github.token }}
+
+    - name: Prepare
+      shell: bash
+      env:
+        DIST_DIR: ${{ inputs.dist-dir }}
+      run: |
+        shopt -s nullglob
+
+        cp assets/*.{html,png,svg,ico} $DIST_DIR/
+        cp assets/.nojekyll $DIST_DIR/
+
+    - name: Store
+      uses: actions/upload-pages-artifact@v5
+      with:
+        path: ${{ inputs.dist-dir }}
+        include-hidden-files: true
+
+    - name: Deploy
+      id: deployed
+      uses: actions/deploy-pages@v5
+      with:
+        token: ${{ github.token }}
