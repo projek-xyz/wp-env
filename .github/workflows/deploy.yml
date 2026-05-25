@@ -14,50 +14,12 @@ concurrency:
 jobs:
   pages:
     name: GitHub Pages
-    runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success'
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployed.outputs.page_url }}
+    uses: ./.github/workflows/gh-pages.yml
+    with:
+      ref: ${{ github.event.workflow_run.head_sha }}
+      dist-dir: assets/dist
 
     permissions:
       pages: write
       id-token: write
-
-    env:
-      DIST_DIR: assets/dist
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-      with:
-        ref: ${{ github.event.workflow_run.head_sha }}
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v8
-      with:
-        name: release-archives
-        path: ${{ env.DIST_DIR }}
-        run-id: ${{ github.event.workflow_run.id }}
-        github-token: ${{ github.token }}
-
-    - name: Prepare
-      shell: bash
-      run: |
-        shopt -s nullglob
-
-        cp assets/*.{html,png,svg,ico} $DIST_DIR/
-        cp assets/.nojekyll $DIST_DIR/
-
-    - name: Store
-      uses: actions/upload-pages-artifact@v5
-      with:
-        path: ${{ env.DIST_DIR }}
-        include-hidden-files: true
-
-    - name: Deploy
-      id: deployed
-      uses: actions/deploy-pages@v5
-      with:
-        token: ${{ github.token }}
