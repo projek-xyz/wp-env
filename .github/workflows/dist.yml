@@ -22,5 +22,6 @@ jobs:
       ref: ${{ github.event.workflow_run.head_sha }}
 
     permissions:
+      contents: write
       id-token: write
       pages: write
