@@ -52,7 +52,7 @@ jobs:
           - 3306:3306
 
     steps:
-    - name: Checkout
+    - name: Checkout head repo
       uses: actions/checkout@v6
       with:
         ref: ${{ inputs.ref }}
@@ -75,7 +75,7 @@ jobs:
       shell: bash
       run: |
         mkdir -p scripts
-        cp -r .github/xyz-actions/scripts/ scripts/
+        cp -r .github/xyz-actions/scripts .
 
     - name: Check package releases
       id: packages
