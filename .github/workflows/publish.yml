@@ -68,6 +68,8 @@ jobs:
         path: .github/xyz-actions
         sparse-checkout-cone-mode: false
         sparse-checkout: |
+          packages/index.php
+          packages/.distignore
           scripts
 
     - name: Prepare scripts
@@ -76,6 +78,8 @@ jobs:
       run: |
         mkdir -p scripts
         cp -r .github/xyz-actions/scripts .
+        [[ ! -f packages/index.php ]] && cp .github/xyz-actions/packages/index.php packages/
+        [[ ! -f packages/.distignore ]] && cp .github/xyz-actions/packages/.distignore packages/
 
     - name: Check package releases
       id: packages
