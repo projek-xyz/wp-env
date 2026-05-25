@@ -219,12 +219,12 @@ if [[ -n "${SITE_PLUGINS:-}" ]]; then
 
     unset plugin result
 
-    if [[ -f "$SCRIPTS_DIR/init-plugins.txt" ]]; then
+    if [[ -f "$ASSET_DIR/init-plugins.txt" ]]; then
         while read -r plugin; do
             if [[ -n $plugin ]] && ! _wp plugin is-installed "$plugin"; then
                 plugins+=("$plugin")
             fi
-        done < "$SCRIPTS_DIR/init-plugins.txt"
+        done < "$ASSET_DIR/init-plugins.txt"
 
         unset plugin result
     fi
@@ -318,12 +318,12 @@ if [[ -n "${SITE_THEMES:-}" ]]; then
 
     unset theme result
 
-    if [[ -f "$SCRIPTS_DIR/init-themes.txt" ]]; then
+    if [[ -f "$ASSET_DIR/init-themes.txt" ]]; then
         while read -r theme; do
             if [[ -n $theme ]] && ! _wp theme is-installed "$theme"; then
                 themes+=("$theme")
             fi
-        done < "$SCRIPTS_DIR/init-themes.txt"
+        done < "$ASSET_DIR/init-themes.txt"
 
         unset theme result
     fi
@@ -367,14 +367,14 @@ for site_url in $site_urls; do
             done
         done
 
-        if [[ -f "$SCRIPTS_DIR/init-assets.txt" ]]; then
+        if [[ -f "$ASSET_DIR/init-assets.txt" ]]; then
             while read -r asset; do
                 if [[ -n $asset ]]; then
                     # $asset: can be url from or file path relative to root project
                     # As it supported by `wp media import`
                     assets+=("$asset")
                 fi
-            done < "$SCRIPTS_DIR/init-assets.txt"
+            done < "$ASSET_DIR/init-assets.txt"
         fi
 
         unset asset

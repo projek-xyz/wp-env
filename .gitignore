@@ -46,9 +46,6 @@ GEMINI.md
 vendor
 node_modules
 
-# Additional plugins and themes
-scripts/init-*.txt
-
 # Other package managers
 packages/*/composer.lock
 packages/*/license.txt
