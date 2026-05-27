@@ -267,6 +267,7 @@ class Plugin {
 	 *
 	 * @param 'name'|'plugin_uri'|'version'|'description'|'text_domain'|'domain_path'|'network'|'requires_wp'|'requires_php'|'update_uri'|'requires_plugins'|'supports' $key Plugin metadata key.
 	 * @return ($key is 'supports' ? array : non-empty-string)
+	 * @throws \InvalidArgumentException If the key is unknown.
 	 */
 	public function get( string $key ): array|string {
 		if ( ! isset( $this->data[ $key ] ) || empty( $this->data[ $key ] ) ) {

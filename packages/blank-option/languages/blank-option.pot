@@ -39,28 +39,28 @@ msgstr ""
 msgid "Blank Options"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:60
+#: includes/admin/class-blank-page.php:64
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:67
+#: includes/admin/class-blank-page.php:71
 msgid "Supports"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:132
+#: includes/admin/class-blank-page.php:136
 msgid "Blank Help"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:134
+#: includes/admin/class-blank-page.php:138
 msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:148
+#: includes/admin/class-blank-page.php:152
 msgid "For more information:"
 msgstr ""
 
 #. Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
 #: includes/class-plugin.php:130
 #, php-format
-msgid "The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently You have <strong>%4$s</strong>."
+msgid "The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently you have <strong>%4$s</strong>."
 msgstr ""
