@@ -50,7 +50,7 @@ require_once BLANK_OPTION_DIR . '/includes/autoload.php';
 /**
  * Check if the version of PHP in use on the site is supported.
  */
-Plugin::check_requirements( 'PHP', PHP_VERSION, '8.3' );
+Plugin::check_requirements( 'PHP', PHP_VERSION, '8.2' );
 
 /**
  * Check if the version of WordPress in use on the site is supported.
