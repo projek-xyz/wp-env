@@ -36,6 +36,10 @@ final class Blank_Page extends Admin_Page {
 			array( $this, 'render' ),
 		);
 
+		if ( ! $page ) {
+			return;
+		}
+
 		\add_action( 'load-' . $page, array( $this, 'load' ) );
 	}
 

@@ -6,6 +6,7 @@ namespace UnitTests\BlankOption\Includes\Admin;
 
 use Blank_Option\Admin\Blank_Page;
 use Blank_Option\Plugin;
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
@@ -65,7 +66,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
-    public function registerNewAdminMenu()
+    public function shouldAbleToRegisterNewAdminPage()
     {
         Functions\expect('add_submenu_page')->once()->andReturnUsing(
             function (
@@ -85,8 +86,27 @@ class BlankPageTest extends TestCase
                 $this->assertIsArray($callback);
                 $this->assertInstanceOf(Blank_Page::class, $callback[0]);
                 $this->assertSame('render', $callback[1]);
+
+                return 'plugins_page_blank-option';
             }
         );
+
+        Actions\expectAdded('load-plugins_page_blank-option')->once()->whenHappen(function ($callback) {
+            $this->assertIsArray($callback);
+
+            $this->assertInstanceOf(Blank_Page::class, $callback[0]);
+            $this->assertSame('load', $callback[1]);
+        });
+
+        $this->page()->menu();
+    }
+
+    #[Test]
+    public function shouldNotAbleToRegisterAdminPageWhenCurrentUserDoesNotHaveTheRequiredCapability()
+    {
+        Functions\expect('add_submenu_page')->once()->andReturn(false);
+
+        Actions\expectAdded('load-plugins_page_blank-option')->never();
 
         $this->page()->menu();
     }
@@ -143,6 +163,13 @@ class BlankPageTest extends TestCase
             $mock->shouldReceive('set_help_sidebar')->once();
 
             return $mock;
+        });
+
+        Actions\expectAdded('admin_enqueue_scripts')->once()->whenHappen(function ($callback) {
+            $this->assertIsArray($callback);
+
+            $this->assertInstanceOf(Blank_Page::class, $callback[0]);
+            $this->assertSame('enqueue_scripts', $callback[1]);
         });
 
         $this->page()->load();

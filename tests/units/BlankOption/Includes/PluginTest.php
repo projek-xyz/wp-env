@@ -64,7 +64,7 @@ class PluginTest extends TestCase
         $this->expectOutputString(implode('', [
             '<div class="notice notice-error is-dismissible"><p>',
             'The <strong>Blank Option</strong> plugin requires at least version <strong>0.0.1</strong>',
-            ' of <strong>Requirement</strong>, currently You have <strong>0.0.0</strong>.',
+            ' of <strong>Requirement</strong>, currently you have <strong>0.0.0</strong>.',
             '</p></div>',
         ]));
 
@@ -85,13 +85,6 @@ class PluginTest extends TestCase
             $this->assertIsArray($callback);
 
             $this->assertInstanceOf(Plugin::class, $callback[0]);
-            $this->assertSame('enqueue_scripts', $callback[1]);
-        });
-
-        Actions\expectAdded('admin_enqueue_scripts')->once()->whenHappen(function ($callback) {
-            $this->assertIsArray($callback);
-
-            $this->assertInstanceOf(Admin\Blank_Page::class, $callback[0]);
             $this->assertSame('enqueue_scripts', $callback[1]);
         });
 
@@ -152,6 +145,17 @@ class PluginTest extends TestCase
         );
 
         Plugin::instance()->enqueue_scripts();
+    }
+
+    #[Test]
+    public function shouldThrowExceptionWhenAccessingInvalidDataKey()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown plugin metadata: invalid_key');
+
+        Functions\expect('wp_kses')->once()->andReturnFirstArg();
+
+        Plugin::instance()->get('invalid_key');
     }
 
     #[Test]
@@ -250,8 +254,8 @@ class PluginTest extends TestCase
         $plugin = Plugin::instance();
         $filesystem = (new ReflectionClass(Plugin::class))->getProperty('filesystem');
 
-        $this->assertInstanceOf(WP_Filesystem_Direct::class, $filesystem->getValue($plugin));
-
         Plugin::instance()->get_file_contents('assets/blank.css');
+
+        $this->assertInstanceOf(WP_Filesystem_Direct::class, $filesystem->getValue($plugin));
     }
 }

@@ -50,6 +50,11 @@ abstract class Admin_Page {
 		if ( $sidebar_content = $this->help_sidebar() ) {
 			$screen->set_help_sidebar( $sidebar_content );
 		}
+
+		/**
+		 * Enqueue admin scripts and styles.
+		 */
+		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**

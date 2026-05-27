@@ -127,7 +127,7 @@ class Plugin {
 
 					$message = sprintf(
 						// Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
-						\__( 'The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently You have <strong>%4$s</strong>.', 'blank-option' ),
+						\__( 'The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently you have <strong>%4$s</strong>.', 'blank-option' ),
 						$plugin['Name'],
 						$requirement,
 						$required,
@@ -266,10 +266,16 @@ class Plugin {
 	 * Retrieve plugin metadata based on given key.
 	 *
 	 * @param 'name'|'plugin_uri'|'version'|'description'|'text_domain'|'domain_path'|'network'|'requires_wp'|'requires_php'|'update_uri'|'requires_plugins'|'supports' $key Plugin metadata key.
-	 * @return null|string|array
+	 * @return ($key is 'supports' ? array : non-empty-string)
 	 */
-	public function get( string $key ): null|string|array {
-		return $this->data[ $key ] ?? null;
+	public function get( string $key ): array|string {
+		if ( ! isset( $this->data[ $key ] ) || empty( $this->data[ $key ] ) ) {
+			throw new \InvalidArgumentException(
+				\wp_kses( "Unknown plugin metadata: $key", array() )
+			);
+		}
+
+		return $this->data[ $key ];
 	}
 
 	/**
@@ -278,9 +284,9 @@ class Plugin {
 	 * @return void
 	 */
 	public function upgrade(): void {
-		$option = \get_option( $this->get( 'text_domain' ), array() );
+		$option = \get_option( $this->get( 'text_domain' ) );
 
-		if ( false === $option ) {
+		if ( ! $option || ! is_array( $option ) ) {
 			// Not installed, skipping.
 			return;
 		}
@@ -305,11 +311,6 @@ class Plugin {
 		 * Register the admin menu.
 		 */
 		\add_action( 'admin_menu', array( $page, 'menu' ) );
-
-		/**
-		 * Enqueue admin scripts and styles.
-		 */
-		\add_action( 'admin_enqueue_scripts', array( $page, 'enqueue_scripts' ) );
 
 		if ( method_exists( $page, 'action_links' ) ) {
 			/**
