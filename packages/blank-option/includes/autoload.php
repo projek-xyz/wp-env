@@ -49,12 +49,7 @@ spl_autoload_register(
 	}
 );
 
-( static function () {
-	$dirs = array(
-		\BLANK_OPTION_DIR,
-		dirname( dirname( \BLANK_OPTION_DIR ) ),
-	);
-
+( static function ( $dirs ) {
 	// Check for Composer autoloader in both the theme root and the project root.
 	foreach ( $dirs as $dir ) {
 		if ( $file = realpath( $dir . '/vendor/autoload.php' ) ) {
@@ -62,4 +57,4 @@ spl_autoload_register(
 			break;
 		}
 	}
-} )();
+} )( array( \BLANK_OPTION_DIR, dirname( dirname( \BLANK_OPTION_DIR ) ) ) );
