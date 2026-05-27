@@ -11,6 +11,7 @@ declare( strict_types = 1 );
 
 namespace Blank_Option;
 
+use Blank_Option\Admin\Blank_Page;
 use WP_Filesystem_Base;
 use WP_Filesystem_Direct;
 
@@ -23,46 +24,124 @@ defined( 'ABSPATH' ) || exit;
  */
 class Plugin {
 	/**
-	 * Plugin base name.
+	 * Plugin basename.
 	 *
 	 * @var string
 	 */
-	public const BASE_NAME = 'blank-option';
+	public readonly string $basename;
 
 	/**
-	 * Plugin version.
+	 * Plugin directory path.
 	 *
 	 * @var string
 	 */
-	public const VERSION = \BLANK_VERSION;
+	public readonly string $directory_path;
 
 	/**
-	 * Minimum required PHP version.
+	 * Plugin directory URL.
 	 *
 	 * @var string
 	 */
-	public const MINIMUM_PHP_VERSION = '8.2';
+	public readonly string $directory_url;
 
 	/**
-	 * Minimum required WordPress version.
+	 * List of registered admin pages.
 	 *
-	 * @var string
+	 * @var array
 	 */
-	public const MINIMUM_WP_VERSION = '6.0';
+	private array $admin_pages = array();
+
+	/**
+	 * Plugin data.
+	 *
+	 * @var array<string, string>
+	 */
+	private array $data = array();
 
 	/**
 	 * Map of asset paths to their URL and version.
 	 *
-	 * @var array
+	 * @var array<string, array<string, string>>
 	 */
-	private static array $asset_map = array();
+	private array $asset_map = array();
+
+	/**
+	 * Plugin assets directory relative to the plugin directory, default: 'assets'.
+	 *
+	 * @var string
+	 */
+	private string $asset_dir = 'assets';
 
 	/**
 	 * Instance of the WordPress filesystem.
 	 *
 	 * @var WP_Filesystem_Direct|null
 	 */
-	private static ?WP_Filesystem_Direct $filesystem = null;
+	private ?WP_Filesystem_Direct $filesystem = null;
+
+	/**
+	 * Whether the plugin meets the required version of during initiation.
+	 *
+	 * @var bool
+	 */
+	private static bool $is_met_requirements = true;
+
+	/**
+	 * Singleton instance of the Plugin.
+	 *
+	 * @var Plugin|null
+	 */
+	private static ?Plugin $instance = null;
+
+	/**
+	 * Whether the plugin meets the required version of during initiation.
+	 *
+	 * @return bool
+	 */
+	public static function is_met_requirements(): bool {
+		return self::$is_met_requirements;
+	}
+
+	/**
+	 * Checks if the plugin meets the required version of during initiation.
+	 *
+	 * @param 'PHP'|'WordPress' $requirement The requirement to check.
+	 * @param string            $current     The current version of the plugin.
+	 * @param string            $required The required version of the plugin.
+	 * @return void
+	 */
+	public static function check_requirements( string $requirement, string $current, string $required ) {
+		if ( version_compare( $current, $required, '<' ) ) {
+			self::$is_met_requirements = false;
+
+			\add_action(
+				'admin_notices',
+				static function () use ( $current, $required, $requirement ) {
+					$screens = array( 'plugins', 'plugins-network', 'update-core', 'update-core-network' );
+
+					if ( ! self::is_within_screens( ...$screens ) ) {
+						return;
+					}
+
+					$plugin = get_plugin_data( BLANK_OPTION_FILE );
+
+					$message = sprintf(
+						// Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
+						\__( 'The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently You have <strong>%4$s</strong>.', 'blank-option' ),
+						$plugin['Name'],
+						$requirement,
+						$required,
+						$current,
+					);
+
+					printf(
+						'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+						\wp_kses( $message, array( 'strong' => array() ) )
+					);
+				}
+			);
+		}
+	}
 
 	/**
 	 * Perform actions on plugin activation.
@@ -70,7 +149,11 @@ class Plugin {
 	 * @return void
 	 */
 	public static function activate(): void {
-		static::upgrade();
+		$plugin = static::instance();
+
+		$plugin->upgrade();
+
+		new Option( $plugin );
 
 		do_action( 'blank_option_activate' );
 	}
@@ -90,41 +173,78 @@ class Plugin {
 	 * @return void
 	 */
 	public static function init(): void {
+		$plugin = new Plugin( BLANK_OPTION_FILE );
+
 		/**
 		 * Enqueue scripts and styles.
 		 */
-		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_scripts' ) );
-
-		/**
-		 * Enqueue admin scripts and styles.
-		 */
-		add_action( 'admin_enqueue_scripts', array( Admin::class, 'enqueue_scripts' ) );
+		\add_action( 'wp_enqueue_scripts', array( $plugin, 'enqueue_scripts' ) );
 
 		/**
 		 * Register the admin menu.
 		 */
-		\add_action( 'admin_menu', array( Admin::class, 'menu' ) );
-
-		/**
-		 * Register the action links.
-		 */
-		\add_filter( 'plugin_action_links_' . \plugin_basename( BLANK_OPTION_FILE ), array( Admin::class, 'action_links' ), 10, 3 );
+		$plugin->add_admin_page( new Blank_Page( $plugin ) );
 	}
 
 	/**
-	 * Perform upgrade actions when necessary.
+	 * Retrieves the singleton instance of the Plugin class.
 	 *
-	 * @return void
+	 * @return static
 	 */
-	public static function upgrade(): void {
-		$old_version = Option::get( 'version', '0.0.0' );
-		$new_version = self::VERSION;
-
-		if ( ! version_compare( $new_version, $old_version, '>' ) ) {
-			return;
+	final public static function instance(): static {
+		if ( ! self::$instance ) {
+			self::$instance = new Plugin( BLANK_OPTION_FILE );
 		}
 
-		\do_action( 'blank_option_upgrade', $old_version, $new_version );
+		return self::$instance;
+	}
+
+	/**
+	 * Constructs the Plugin instance.
+	 *
+	 * @param string $file The path to the plugin file.
+	 * @return void
+	 */
+	public function __construct(
+		public readonly string $file,
+	) {
+		$this->basename       = \plugin_basename( $file );
+		$this->directory_path = \plugin_dir_path( $file );
+		$this->directory_url  = \plugin_dir_url( $file );
+
+		/**
+		 * The key is what provided by `get_plugin_data()`.
+		 *
+		 * @see \get_plugin_data()
+		 */
+		$data_map = array(
+			'Name'            => 'name',
+			'PluginURI'       => 'plugin_uri',
+			'Version'         => 'version',
+			'Description'     => 'description',
+			'Author'          => 'author',
+			'AuthorURI'       => 'author_uri',
+			'TextDomain'      => 'text_domain',
+			'DomainPath'      => 'domain_path',
+			'Network'         => 'network',
+			'RequiresWP'      => 'requires_wp',
+			'RequiresPHP'     => 'requires_php',
+			'UpdateURI'       => 'update_uri',
+			'RequiresPlugins' => 'requires_plugins',
+		);
+
+		foreach ( \get_plugin_data( $file ) as $key => $value ) {
+			if ( $map = $data_map[ $key ] ?? null ) {
+				$this->data[ $map ] = $value;
+			}
+		}
+
+		$json = $this->get_file_contents( 'composer.json' );
+		$data = $json ? json_decode( $json ?: array(), true ) : array();
+
+		$this->data['supports'] = $data['support'] ?? array();
+
+		self::$instance = $this;
 	}
 
 	/**
@@ -132,24 +252,73 @@ class Plugin {
 	 *
 	 * @return void
 	 */
-	public static function enqueue_scripts(): void {
-		$css = static::asset( 'blank.css' );
-		$js  = static::asset( 'blank.js' );
+	public function enqueue_scripts(): void {
+		$css = $this->get_asset_url( 'blank.css' );
+		$js  = $this->get_asset_url( 'blank.js' );
 
-		\wp_enqueue_style(
-			self::BASE_NAME . '-style',
-			$css['url'],
-			array(),
-			$css['version'],
-		);
+		$domain = $this->get( 'text_domain' );
 
-		\wp_enqueue_script(
-			self::BASE_NAME . '-script',
-			$js['url'],
-			array(),
-			$js['version'],
-			array( 'strategy' => 'defer' )
-		);
+		\wp_enqueue_style( $domain . '-style', $css['url'], array(), $css['version'] );
+		\wp_enqueue_script( $domain . '-script', $js['url'], array(), $js['version'], array( 'strategy' => 'defer' ) );
+	}
+
+	/**
+	 * Retrieve plugin metadata based on given key.
+	 *
+	 * @param 'name'|'plugin_uri'|'version'|'description'|'text_domain'|'domain_path'|'network'|'requires_wp'|'requires_php'|'update_uri'|'requires_plugins'|'supports' $key Plugin metadata key.
+	 * @return null|string|array
+	 */
+	public function get( string $key ): null|string|array {
+		return $this->data[ $key ] ?? null;
+	}
+
+	/**
+	 * Perform upgrade actions when necessary.
+	 *
+	 * @return void
+	 */
+	public function upgrade(): void {
+		$option = \get_option( $this->get( 'text_domain' ), array() );
+
+		if ( false === $option ) {
+			// Not installed, skipping.
+			return;
+		}
+
+		$new_version = $this->get( 'version' );
+
+		if ( ! version_compare( $new_version, $option['version'], '>' ) ) {
+			return;
+		}
+
+		\do_action( 'blank_option_upgrade', $option['version'], $new_version );
+	}
+
+	/**
+	 * Register an admin page.
+	 *
+	 * @param Admin_Page $page The admin page instance.
+	 * @return void
+	 */
+	public function add_admin_page( Admin_Page $page ): void {
+		/**
+		 * Register the admin menu.
+		 */
+		\add_action( 'admin_menu', array( $page, 'menu' ) );
+
+		/**
+		 * Enqueue admin scripts and styles.
+		 */
+		\add_action( 'admin_enqueue_scripts', array( $page, 'enqueue_scripts' ) );
+
+		if ( method_exists( $page, 'action_links' ) ) {
+			/**
+			 * Register the action links.
+			 */
+			\add_filter( 'plugin_action_links_' . $this->basename, array( $page, 'action_links' ), 10, 4 );
+		}
+
+		$this->admin_pages[ $page::class ] = $page;
 	}
 
 	/**
@@ -157,23 +326,41 @@ class Plugin {
 	 *
 	 * @param string ...$paths Path segments to append.
 	 * @return string
+	 * @throws \InvalidArgumentException If the path is not found.
 	 */
-	public static function dir( string ...$paths ): string {
-		$paths = array_merge( array( \BLANK_OPTION_DIR ), $paths );
+	public function directory_path( string ...$paths ): string {
+		$rel_path = implode( '/', array_filter( $paths ) );
+		$realpath = realpath( "$this->directory_path/$rel_path" );
 
-		return implode( DIRECTORY_SEPARATOR, array_filter( $paths ) );
+		if ( $realpath ) {
+			return \wp_normalize_path( $realpath );
+		}
+
+		throw new \InvalidArgumentException(
+			\wp_kses( "Path not found: $rel_path", array() )
+		);
 	}
 
 	/**
-	 * Get the plugin URL.
+	 * Get the plugin directory URL.
 	 *
 	 * @param string ...$paths Path segments to append.
 	 * @return string
 	 */
-	public static function url( string ...$paths ): string {
-		$paths = array_merge( array( \plugin_dir_url( \BLANK_OPTION_FILE ) ), $paths );
+	public function directory_url( string ...$paths ): string {
+		$paths = array_merge( array( $this->directory_url ), $paths );
 
 		return implode( '/', array_filter( $paths ) );
+	}
+
+	/**
+	 * Set new assets directory relative to the plugin directory.
+	 *
+	 * @param string $dir The assets directory path.
+	 * @return void
+	 */
+	public function set_asset_dir( string $dir ): void {
+		$this->asset_dir = $dir;
 	}
 
 	/**
@@ -184,14 +371,14 @@ class Plugin {
 	 * @return ($key is string ? string : array)
 	 * @throws \InvalidArgumentException If an invalid key is provided.
 	 */
-	public static function asset( string $path, ?string $key = null ): string|array {
-		$asset = self::$asset_map[ $path ] ?? array();
+	public function get_asset_url( string $path, ?string $key = null ): string|array {
+		$asset = $this->asset_map[ $path ] ?? array();
 
 		if ( ! empty( $asset ) ) {
 			if ( $key ) {
 				if ( ! in_array( $key, array( 'dir', 'url', 'version' ), true ) ) {
 					throw new \InvalidArgumentException(
-						\wp_kses( "Invalid key: $key, expected 'dir', 'url', or 'version'", array() )
+						\wp_kses( "Invalid key: $key, expected 'dir', 'url' or 'version'", array() )
 					);
 				}
 
@@ -202,20 +389,18 @@ class Plugin {
 		}
 
 		$asset = array(
-			'dir'     => self::dir( 'assets', $path ),
-			'url'     => self::url( 'assets', $path ),
-			'version' => self::VERSION,
+			'dir'     => $this->directory_path( $this->asset_dir, $path ),
+			'url'     => $this->directory_url( $this->asset_dir, $path ),
+			'version' => $this->get( 'version' ),
 		);
 
-		if ( self::is_debug() ) {
-			$filetime = (string) filemtime( $asset['dir'] );
-
-			$asset['version'] .= '-' . $filetime;
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			$asset['version'] .= '-' . ( (string) filemtime( $asset['dir'] ) );
 		}
 
-		self::$asset_map[ $path ] = $asset;
+		$this->asset_map[ $path ] = $asset;
 
-		return static::asset( $path, $key );
+		return $this->get_asset_url( $path, $key );
 	}
 
 	/**
@@ -224,51 +409,8 @@ class Plugin {
 	 * @param string $path The path to the file relative to the plugin directory.
 	 * @return string|false The content of the file.
 	 */
-	public static function get_file_contents( string $path ): string|false {
-		return static::filesystem()->get_contents( static::dir( $path ) );
-	}
-
-	/**
-	 * Retrieve the filesystem instance.
-	 *
-	 * @internal
-	 * @return WP_Filesystem_Direct
-	 */
-	private static function filesystem(): WP_Filesystem_Direct {
-		if ( self::$filesystem ) {
-			return self::$filesystem;
-		}
-
-		$fs_classes = array(
-			WP_Filesystem_Base::class   => 'class-wp-filesystem-base.php',
-			WP_Filesystem_Direct::class => 'class-wp-filesystem-direct.php',
-		);
-
-		foreach ( $fs_classes as $class => $file ) {
-			if ( ! class_exists( $class ) ) {
-				require_once ABSPATH . "wp-admin/includes/$file";
-			}
-		}
-
-		return self::$filesystem = new WP_Filesystem_Direct( 1 );
-	}
-
-	/**
-	 * Check if the version of PHP in use on the site is supported.
-	 *
-	 * @return bool
-	 */
-	public static function is_unmet_php_requirements(): bool {
-		return version_compare( PHP_VERSION, self::MINIMUM_PHP_VERSION, '<' );
-	}
-
-	/**
-	 * Check if the version of WordPress in use on the site is supported.
-	 *
-	 * @return bool
-	 */
-	public static function is_unmet_wp_requirements(): bool {
-		return version_compare( $GLOBALS['wp_version'], self::MINIMUM_WP_VERSION, '<' );
+	public function get_file_contents( string $path ): string|false {
+		return $this->filesystem()->get_contents( $this->directory_path( $path ) );
 	}
 
 	/**
@@ -288,9 +430,35 @@ class Plugin {
 	/**
 	 * Check if the version of WordPress in under debug mode.
 	 *
+	 * @codeCoverageIgnore
 	 * @return bool
 	 */
 	public static function is_debug(): bool {
 		return defined( 'WP_DEBUG' ) && boolval( WP_DEBUG );
+	}
+
+	/**
+	 * Retrieve the filesystem instance.
+	 *
+	 * @internal
+	 * @return WP_Filesystem_Direct
+	 */
+	private function filesystem(): WP_Filesystem_Direct {
+		if ( $this->filesystem ) {
+			return $this->filesystem;
+		}
+
+		$fs_classes = array(
+			WP_Filesystem_Base::class   => 'class-wp-filesystem-base.php',
+			WP_Filesystem_Direct::class => 'class-wp-filesystem-direct.php',
+		);
+
+		foreach ( $fs_classes as $class => $file ) {
+			if ( ! class_exists( $class ) ) {
+				require_once ABSPATH . "wp-admin/includes/$file";
+			}
+		}
+
+		return $this->filesystem = new WP_Filesystem_Direct( 1 );
 	}
 }
