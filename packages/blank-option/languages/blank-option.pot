@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Blank Option for Nothing 0.0.1\n"
+"Project-Id-Version: Blank Option 0.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/blank-option\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,12 +11,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-05-22T00:33:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"X-Generator: WP-CLI 2.13.0-alpha\n"
 "X-Domain: blank-option\n"
 
 #. Plugin Name of the plugin
 #: blank-option.php:10
-msgid "Blank Option for Nothing"
+msgid "Blank Option"
 msgstr ""
 
 #. Description of the plugin
@@ -34,39 +34,33 @@ msgstr ""
 msgid "https://feryardiant.id"
 msgstr ""
 
-#. translators: %s: version of PHP required by Blank WordPress Plugin.
-#: includes/class-admin.php:43
-#, php-format
-msgid "<strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>PHP</strong> and has been paused."
-msgstr ""
-
-#. translators: %s: version of PHP required by Blank WordPress Plugin.
-#: includes/class-admin.php:48
-#, php-format
-msgid "<strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>WordPress</strong> and has been paused."
-msgstr ""
-
-#: includes/class-admin.php:112
-msgid "Settings"
-msgstr ""
-
-#: includes/class-admin.php:119
-msgid "Supports"
-msgstr ""
-
-#: includes/class-admin.php:145
-#: includes/class-admin.php:146
+#: includes/admin/class-blank-page.php:32
+#: includes/admin/class-blank-page.php:33
 msgid "Blank Options"
 msgstr ""
 
-#: includes/class-admin.php:170
+#: includes/admin/class-blank-page.php:60
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/class-blank-page.php:67
+msgid "Supports"
+msgstr ""
+
+#: includes/admin/class-blank-page.php:132
 msgid "Blank Help"
 msgstr ""
 
-#: includes/class-admin.php:172
+#: includes/admin/class-blank-page.php:134
 msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
 msgstr ""
 
-#: includes/class-admin.php:183
+#: includes/admin/class-blank-page.php:148
 msgid "For more information:"
+msgstr ""
+
+#. Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
+#: includes/class-plugin.php:130
+#, php-format
+msgid "The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently You have <strong>%4$s</strong>."
 msgstr ""

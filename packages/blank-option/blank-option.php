@@ -1,6 +1,6 @@
 <?php
 /**
- * Blank Option for Nothing
+ * Blank Option
  *
  * @package projek-xyz/wp-blank-option
  * @copyright Copyright (c) 2026 Fery Wardiyanto <https://feryardiant.id>
