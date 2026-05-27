@@ -205,13 +205,17 @@ class BlankPageTest extends TestCase
     #[Test]
     public function renderShouldPrintOutputToPluginScreen()
     {
-        $this->expectOutputString(implode('', [
+        $this->expectOutputString(implode("\n\t\t", [
             '<div class="wrap">',
-            '<h1 class="wp-heading-inline">Blank Option</h1><hr class="wp-header-end">',
-            '<div class="clear"></div></div>'
+            '<h1 class="wp-heading-inline">Blank Option</h1> <!-- .wp-heading-inline -->',
+            '<hr class="wp-header-end" />',
+            '<div class="inner">',
+            '</div> <!-- .inner -->',
+            '</div> <!-- .wrap -->'
         ]));
 
-        Functions\expect('wp_kses')->once()->andReturnFirstArg();
+        Functions\when('wp_kses_post')->returnArg(1);
+        Functions\when('wp_kses')->returnArg(1);
         Functions\expect('get_admin_page_title')->once()->andReturn('Blank Option');
 
         $this->page()->render();

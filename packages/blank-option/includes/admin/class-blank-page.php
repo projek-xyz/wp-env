@@ -12,6 +12,7 @@ declare( strict_types = 1 );
 namespace Blank_Option\Admin;
 
 use Blank_Option\Admin_Page;
+use Blank_Option\Html_Element;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -111,20 +112,16 @@ final class Blank_Page extends Admin_Page {
 	 * {@inheritdoc}
 	 */
 	public function render(): void {
-		echo '<div class="wrap">';
-
-		printf(
-			'<h1 class="wp-heading-inline">%s</h1>',
-			\wp_kses( \get_admin_page_title(), array( 'strong' => array() ) )
+		Html_Element::div(
+			array( 'class' => 'wrap' ),
+			static fn ( $elm ) => $elm
+			->h1( array( 'class' => 'wp-heading-inline' ), \get_admin_page_title() )
+			->hr( array( 'class' => 'wp-header-end' ) )
+			->div(
+				array( 'class' => 'inner' ),
+				static fn ( $elm ) => $elm
+			)
 		);
-
-		echo '<hr class="wp-header-end">';
-
-		// Nothing.
-
-		echo '<div class="clear"></div>';
-
-		echo '</div>';
 	}
 
 	/**

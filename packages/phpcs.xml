@@ -32,6 +32,8 @@
     <rule ref="WordPress">
         <!-- Allows: Variable assignment in condition, e.g. `if ( $var = some_func() ) { ... }` -->
         <exclude name="Generic.CodeAnalysis.AssignmentInCondition.Found" />
+        <!-- Allows: Variable assignment in while condition, e.g. `while ( $var = some_func() ) { ... }` -->
+        <exclude name="Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition" />
 
         <!-- Allows: Commented-out code, e.g. `// $var = disabled_func();` -->
         <exclude name="Squiz.PHP.CommentedOutCode.Found" />
