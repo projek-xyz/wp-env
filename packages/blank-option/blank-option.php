@@ -1,13 +1,13 @@
 <?php
 /**
- * Blank Option for Nothing
+ * Blank Option
  *
  * @package projek-xyz/wp-blank-option
  * @copyright Copyright (c) 2026 Fery Wardiyanto <https://feryardiant.id>
  * @license http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 or higher
  *
  * @wordpress-plugin
- * Plugin Name: Blank Option for Nothing
+ * Plugin Name: Blank Option
  * Description: Something awesome is about to come.
  * Text Domain: blank-option
  * Domain Path: /languages
@@ -20,7 +20,6 @@
  * License: GPLv3 or later
  */
 
-use Blank_Option\Admin;
 use Blank_Option\Plugin;
 
 defined( 'ABSPATH' ) || exit;
@@ -51,24 +50,14 @@ require_once BLANK_OPTION_DIR . '/includes/autoload.php';
 /**
  * Check if the version of PHP in use on the site is supported.
  */
-if ( Plugin::is_unmet_php_requirements() ) {
-	/**
-	 * Display an admin notice if the PHP version is too low.
-	 */
-	\add_action( 'admin_notices', static fn () => Admin::notice( 'php' ) );
-
-	return;
-}
+Plugin::check_requirements( 'PHP', PHP_VERSION, '8.2' );
 
 /**
  * Check if the version of WordPress in use on the site is supported.
  */
-if ( Plugin::is_unmet_wp_requirements() ) {
-	/**
-	 * Display an admin notice if the WordPress version is too low.
-	 */
-	\add_action( 'admin_notices', static fn () => Admin::notice( 'wp' ) );
+Plugin::check_requirements( 'WordPress', $GLOBALS['wp_version'], '6.0' );
 
+if ( ! Plugin::is_met_requirements() ) {
 	return;
 }
 

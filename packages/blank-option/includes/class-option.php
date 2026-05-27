@@ -25,6 +25,13 @@ final class Option {
 	private static array $cached = array();
 
 	/**
+	 * Option key.
+	 *
+	 * @var string
+	 */
+	private static string $key;
+
+	/**
 	 * Get an option value.
 	 *
 	 * @param string     $name Option name.
@@ -36,13 +43,13 @@ final class Option {
 			return self::$cached[ $name ];
 		}
 
-		$data = \get_option( Plugin::BASE_NAME, array() );
+		$option = self::all();
 
-		if ( false === $data || ! isset( $data[ $name ] ) ) {
+		if ( ! isset( $option[ $name ] ) ) {
 			return $default;
 		}
 
-		return self::$cached[ $name ] = $data[ $name ];
+		return self::$cached[ $name ] = $option[ $name ];
 	}
 
 	/**
@@ -53,16 +60,35 @@ final class Option {
 	 * @return void
 	 */
 	public static function set( string $name, mixed $value ): void {
-		$old_data = \get_option( Plugin::BASE_NAME, array() );
+		$option = self::all();
 
-		if ( false === $old_data ) {
-			$old_data = array();
+		$option[ $name ] = $value;
+
+		if ( isset( self::$cached[ $name ] ) ) {
+			unset( self::$cached[ $name ] );
 		}
 
-		$old_data[ $name ] = $value;
+		\update_option( self::$key, $option );
+	}
 
-		unset( self::$cached[ $name ] );
+	/**
+	 * Retrieve all option values.
+	 *
+	 * @return array
+	 */
+	private static function all(): array {
+		$option = \get_option( self::$key, array() );
 
-		\update_option( Plugin::BASE_NAME, $old_data );
+		return $option ?? array();
+	}
+
+	/**
+	 * Initialize the plugin option.
+	 *
+	 * @param Plugin $plugin The plugin instance.
+	 * @return void
+	 */
+	public function __construct( Plugin $plugin ) {
+		self::$key = $plugin->get( 'text_domain' );
 	}
 }

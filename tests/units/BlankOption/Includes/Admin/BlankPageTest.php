@@ -2,87 +2,28 @@
 
 declare(strict_types=1);
 
-namespace UnitTests\BlankOption\Includes;
+namespace UnitTests\BlankOption\Includes\Admin;
 
-use Blank_Option\Admin;
+use Blank_Option\Admin\Blank_Page;
 use Blank_Option\Plugin;
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
+use UnitTests\BlankOption\Includes\TestCase;
 use WP_Screen;
 
 /**
  * Unit tests for the blank's `includes/class-admin.php`.
  */
 #[RunClassInSeparateProcess]
-class AdminTest extends TestCase
+class BlankPageTest extends TestCase
 {
     protected static bool $loadAutoloader = true;
 
-    #[Test]
-    public function noticeShouldDoingNothingWhenNoScreenDefined()
+    private function page(?Plugin $plugin = null): Blank_Page
     {
-        Functions\expect('get_current_screen')->once()->andReturnNull();
-
-        Admin::notice('unknown');
-    }
-
-    #[Test]
-    public function noticeShouldDoingNothingOnUndesiredScreen()
-    {
-        Functions\expect('get_current_screen')->once()->andReturn((object) ['id' => 'undesired']);
-
-        Admin::notice('unknown');
-    }
-
-    #[Test]
-    public function noticeShouldDoingNothingOnUnknownType()
-    {
-        Functions\expect('get_current_screen')->once()->andReturn((object) ['id' => 'plugins']);
-        Functions\expect('wp_kses')->never();
-
-        Admin::notice('unknown');
-    }
-
-    #[Test]
-    public function phpRequirementNoticeShouldPrintTheOutputProperly()
-    {
-        // phpcs:disable Generic.Files.LineLength.TooLong
-        $this->expectOutputString(implode('', [
-            '<div class="notice notice-error is-dismissible">',
-            sprintf(
-                '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>PHP</strong> and has been paused.</p>',
-                Plugin::MINIMUM_PHP_VERSION
-            ),
-            '</div>'
-        ]));
-        // phpcs:enable Generic.Files.LineLength.TooLong
-
-        Functions\expect('get_current_screen')->once()->andReturn((object) ['id' => 'plugins']);
-        Functions\expect('wp_kses')->once()->andReturnFirstArg();
-
-        Admin::notice('php');
-    }
-
-    #[Test]
-    public function wpRequirementNoticeShouldPrintTheOutputProperly()
-    {
-        // phpcs:disable Generic.Files.LineLength.TooLong
-        $this->expectOutputString(implode('', [
-            '<div class="notice notice-error is-dismissible">',
-            sprintf(
-                '<p><strong>Blank WordPress Plugin</strong> requires at least version <strong>%s</strong> of <strong>WordPress</strong> and has been paused.</p>',
-                Plugin::MINIMUM_WP_VERSION
-            ),
-            '</div>'
-        ]));
-        // phpcs:enable Generic.Files.LineLength.TooLong
-
-        Functions\expect('get_current_screen')->once()->andReturn((object) ['id' => 'plugins']);
-        Functions\expect('wp_kses')->once()->andReturnFirstArg();
-
-        Admin::notice('wp');
+        return new Blank_Page($plugin ?? Plugin::instance());
     }
 
     #[Test]
@@ -91,7 +32,7 @@ class AdminTest extends TestCase
         Functions\expect('wp_enqueue_style')->never();
         Functions\expect('wp_enqueue_script')->never();
 
-        Admin::enqueue_scripts('other-admin-screen');
+        $this->page()->enqueue_scripts('other-admin-screen');
     }
 
     #[Test]
@@ -100,7 +41,7 @@ class AdminTest extends TestCase
         Functions\expect('wp_enqueue_style')->once()->andReturnUsing(
             function (string $handle, string $src, array $deps, string $version) {
                 $this->assertSame('blank-option-admin-style', $handle);
-                $this->assertSame(Plugin::VERSION, $version);
+                $this->assertSame(BLANK_VERSION, $version);
                 $this->assertEmpty($deps);
                 $this->assertSame(
                     'http://example.com/wp-content/plugins/blank-option/assets/admin.blank.css',
@@ -112,7 +53,7 @@ class AdminTest extends TestCase
         Functions\expect('wp_enqueue_script')->once()->andReturnUsing(
             function (string $handle, string $src, array $deps, string $version) {
                 $this->assertSame('blank-option-admin-script', $handle);
-                $this->assertSame(Plugin::VERSION, $version);
+                $this->assertSame(BLANK_VERSION, $version);
                 $this->assertEmpty($deps);
                 $this->assertSame(
                     'http://example.com/wp-content/plugins/blank-option/assets/admin.blank.js',
@@ -121,11 +62,11 @@ class AdminTest extends TestCase
             }
         );
 
-        Admin::enqueue_scripts('plugins_page_blank-option');
+        $this->page()->enqueue_scripts('plugins_page_blank-option');
     }
 
     #[Test]
-    public function registerNewAdminMenu()
+    public function shouldAbleToRegisterNewAdminPage()
     {
         Functions\expect('add_submenu_page')->once()->andReturnUsing(
             function (
@@ -143,12 +84,31 @@ class AdminTest extends TestCase
                 $this->assertSame('blank-option', $menu_slug);
 
                 $this->assertIsArray($callback);
-                $this->assertSame(Admin::class, $callback[0]);
+                $this->assertInstanceOf(Blank_Page::class, $callback[0]);
                 $this->assertSame('render', $callback[1]);
+
+                return 'plugins_page_blank-option';
             }
         );
 
-        Admin::menu();
+        Actions\expectAdded('load-plugins_page_blank-option')->once()->whenHappen(function ($callback) {
+            $this->assertIsArray($callback);
+
+            $this->assertInstanceOf(Blank_Page::class, $callback[0]);
+            $this->assertSame('load', $callback[1]);
+        });
+
+        $this->page()->menu();
+    }
+
+    #[Test]
+    public function shouldNotAbleToRegisterAdminPageWhenCurrentUserDoesNotHaveTheRequiredCapability()
+    {
+        Functions\expect('add_submenu_page')->once()->andReturn(false);
+
+        Actions\expectAdded('load-plugins_page_blank-option')->never();
+
+        $this->page()->menu();
     }
 
     #[Test]
@@ -156,7 +116,7 @@ class AdminTest extends TestCase
     {
         Functions\expect('current_user_can')->once()->andReturn(false);
 
-        $actual = Admin::action_links([], '', []);
+        $actual = $this->page()->action_links([], '', []);
 
         $this->assertSame([], $actual);
     }
@@ -166,20 +126,22 @@ class AdminTest extends TestCase
     {
         Functions\when('current_user_can')->justReturn(true);
 
-        $actualLinks = Admin::action_links([], '', []);
+        $this->assertSame(
+            [
+                '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>'
+            ],
+            $this->page()->action_links([], '', [])
+        );
 
-        $this->assertSame([
-            '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>'
-        ], $actualLinks);
-
-        $actualLinks = Admin::action_links([], '', [
-            'PluginURI' => 'http://example.com/support'
-        ]);
-
-        $this->assertSame([
-            '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>',
-            '<a href="http://example.com/support">Supports</a>',
-        ], $actualLinks);
+        $this->assertSame(
+            [
+                '<a href="http://example.com/wp-admin/plugins.php?page=blank-option">Settings</a>',
+                '<a href="http://example.com/support">Supports</a>',
+            ],
+            $this->page()->action_links([], '', [
+                'PluginURI' => 'http://example.com/support'
+            ])
+        );
     }
 
     #[Test]
@@ -188,7 +150,7 @@ class AdminTest extends TestCase
         Functions\expect('get_current_screen')->once()->andReturnNull();
         Functions\expect('esc_url')->never();
 
-        Admin::load();
+        $this->page()->load();
     }
 
     #[Test]
@@ -203,7 +165,14 @@ class AdminTest extends TestCase
             return $mock;
         });
 
-        Admin::load();
+        Actions\expectAdded('admin_enqueue_scripts')->once()->whenHappen(function ($callback) {
+            $this->assertIsArray($callback);
+
+            $this->assertInstanceOf(Blank_Page::class, $callback[0]);
+            $this->assertSame('enqueue_scripts', $callback[1]);
+        });
+
+        $this->page()->load();
     }
 
     #[Test]
@@ -223,12 +192,28 @@ class AdminTest extends TestCase
             'docs' => 'https://example.com/docs'
         ];
 
-        $this->mockStaticMethods(Plugin::class, [
-            'get_file_contents' => fn ($called) => $called->once()
-                ->with('composer.json')
-                ->andReturn(json_encode(['support' => $support])),
-        ]);
+        $plugin = mock(Plugin::class);
 
-        Admin::load();
+        $plugin->shouldReceive('get')
+            ->once()
+            ->with('supports')
+            ->andReturn($support);
+
+        $this->page($plugin)->load();
+    }
+
+    #[Test]
+    public function renderShouldPrintOutputToPluginScreen()
+    {
+        $this->expectOutputString(implode('', [
+            '<div class="wrap">',
+            '<h1 class="wp-heading-inline">Blank Option</h1><hr class="wp-header-end">',
+            '<div class="clear"></div></div>'
+        ]));
+
+        Functions\expect('wp_kses')->once()->andReturnFirstArg();
+        Functions\expect('get_admin_page_title')->once()->andReturn('Blank Option');
+
+        $this->page()->render();
     }
 }

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace UnitTests\BlankOption\Includes;
 
 use Blank_Option\Option;
+use Blank_Option\Plugin;
 use Brain\Monkey\Functions;
+use Override;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
+use ReflectionClass;
 
 /**
  * Unit tests for the blank's `includes/class-option.php`.
@@ -17,19 +20,12 @@ class OptionTest extends TestCase
 {
     protected static bool $loadAutoloader = true;
 
-    #[Test]
-    public function setShouldRetunsDefaultValueIfNoOptionExists()
+    #[Override]
+    public function setUp(): void
     {
-        Functions\when('get_option')->justReturn(false);
+        parent::setUp();
 
-        Functions\expect('update_option')
-            ->once()
-            ->andReturnUsing(function (string $name, array $option) {
-                $this->assertSame(static::PACKAGE_NAME, $name);
-                $this->assertSame(['key' => 'value'], $option);
-            });
-
-        Option::set('key', 'value');
+        new Option(Plugin::instance());
     }
 
     #[Test]
@@ -37,7 +33,7 @@ class OptionTest extends TestCase
     {
         $stub = Functions\when('get_option');
 
-        $stub->justReturn(false);
+        $stub->justReturn([]);
 
         $actual = Option::get('key_false', $expected = 'default');
 
@@ -53,9 +49,7 @@ class OptionTest extends TestCase
     #[Test]
     public function getShouldRetunsItsValueIfTheOptionExists()
     {
-        $stub = Functions\when('get_option');
-
-        $stub->justReturn(['key' => 'value']);
+        Functions\when('get_option')->justReturn(['key' => 'value']);
 
         $actual = Option::get('key', 'default');
 
@@ -73,5 +67,28 @@ class OptionTest extends TestCase
         $second = Option::get('other', 'default');
 
         $this->assertSame($first, $second);
+    }
+
+    #[Test]
+    public function setShouldCleanItsCacheWhenValueIsChanged()
+    {
+        $cache = (new ReflectionClass(Option::class))->getProperty('cached');
+
+        Functions\when('get_option')->justReturn(['key' => 'old_value']);
+
+        Option::get('key');
+
+        $this->assertArrayHasKey('key', $cache->getValue());
+
+        Functions\expect('update_option')
+            ->once()
+            ->andReturnUsing(function (string $name, array $option) {
+                $this->assertSame(static::PACKAGE_NAME, $name);
+                $this->assertArrayHasKey('key', $option);
+            });
+
+        Option::set('key', 'new_value');
+
+        $this->assertEmpty($cache->getValue());
     }
 }

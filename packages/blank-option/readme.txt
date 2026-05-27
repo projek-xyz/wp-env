@@ -1,5 +1,5 @@
-=== Blank Option for Nothing ===
-Plugin Name: Blank Option for Nothing
+=== Blank Option ===
+Plugin Name: Blank Option
 Description: Something awesome is about to come.
 Text Domain: blank-option
 Stable tag: 0.0.1
