@@ -149,14 +149,23 @@ defined( 'ABSPATH' ) || exit;
  */
 class Html_Element implements Stringable {
 	/**
+	 * Regular expression pattern for valid tag names.
+	 */
+	public const VALID_TAG_NAME = '[a-z][0-9a-z]*(?:[-_:.][a-z][0-9a-z]*)?';
+
+	/**
+	 * Regular expression pattern for valid tag names.
+	 */
+	public const VALID_ATTRIBUTE_NAME = '[a-z-_:.][a-z-_:.0-9-]*';
+
+	/**
 	 * List of void elements.
 	 *
 	 * @link https://developer.mozilla.org/en-US/docs/Glossary/Void_element
 	 * @var array<string>
 	 */
 	private const VOID_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-		'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr',
+		'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'param', 'source', 'track', 'wbr',
 	); // phpcs:enable
 
 	/**
@@ -174,9 +183,9 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const P_PARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'address', 'article', 'aside', 'blockquote', 'body', 'caption', 'dd',
-		'details', 'dialog', 'div', 'dt', 'fieldset', 'figcaption', 'figure',
-		'footer', 'form', 'header', 'li', 'main', 'nav', 'section', 'td', 'th',
+		'address', 'article', 'aside', 'blockquote', 'caption', 'div', 'dd', 'dt', 'li', 'td', 'th',
+		'details', 'dialog', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'header', 'main',
+		'nav', 'section',
 	); // phpcs:enable
 
 	/**
@@ -185,9 +194,8 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const P_NONPARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'colgroup', 'dl', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hgroup',
-		'html', 'legend', 'menu', 'ol', 'pre', 'style', 'summary', 'table',
-		'tbody', 'template', 'tfoot', 'thead', 'title', 'tr', 'ul',
+		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'colgroup', 'hgroup', 'legend', 'dl', 'ul', 'ol', 'pre',
+		'table', 'tbody', 'tfoot', 'thead', 'tr', 'summary', 'menu', 'template',
 	); // phpcs:enable
 
 	/**
@@ -197,13 +205,11 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const P_CHILD_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'a', 'abbr', 'area', 'audio', 'b', 'bdi', 'bdo', 'br', 'button',
-		'canvas', 'cite', 'code', 'data', 'datalist', 'del', 'dfn', 'em',
-		'embed', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label',
-		'link', 'map', 'mark', 'meta', 'meter', 'noscript', 'object', 'output',
-		'picture', 'progress', 'q', 'ruby', 's', 'samp', 'script', 'select',
-		'slot', 'small', 'span', 'strong', 'sub', 'sup', 'textarea', 'time',
-		'u', 'var', 'video', 'wbr', 'optgroup', 'option', 'rp', 'rt',
+		'a', 'abbr', 'b', 's', 'u', 'bdi', 'bdo', 'br', 'cite', 'em', 'i', 'ins', 'kbd', 'sub', 'sup',
+		'area', 'data', 'code', 'datalist', 'del', 'dfn', 'audio', 'canvas', 'embed', 'iframe', 'img',
+		'button', 'input', 'label', 'map', 'mark', 'meter', 'noscript', 'object', 'output', 'picture',
+		'progress', 'q', 'ruby', 'samp', 'select', 'slot', 'small', 'span', 'strong', 'textarea',
+		'time', 'var', 'video', 'wbr', 'optgroup', 'option', 'rp', 'rt',
 	); // phpcs:enable
 
 	/**
@@ -212,15 +218,13 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const BR_PARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'a', 'abbr', 'address', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo',
-		'blockquote', 'button', 'canvas', 'caption', 'cite', 'code', 'data',
-		'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dt', 'em',
-		'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
-		'h4', 'h5', 'h6', 'header', 'i', 'ins', 'kbd', 'label', 'legend', 'li',
-		'main', 'map', 'mark', 'meter', 'nav', 'noscript', 'object', 'output',
-		'p', 'progress', 'q', 'rt', 'ruby', 's', 'samp', 'section', 'slot',
-		'small', 'span', 'strong', 'sub', 'summary', 'sup', 'td', 'th', 'time',
-		'u', 'var', 'video',
+		'a', 'abbr', 'address', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'blockquote',
+		'button', 'canvas', 'caption', 'cite', 'code', 'data', 'datalist', 'dd', 'del', 'details',
+		'dfn', 'dialog', 'div', 'dt', 'em', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
+		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'kbd', 'label', 'legend', 'li',
+		'main', 'map', 'mark', 'meter', 'nav', 'noscript', 'object', 'output', 'p', 'progress', 'q',
+		'rt', 'ruby', 's', 'samp', 'section', 'slot', 'small', 'span', 'strong', 'sub', 'summary',
+		'sup', 'td', 'th', 'time', 'u', 'var', 'video',
 	); // phpcs:enable
 
 	/**
@@ -296,10 +300,12 @@ class Html_Element implements Stringable {
 	 * @return string
 	 */
 	public function __toString(): string {
+		$this->close_all_tags();
+
 		$output       = $this->output;
 		$this->output = array();
 
-		return implode( "\n\t\t", $output );
+		return implode( "\n", $output );
 	}
 
 	/**
@@ -321,36 +327,22 @@ class Html_Element implements Stringable {
 	/**
 	 * Magic method __call to handle HTML element generation.
 	 *
-	 * @param string                                  $method The HTML element name.
-	 * @param array<array-key|string, string|Closure> $args   Arguments (attributes and child content).
+	 * @param string                                 $method The HTML element name.
+	 * @param array{atts:array,child:string|Closure} $args   Arguments (attributes and child content).
 	 * @throws \BadMethodCallException If the element is not known or allowed.
 	 * @throws \TypeError              If arguments are invalid.
 	 */
 	public function __call( string $method, array $args = array() ): self {
-		if ( ! in_array( $method, $this->known_tags, true ) ) {
-			throw new \BadMethodCallException(
-				sprintf(
-					'Call to undefined method: %s::%s()',
-					__CLASS__,
-					\esc_attr( $method )
-				)
-			);
-		}
-
 		$atts = $args[0] ?? $args['atts'] ?? array();
 
-		if ( ! is_array( $atts ) ) {
-			throw new \TypeError(
-				sprintf(
-					'%s::%s(): Argument #1 ($atts) must be of type array, %s given',
-					__CLASS__,
-					\esc_attr( $method ),
-					\esc_attr( gettype( $atts ) )
-				)
-			);
+		try {
+			$this->open_tag( $method, $atts );
+		} catch ( \InvalidArgumentException $err ) {
+			// phpcs:ignore -- WordPress.Security.EscapeOutput.ExceptionNotEscaped
+			throw new \BadMethodCallException( $err->getMessage(), 0, $err );
+		} catch ( \TypeError $err ) {
+			throw $err;
 		}
-
-		$this->open_tag( $method, $atts );
 
 		if ( in_array( $method, self::VOID_TAGS, true ) ) {
 			return $this;
@@ -406,11 +398,13 @@ class Html_Element implements Stringable {
 		}
 
 		if (
-			$this->has_parent( $tag ) &&
+			$this->has_unclosed_siblings( $tag ) &&
 			! in_array( $tag, self::NESTABLE_TAGS, true )
 		) {
+			list( $prev_tag, $atts ) = $this->previous_tag();
+
 			// Try to auto close the tag.
-			$this->close_tag( $tag );
+			$this->close_tag( $tag, $prev_tag === $tag ? $atts : array() );
 		}
 
 		array_unshift( $this->tags_stack, $tag );
@@ -483,7 +477,7 @@ class Html_Element implements Stringable {
 			return $this->append_content( $text, false );
 		}
 
-		if ( ! $this->has_parent( 'p', ...self::P_PARENT_TAGS ) ) {
+		if ( ! $this->has_unclosed_siblings( 'p', ...self::P_PARENT_TAGS ) ) {
 			return $this->append_content(
 				$this->normalize_paragraph( $text ),
 				false,
@@ -498,13 +492,19 @@ class Html_Element implements Stringable {
 			}
 		);
 
-		foreach ( array_values( $paragraphs ) as $paragraph ) {
-			$this->open_tag( 'p' );
+		list( $tag, $atts ) = $this->previous_tag();
+		$paragraphs_count   = count( $paragraphs );
 
+		foreach ( array_values( $paragraphs ) as $p => $paragraph ) {
 			$this->append_content(
 				$this->normalize_paragraph( $paragraph ),
-				false,
+				empty( $tag ),
 			);
+
+			if ( ! empty( $tag ) && $p < $paragraphs_count - 1 ) {
+				$this->close_tag( $tag, $atts );
+				$this->open_tag( $tag, $atts );
+			}
 		}
 
 		return $this;
@@ -553,80 +553,6 @@ class Html_Element implements Stringable {
 	}
 
 	/**
-	 * Returns true if the current node is a child of one of the specified tags.
-	 *
-	 * @param string ...$tags A tag name or an array of tag names.
-	 */
-	public function is_child_of( ...$tags ): bool {
-		foreach ( $this->tags_stack as $tag ) {
-			if ( in_array( $tag, $tags, true ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns true if the parent node is one of HTML elements specified
-	 * by tag names.
-	 *
-	 * @param string ...$tags A tag name or an array of tag names.
-	 */
-	public function has_parent( ...$tags ): bool {
-		$parent = reset( $this->tags_stack );
-
-		if ( false === $parent ) {
-			return false;
-		}
-
-		return in_array( $parent, $tags, true );
-	}
-
-	/**
-	 * Builds an HTML attribute string from an array of attributes.
-	 *
-	 * @param array<string, mixed> $atts The attributes to build.
-	 */
-	public function build_attributes( array $atts ): string {
-		static $boolean_attributes = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-			'checked', 'disabled', 'inert', 'multiple', 'readonly', 'required', 'selected',
-		); // phpcs:enable
-
-		$results = array();
-
-		foreach ( $atts as $name => $value ) {
-			$name = strtolower( trim( $name ) );
-
-			if ( ! preg_match( '/^[a-z_:][a-z_:.0-9-]*$/', $name ) ) {
-				continue;
-			}
-
-			$value = trim( $value );
-
-			if ( is_numeric( $value ) ) {
-				$value = (string) $value;
-			}
-
-			if ( is_array( $value ) ) {
-				$value = implode( ' ', $value );
-			}
-
-			if ( in_array( $name, $boolean_attributes, true ) ) {
-				$value = ! empty( $value );
-			}
-
-			if ( true === $value ) {
-				$results[] = sprintf( '%1$s="%1$s"', $name ); // boolean attribute.
-			} elseif ( is_string( $value ) ) {
-				$results[] = sprintf( '%1$s="%2$s"', $name, \esc_attr( $value ) );
-			}
-		}
-
-		return implode( ' ', $results );
-	}
-
-	/**
 	 * Dump parameters for debugging (no-op if WP_DEBUG is false).
 	 *
 	 * @param mixed ...$params The parameters to dump.
@@ -650,12 +576,58 @@ class Html_Element implements Stringable {
 	}
 
 	/**
+	 * Builds an HTML attribute string from an array of attributes.
+	 *
+	 * @param array<string, mixed> $atts The attributes to build.
+	 */
+	public function build_attributes( array $atts ): string {
+		static $boolean_attributes = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
+			'checked', 'disabled', 'inert', 'multiple', 'readonly', 'required', 'selected',
+		); // phpcs:enable
+
+		$results = array();
+
+		foreach ( $atts as $name => $value ) {
+			$name = strtolower( trim( $name ) );
+
+			if ( ! preg_match( '/^' . self::VALID_ATTRIBUTE_NAME . '$/', $name ) ) {
+				continue;
+			}
+
+			if ( is_numeric( $value ) ) {
+				$value = (string) $value;
+			}
+
+			if ( is_array( $value ) ) {
+				$value = array_filter(
+					array_map( 'trim', $value ),
+					static fn( $v ) => ! empty( $v )
+				);
+
+				$value = implode( ' ', $value );
+			}
+
+			if ( in_array( $name, $boolean_attributes, true ) ) {
+				$value = ! empty( $value );
+			}
+
+			if ( true === $value ) {
+				$results[] = sprintf( '%1$s="%1$s"', $name ); // boolean attribute.
+			} elseif ( is_string( $value ) ) {
+				$results[] = sprintf( '%1$s="%2$s"', $name, \esc_attr( $value ) );
+			}
+		}
+
+		return implode( ' ', $results );
+	}
+
+	/**
 	 * Normalizes a paragraph by replacing newlines with <br> tags and collapsing multiple spaces.
 	 *
 	 * @param string $paragraph The paragraph to normalize.
 	 */
 	public function normalize_paragraph( string $paragraph ): string {
-		$paragraph = preg_replace( '/\s*\n\s*/', "<br />\n", $paragraph );
+		$paragraph = preg_replace( '/\s*\n\s*/', '<br />', $paragraph );
 
 		return preg_replace( '/\s+/', ' ', trim( $paragraph ) );
 	}
@@ -667,12 +639,90 @@ class Html_Element implements Stringable {
 	 * @throws \InvalidArgumentException If the tag name is invalid.
 	 */
 	public function validate_tag( string $tag ): void {
-		if ( 1 === preg_match( '/^[a-z][0-9a-z]*(?:[:][a-z][0-9a-z]*)?$/', $tag ) ) {
+		if ( 1 === preg_match( '/^' . self::VALID_TAG_NAME . '$/', $tag ) ) {
 			return;
 		}
 
 		throw new \InvalidArgumentException(
 			sprintf( 'Invalid tag name (%s) is specified.', \esc_attr( $tag ) ),
 		);
+	}
+
+	/**
+	 * Extracts the tag and its attributes from a line of HTML.
+	 *
+	 * @param string $line The line of HTML to extract from.
+	 * @return array{string, array<string, string>} The tag and its attributes.
+	 */
+	public function extract_tag_attributes( string $line ): array {
+		preg_match( '/<(' . self::VALID_TAG_NAME . ')\s*(.*?)>/', $line, $matches );
+
+		$tag  = $matches[1] ?? '';
+		$atts = array();
+
+		if ( ! empty( $matches[2] ) ) {
+			preg_match_all( '/(' . self::VALID_ATTRIBUTE_NAME . ')="([^"]*)"/', $matches[2], $attr_matches );
+
+			foreach ( $attr_matches[1] as $key => $attr ) {
+				$atts[ $attr ] = $attr_matches[2][ $key ];
+			}
+		}
+
+		return array( $tag, $atts );
+	}
+
+	/**
+	 * Returns the structure of previously registered tag.
+	 *
+	 * @return array{string, array<string, string>} The tag and its attributes.
+	 */
+	private function previous_tag(): array {
+		/** @var positive-int $out_count */ // phpcs:ignore
+		$out_count = count( $this->output );
+
+		for ( $o = $out_count - 1; $o >= 0; $o-- ) {
+			$line = $this->output[ $o ];
+
+			if ( ! str_starts_with( $line, '<' ) ) {
+				continue;
+			}
+
+			list( $tag, $atts ) = $this->extract_tag_attributes( $line );
+
+			return array( $tag, $atts );
+		}
+
+		return array( '', array() );
+	}
+
+	/**
+	 * Returns true if the current node is a child of one of the specified tags.
+	 *
+	 * @param string ...$tags A tag name or an array of tag names.
+	 */
+	private function is_child_of( ...$tags ): bool {
+		foreach ( $this->tags_stack as $tag ) {
+			if ( in_array( $tag, $tags, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns true if the previously registered tag is one of the specified tags
+	 * and is remain unclosed.
+	 *
+	 * @param string ...$tags A tag name or an array of tag names.
+	 */
+	private function has_unclosed_siblings( ...$tags ): bool {
+		$parent = reset( $this->tags_stack );
+
+		if ( false === $parent ) {
+			return false;
+		}
+
+		return in_array( $parent, $tags, true );
 	}
 }

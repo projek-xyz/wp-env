@@ -205,7 +205,7 @@ class BlankPageTest extends TestCase
     #[Test]
     public function renderShouldPrintOutputToPluginScreen()
     {
-        $this->expectOutputString(implode("\n\t\t", [
+        $this->expectOutputString(implode("\n", [
             '<div class="wrap">',
             '<h1 class="wp-heading-inline">Blank Option</h1> <!-- .wp-heading-inline -->',
             '<hr class="wp-header-end" />',
