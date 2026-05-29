@@ -35,6 +35,8 @@
         <!-- Allows: Variable assignment in while condition, e.g. `while ( $var = some_func() ) { ... }` -->
         <exclude name="Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition" />
 
+        <exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing" />
+
         <!-- Allows: Commented-out code, e.g. `// $var = disabled_func();` -->
         <exclude name="Squiz.PHP.CommentedOutCode.Found" />
 

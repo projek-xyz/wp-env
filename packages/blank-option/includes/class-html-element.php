@@ -150,13 +150,20 @@ defined( 'ABSPATH' ) || exit;
 class Html_Element implements Stringable {
 	/**
 	 * Regular expression pattern for valid tag names.
+	 *
+	 * Allows multiple hyphens, underscores, colons, and periods in tag names.
+	 * e.g., `<my-web-component>`, `<my:web-component>`, `<my:web.component>`
 	 */
-	public const VALID_TAG_NAME = '[a-z][0-9a-z]*(?:[-_:.][a-z][0-9a-z]*)?';
+	public const VALID_TAG_NAME = '[a-zA-Z][0-9a-zA-Z]*(?:[_:.-][0-9a-zA-Z]+)*';
 
 	/**
-	 * Regular expression pattern for valid tag names.
+	 * Regular expression pattern for valid attribute names.
+	 *
+	 * Allows `@` for Alpine & Vue (e.g., `@click=`, `x-on:click=`) with
+	 * multiple hyphens, underscores, colons, and periods in attribute names.
+	 * e.g., `x-on:click.prevent`, `@click.prevent`
 	 */
-	public const VALID_ATTRIBUTE_NAME = '[a-z-_:.][a-z-_:.0-9-]*';
+	public const VALID_ATTRIBUTE_NAME = '[@:a-zA-Z_:.][@:a-zA-Z0-9_:.-]*';
 
 	/**
 	 * List of void elements.
@@ -205,11 +212,11 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const P_CHILD_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'a', 'abbr', 'b', 's', 'u', 'bdi', 'bdo', 'br', 'cite', 'em', 'i', 'ins', 'kbd', 'sub', 'sup',
-		'area', 'data', 'code', 'datalist', 'del', 'dfn', 'audio', 'canvas', 'embed', 'iframe', 'img',
-		'button', 'input', 'label', 'map', 'mark', 'meter', 'noscript', 'object', 'output', 'picture',
-		'progress', 'q', 'ruby', 'samp', 'select', 'slot', 'small', 'span', 'strong', 'textarea',
-		'time', 'var', 'video', 'wbr', 'optgroup', 'option', 'rp', 'rt',
+		'a', 'abbr', 'b', 's', 'strong', 'u', 'br', 'em', 'i', 'ins', 'kbd', 'sub', 'sup', 'small',
+		'span', 'code', 'var', 'dfn', 'mark', 'time', 'del', 'bdi', 'bdo', 'ruby', 'rp', 'rt', 'q',
+		'cite', 'img', 'noscript', 'output', 'picture', 'samp', 'slot', 'wbr', 'label', 'button',
+		'audio', 'video', 'object', 'canvas', 'embed', 'map', 'area', 'data', 'datalist', 'meter',
+		'input', 'textarea', 'progress', 'select', 'optgroup', 'option',
 	); // phpcs:enable
 
 	/**
@@ -218,13 +225,10 @@ class Html_Element implements Stringable {
 	 * @var array<string>
 	 */
 	private const BR_PARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'a', 'abbr', 'address', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'blockquote',
-		'button', 'canvas', 'caption', 'cite', 'code', 'data', 'datalist', 'dd', 'del', 'details',
-		'dfn', 'dialog', 'div', 'dt', 'em', 'fieldset', 'figcaption', 'figure', 'footer', 'form',
-		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'kbd', 'label', 'legend', 'li',
-		'main', 'map', 'mark', 'meter', 'nav', 'noscript', 'object', 'output', 'p', 'progress', 'q',
-		'rt', 'ruby', 's', 'samp', 'section', 'slot', 'small', 'span', 'strong', 'sub', 'summary',
-		'sup', 'td', 'th', 'time', 'u', 'var', 'video',
+		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'i', 'em', 's', 'u', 'strong', 'small', 'del',
+		'sub', 'sup', 'dd', 'dt', 'bdi', 'bdo', 'abbr', 'code', 'time', 'mark', 'ins', 'dfn', 'kbd',
+		'span', 'p', 'ruby', 'rp', 'rt', 'address', 'data', 'li', 'td', 'th', 'var', 'samp', 'cite',
+		'q', 'summary', 'caption', 'figcaption', 'legend', 'dialog', 'meter', 'progress', 'output',
 	); // phpcs:enable
 
 	/**
@@ -319,7 +323,7 @@ class Html_Element implements Stringable {
 	public static function __callStatic( string $method, array $args = array() ): void {
 		$elm = new self();
 
-		$elm->$method( ...$args );
+		$elm->{$method}( ...$args );
 
 		echo \wp_kses_post( (string) $elm );
 	}
@@ -331,6 +335,7 @@ class Html_Element implements Stringable {
 	 * @param array{atts:array,child:string|Closure} $args   Arguments (attributes and child content).
 	 * @throws \BadMethodCallException If the element is not known or allowed.
 	 * @throws \TypeError              If arguments are invalid.
+	 * @throws \Throwable              Any exception thrown by `open_tag()`.
 	 */
 	public function __call( string $method, array $args = array() ): self {
 		$atts = $args[0] ?? $args['atts'] ?? array();
@@ -338,10 +343,19 @@ class Html_Element implements Stringable {
 		try {
 			$this->open_tag( $method, $atts );
 		} catch ( \InvalidArgumentException $err ) {
-			// phpcs:ignore -- WordPress.Security.EscapeOutput.ExceptionNotEscaped
-			throw new \BadMethodCallException( $err->getMessage(), 0, $err );
-		} catch ( \TypeError $err ) {
-			throw $err;
+			$message = sprintf( 'Call to undefined method %s::%s()', __CLASS__, \esc_attr( $method ) );
+
+			throw new \BadMethodCallException( $message, $err->getCode(), $err ); // phpcs:ignore
+		} catch ( \Throwable $err ) {
+			$err_class = $err::class;
+			$message   = sprintf(
+				'%s::%s(): Argument #1 ($atts) must be of type array, %s given',
+				__CLASS__,
+				\esc_attr( $method ),
+				\esc_attr( gettype( $atts ) )
+			);
+
+			throw new $err_class( $message, $err->getCode(), $err ); // phpcs:ignore
 		}
 
 		if ( in_array( $method, self::VOID_TAGS, true ) ) {
@@ -385,7 +399,7 @@ class Html_Element implements Stringable {
 	 * @param array<string, string> $atts The tag attributes.
 	 */
 	public function open_tag( string $tag, array $atts = array() ): static {
-		$this->validate_tag( $tag );
+		$tag = $this->validate_tag( $tag );
 
 		$this->new_line = true;
 
@@ -401,10 +415,10 @@ class Html_Element implements Stringable {
 			$this->has_unclosed_siblings( $tag ) &&
 			! in_array( $tag, self::NESTABLE_TAGS, true )
 		) {
-			list( $prev_tag, $atts ) = $this->previous_tag();
+			list( $_, $prev_atts ) = $this->previous_tag( $tag );
 
-			// Try to auto close the tag.
-			$this->close_tag( $tag, $prev_tag === $tag ? $atts : array() );
+			// Close the previous tag if it matches the current tag.
+			$this->close_tag( $tag, $prev_atts );
 		}
 
 		array_unshift( $this->tags_stack, $tag );
@@ -423,7 +437,7 @@ class Html_Element implements Stringable {
 	 * @param array<string, string> $atts The tag attributes.
 	 */
 	public function close_tag( string $tag, array $atts = array() ): static {
-		$this->validate_tag( $tag );
+		$tag = $this->validate_tag( $tag );
 
 		$tag_pos = array_search( $tag, $this->tags_stack, true );
 
@@ -443,17 +457,21 @@ class Html_Element implements Stringable {
 			}
 		}
 
+		$new_line = in_array( $tag, self::BR_PARENT_TAGS, true ) ? false : $this->new_line;
+
 		while ( $elm = array_shift( $this->tags_stack ) ) {
 			$content = ! empty( $atts_mark )
 				? sprintf( '</%s> <!-- %s -->', $elm, $atts_mark )
 				: sprintf( '</%s>', $elm );
 
-			$this->append_content( $content, $this->new_line );
+			$this->append_content( $content, $new_line );
 
 			if ( $elm === $tag ) {
 				break;
 			}
 		}
+
+		$this->new_line = true;
 
 		return $this;
 	}
@@ -477,10 +495,13 @@ class Html_Element implements Stringable {
 			return $this->append_content( $text, false );
 		}
 
+		list( $tag, $atts ) = $this->previous_tag();
+		$no_previous_tag    = empty( $tag );
+
 		if ( ! $this->has_unclosed_siblings( 'p', ...self::P_PARENT_TAGS ) ) {
 			return $this->append_content(
 				$this->normalize_paragraph( $text ),
-				false,
+				$no_previous_tag,
 			);
 		}
 
@@ -492,16 +513,15 @@ class Html_Element implements Stringable {
 			}
 		);
 
-		list( $tag, $atts ) = $this->previous_tag();
-		$paragraphs_count   = count( $paragraphs );
+		$last_p = count( $paragraphs ) - 1;
 
 		foreach ( array_values( $paragraphs ) as $p => $paragraph ) {
 			$this->append_content(
 				$this->normalize_paragraph( $paragraph ),
-				empty( $tag ),
+				$no_previous_tag,
 			);
 
-			if ( ! empty( $tag ) && $p < $paragraphs_count - 1 ) {
+			if ( ! $no_previous_tag && $p < $last_p ) {
 				$this->close_tag( $tag, $atts );
 				$this->open_tag( $tag, $atts );
 			}
@@ -576,11 +596,61 @@ class Html_Element implements Stringable {
 	}
 
 	/**
+	 * Normalizes a paragraph by replacing newlines with <br> tags and collapsing multiple spaces.
+	 *
+	 * @param string $paragraph The paragraph to normalize.
+	 */
+	public function normalize_paragraph( string $paragraph ): string {
+		$paragraph = preg_replace( '/\s*\n\s*/', '<br />', $paragraph );
+
+		return preg_replace( '/\s+/', ' ', trim( $paragraph ) );
+	}
+
+	/**
+	 * Returns lowercase of $tag if the specified tag name is valid.
+	 *
+	 * @param string $tag The tag name to validate.
+	 * @throws \InvalidArgumentException If the tag name is invalid.
+	 */
+	public function validate_tag( string $tag ): string {
+		if ( 1 === preg_match( '/^' . self::VALID_TAG_NAME . '$/', $tag ) ) {
+			return strtolower( $tag );
+		}
+
+		throw new \InvalidArgumentException(
+			sprintf( 'Invalid tag name (%s) is specified.', \esc_attr( $tag ) ),
+		);
+	}
+
+	/**
+	 * Extracts the tag and its attributes from a line of HTML.
+	 *
+	 * @param string $line The line of HTML to extract from.
+	 * @return array{string, array<string, string>} The tag and its attributes.
+	 */
+	public function extract_tag_attributes( string $line ): array {
+		preg_match( '/<(' . self::VALID_TAG_NAME . ')\s*(.*?)>/', $line, $matches );
+
+		$tag  = $matches[1] ?? '';
+		$atts = array();
+
+		if ( ! empty( $matches[2] ) ) {
+			preg_match_all( '/(' . self::VALID_ATTRIBUTE_NAME . ')="([^"]*)"/', $matches[2], $attr_matches );
+
+			foreach ( $attr_matches[1] as $key => $attr ) {
+				$atts[ $attr ] = $attr_matches[2][ $key ];
+			}
+		}
+
+		return array( $tag, $atts );
+	}
+
+	/**
 	 * Builds an HTML attribute string from an array of attributes.
 	 *
 	 * @param array<string, mixed> $atts The attributes to build.
 	 */
-	public function build_attributes( array $atts ): string {
+	private function build_attributes( array $atts ): string {
 		static $boolean_attributes = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 			'checked', 'disabled', 'inert', 'multiple', 'readonly', 'required', 'selected',
 		); // phpcs:enable
@@ -622,74 +692,27 @@ class Html_Element implements Stringable {
 	}
 
 	/**
-	 * Normalizes a paragraph by replacing newlines with <br> tags and collapsing multiple spaces.
-	 *
-	 * @param string $paragraph The paragraph to normalize.
-	 */
-	public function normalize_paragraph( string $paragraph ): string {
-		$paragraph = preg_replace( '/\s*\n\s*/', '<br />', $paragraph );
-
-		return preg_replace( '/\s+/', ' ', trim( $paragraph ) );
-	}
-
-	/**
-	 * Returns true if the specified tag name is valid.
-	 *
-	 * @param string $tag The tag name to validate.
-	 * @throws \InvalidArgumentException If the tag name is invalid.
-	 */
-	public function validate_tag( string $tag ): void {
-		if ( 1 === preg_match( '/^' . self::VALID_TAG_NAME . '$/', $tag ) ) {
-			return;
-		}
-
-		throw new \InvalidArgumentException(
-			sprintf( 'Invalid tag name (%s) is specified.', \esc_attr( $tag ) ),
-		);
-	}
-
-	/**
-	 * Extracts the tag and its attributes from a line of HTML.
-	 *
-	 * @param string $line The line of HTML to extract from.
-	 * @return array{string, array<string, string>} The tag and its attributes.
-	 */
-	public function extract_tag_attributes( string $line ): array {
-		preg_match( '/<(' . self::VALID_TAG_NAME . ')\s*(.*?)>/', $line, $matches );
-
-		$tag  = $matches[1] ?? '';
-		$atts = array();
-
-		if ( ! empty( $matches[2] ) ) {
-			preg_match_all( '/(' . self::VALID_ATTRIBUTE_NAME . ')="([^"]*)"/', $matches[2], $attr_matches );
-
-			foreach ( $attr_matches[1] as $key => $attr ) {
-				$atts[ $attr ] = $attr_matches[2][ $key ];
-			}
-		}
-
-		return array( $tag, $atts );
-	}
-
-	/**
 	 * Returns the structure of previously registered tag.
 	 *
+	 * @param string|null $tag The previous tag to search for.
 	 * @return array{string, array<string, string>} The tag and its attributes.
 	 */
-	private function previous_tag(): array {
+	private function previous_tag( ?string $tag = null ): array {
 		/** @var positive-int $out_count */ // phpcs:ignore
 		$out_count = count( $this->output );
+
+		$prefix = $tag ? "<$tag" : '<';
 
 		for ( $o = $out_count - 1; $o >= 0; $o-- ) {
 			$line = $this->output[ $o ];
 
-			if ( ! str_starts_with( $line, '<' ) ) {
+			if ( ! str_starts_with( $line, $prefix ) ) {
 				continue;
 			}
 
-			list( $tag, $atts ) = $this->extract_tag_attributes( $line );
+			list( $prev_tag, $atts ) = $this->extract_tag_attributes( $line );
 
-			return array( $tag, $atts );
+			return array( $prev_tag, $atts );
 		}
 
 		return array( '', array() );
