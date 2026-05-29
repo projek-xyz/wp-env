@@ -255,6 +255,13 @@ class Html_Element implements Stringable {
 	private array $tags_stack = array();
 
 	/**
+	 * Registered tags with its alpine atts.
+	 *
+	 * @var array<string, list<string>>
+	 */
+	private array $registered_tags = array();
+
+	/**
 	 * Final output buffer.
 	 *
 	 * @var array
@@ -325,7 +332,7 @@ class Html_Element implements Stringable {
 
 		$elm->{$method}( ...$args );
 
-		echo \wp_kses_post( (string) $elm );
+		echo \wp_kses( (string) $elm, $elm->allowed_tags() );
 	}
 
 	/**
@@ -408,6 +415,8 @@ class Html_Element implements Stringable {
 				? sprintf( '<%s %s />', $tag, $this->build_attributes( $atts ) )
 				: sprintf( '<%s />', $tag );
 
+			$this->allow_tag( $tag, $atts );
+
 			return $this->append_content( $content );
 		}
 
@@ -426,6 +435,8 @@ class Html_Element implements Stringable {
 		$content = ! empty( $atts )
 			? sprintf( '<%s %s>', $tag, $this->build_attributes( $atts ) )
 			: sprintf( '<%s>', $tag );
+
+		$this->allow_tag( $tag, $atts );
 
 		return $this->append_content( $content );
 	}
@@ -646,6 +657,17 @@ class Html_Element implements Stringable {
 	}
 
 	/**
+	 * Returns the allowed HTML tags and their attributes.
+	 *
+	 * @return array<string, array<string, bool>> The allowed HTML tags and their attributes.
+	 */
+	public function allowed_tags(): array {
+		$allowed_tags = array();
+
+		return $allowed_tags;
+	}
+
+	/**
 	 * Builds an HTML attribute string from an array of attributes.
 	 *
 	 * @param array<string, mixed> $atts The attributes to build.
@@ -689,6 +711,16 @@ class Html_Element implements Stringable {
 		}
 
 		return implode( ' ', $results );
+	}
+
+	/**
+	 * Registers an Alpine.js event attribute for a given tag.
+	 *
+	 * @param string $tag The tag to register.
+	 * @param array  $atts The attributes to register.
+	 */
+	private function allow_tag( string $tag, array $atts = array() ): void {
+		// .
 	}
 
 	/**

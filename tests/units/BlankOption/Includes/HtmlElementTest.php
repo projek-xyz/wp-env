@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use TypeError;
 
 /**
- * Unit tests for the blank's `includes/class-option.php`.
+ * Unit tests for the blank's `includes/class-html-element.php`.
  */
 #[RunClassInSeparateProcess]
 class HtmlElementTest extends TestCase
@@ -457,7 +457,7 @@ class HtmlElementTest extends TestCase
     {
         $this->expectOutputString('<p class="test">Content of a P</p> <!-- .test -->');
 
-        Functions\expect('wp_kses_post')->once()->andReturnFirstArg();
+        Functions\expect('wp_kses')->once()->andReturnFirstArg();
 
         Html_Element::p(['class' => 'test'], 'Content of a P');
     }
@@ -506,14 +506,12 @@ class HtmlElementTest extends TestCase
         define('WP_DEBUG', true);
         $elm = new Html_Element();
 
-        $elm->dump(static function () {
-            echo 'the content';
-        });
+        $elm->dump('a string');
 
         $output = (string) $elm;
 
         $this->assertStringStartsWith("<div class=\"blank-debug\">\n<pre>", $output);
         $this->assertStringEndsWith("</pre>\n</div> <!-- .blank-debug -->", $output);
-        $this->assertStringContainsString('class Closure', $output);
+        $this->assertStringContainsString('a string', $output);
     }
 }
