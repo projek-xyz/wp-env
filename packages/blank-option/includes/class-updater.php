@@ -46,7 +46,7 @@ class Updater {
 		string $plugin_file,
 	): array|false {
 		// Only handle our custom plugin.
-		if ( $this->plugin->file !== $plugin_file ) {
+		if ( $this->plugin->basename !== $plugin_file ) {
 			return $update;
 		}
 

@@ -35,7 +35,11 @@ class UpdaterTest extends TestCase
     public function shouldReturnFalseWhenCurrentlyCheckingAnotherPlugin()
     {
         $this->assertFalse(
-            $this->updater()->check_updates(false, [], 'other-plugin/other-plugin.php')
+            $this->updater()->check_updates(
+                false,
+                [],
+                plugin_basename('other-plugin/other-plugin.php')
+            )
         );
     }
 
@@ -48,7 +52,11 @@ class UpdaterTest extends TestCase
         Functions\when('wp_remote_get')->justReturn(new WP_Error());
 
         $this->assertFalse(
-            $this->updater()->check_updates(false, [], BLANK_OPTION_FILE)
+            $this->updater()->check_updates(
+                false,
+                [],
+                plugin_basename(BLANK_OPTION_FILE)
+            )
         );
     }
 
@@ -64,7 +72,11 @@ class UpdaterTest extends TestCase
         ]));
 
         $this->assertFalse(
-            $this->updater()->check_updates(false, [], BLANK_OPTION_FILE)
+            $this->updater()->check_updates(
+                false,
+                [],
+                plugin_basename(BLANK_OPTION_FILE)
+            )
         );
     }
 
@@ -73,7 +85,11 @@ class UpdaterTest extends TestCase
     {
         Functions\when('get_site_transient')->justReturn((object) $this->updates);
 
-        $return = $this->updater()->check_updates(false, ['Version' => '0.0.1'], BLANK_OPTION_FILE);
+        $return = $this->updater()->check_updates(
+            false,
+            ['Version' => '0.0.1'],
+            plugin_basename(BLANK_OPTION_FILE)
+        );
 
         $this->assertArrayHasKey('package', $return);
         $this->assertArrayHasKey('version', $return);
@@ -94,7 +110,11 @@ class UpdaterTest extends TestCase
             static::PACKAGE_NAME => (object) $this->updates,
         ]));
 
-        $return = $this->updater()->check_updates(false, ['Version' => '0.0.1'], BLANK_OPTION_FILE);
+        $return = $this->updater()->check_updates(
+            false,
+            ['Version' => '0.0.1'],
+            plugin_basename(BLANK_OPTION_FILE)
+        );
 
         $this->assertArrayHasKey('package', $return);
         $this->assertArrayHasKey('version', $return);
