@@ -57,7 +57,7 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "mockery/mockery": "^1.6",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^12.5",
         "squizlabs/php_codesniffer": "^3.13",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wp-cli/config-command": "^2.4",
@@ -70,7 +70,7 @@
         "wp-cli/wp-cli": "^2.12",
         "wp-coding-standards/wpcs": "^3.3",
         "wp-phpunit/wp-phpunit": "^7.0",
-        "yoast/phpunit-polyfills": "^2.0"
+        "yoast/phpunit-polyfills": "^4.0"
     },
     "autoload-dev": {
         "psr-4": {
