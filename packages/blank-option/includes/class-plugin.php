@@ -176,6 +176,16 @@ class Plugin {
 		$plugin = new Plugin( BLANK_OPTION_FILE );
 
 		/**
+		 * Checks if a update is available.
+		 */
+		add_filter(
+			'update_plugins_projek-xyz.github.io',
+			array( new Updater( $plugin ), 'check_updates' ),
+			10,
+			3
+		);
+
+		/**
 		 * Enqueue scripts and styles.
 		 */
 		\add_action( 'wp_enqueue_scripts', array( $plugin, 'enqueue_scripts' ) );

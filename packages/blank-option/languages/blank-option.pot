@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-05-22T00:33:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.13.0-alpha\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: blank-option\n"
 
 #. Plugin Name of the plugin
@@ -25,12 +25,12 @@ msgid "Something awesome is about to come."
 msgstr ""
 
 #. Author of the plugin
-#: blank-option.php:18
+#: blank-option.php:19
 msgid "Fery Wardiyanto"
 msgstr ""
 
 #. Author URI of the plugin
-#: blank-option.php:19
+#: blank-option.php:20
 msgid "https://feryardiant.id"
 msgstr ""
 
