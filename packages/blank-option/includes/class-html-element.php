@@ -22,130 +22,128 @@ defined( 'ABSPATH' ) || exit;
  * @credit Contact Form 7's `WPCF7_HTMLFormatter` class.
  *
  * // Grouping & Text
- * @method static self div(array $atts = [], Closure(self)|string $child = null)
- * @method static self p(array $atts = [], Closure(self)|string $child = null)
- * @method static self span(array $atts = [], Closure(self)|string $child = null)
+ * @method static self div(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self p(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self span(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self br(array $atts = [])
  * @method static self wbr(array $atts = [])
  * @method static self hr(array $atts = [])
  *
  * // Sectioning
- * @method static self article(array $atts = [], Closure(self)|string $child = null)
- * @method static self section(array $atts = [], Closure(self)|string $child = null)
- * @method static self nav(array $atts = [], Closure(self)|string $child = null)
- * @method static self aside(array $atts = [], Closure(self)|string $child = null)
- * @method static self header(array $atts = [], Closure(self)|string $child = null)
- * @method static self footer(array $atts = [], Closure(self)|string $child = null)
- * @method static self main(array $atts = [], Closure(self)|string $child = null)
- * @method static self address(array $atts = [], Closure(self)|string $child = null)
- * @method static self h1(array $atts = [], Closure(self)|string $child = null)
- * @method static self h2(array $atts = [], Closure(self)|string $child = null)
- * @method static self h3(array $atts = [], Closure(self)|string $child = null)
- * @method static self h4(array $atts = [], Closure(self)|string $child = null)
- * @method static self h5(array $atts = [], Closure(self)|string $child = null)
- * @method static self h6(array $atts = [], Closure(self)|string $child = null)
- * @method static self hgroup(array $atts = [], Closure(self)|string $child = null)
+ * @method static self article(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self section(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self nav(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self aside(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self header(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self footer(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self main(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self address(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h1(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h2(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h3(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h4(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h5(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self h6(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self hgroup(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Lists
- * @method static self ul(array $atts = [], Closure(self)|string $child = null)
- * @method static self ol(array $atts = [], Closure(self)|string $child = null)
- * @method static self menu(array $atts = [], Closure(self)|string $child = null)
- * @method static self li(array $atts = [], Closure(self)|string $child = null)
- * @method static self dl(array $atts = [], Closure(self)|string $child = null)
- * @method static self dt(array $atts = [], Closure(self)|string $child = null)
- * @method static self dd(array $atts = [], Closure(self)|string $child = null)
+ * @method static self ul(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self ol(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self menu(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self li(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self dl(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self dt(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self dd(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Tables
- * @method static self table(array $atts = [], Closure(self)|string $child = null)
- * @method static self caption(array $atts = [], Closure(self)|string $child = null)
- * @method static self colgroup(array $atts = [], Closure(self)|string $child = null)
+ * @method static self table(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self caption(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self colgroup(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self col(array $atts = [])
- * @method static self thead(array $atts = [], Closure(self)|string $child = null)
- * @method static self tbody(array $atts = [], Closure(self)|string $child = null)
- * @method static self tfoot(array $atts = [], Closure(self)|string $child = null)
- * @method static self tr(array $atts = [], Closure(self)|string $child = null)
- * @method static self th(array $atts = [], Closure(self)|string $child = null)
- * @method static self td(array $atts = [], Closure(self)|string $child = null)
+ * @method static self thead(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self tbody(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self tfoot(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self tr(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self th(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self td(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Forms
- * @method static self form(array $atts = [], Closure(self)|string $child = null)
- * @method static self fieldset(array $atts = [], Closure(self)|string $child = null)
- * @method static self legend(array $atts = [], Closure(self)|string $child = null)
- * @method static self label(array $atts = [], Closure(self)|string $child = null)
+ * @method static self form(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self fieldset(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self legend(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self label(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self input(array $atts = [])
- * @method static self button(array $atts = [], Closure(self)|string $child = null)
- * @method static self select(array $atts = [], Closure(self)|string $child = null)
- * @method static self optgroup(array $atts = [], Closure(self)|string $child = null)
- * @method static self option(array $atts = [], Closure(self)|string $child = null)
- * @method static self textarea(array $atts = [], Closure(self)|string $child = null)
- * @method static self datalist(array $atts = [], Closure(self)|string $child = null)
- * @method static self output(array $atts = [], Closure(self)|string $child = null)
- * @method static self progress(array $atts = [], Closure(self)|string $child = null)
- * @method static self meter(array $atts = [], Closure(self)|string $child = null)
+ * @method static self button(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self select(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self optgroup(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self option(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self textarea(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self datalist(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self output(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self progress(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self meter(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Inline Formatting
- * @method static self a(array $atts = [], Closure(self)|string $child = null)
- * @method static self strong(array $atts = [], Closure(self)|string $child = null)
- * @method static self b(array $atts = [], Closure(self)|string $child = null)
- * @method static self em(array $atts = [], Closure(self)|string $child = null)
- * @method static self i(array $atts = [], Closure(self)|string $child = null)
- * @method static self u(array $atts = [], Closure(self)|string $child = null)
- * @method static self s(array $atts = [], Closure(self)|string $child = null)
- * @method static self small(array $atts = [], Closure(self)|string $child = null)
- * @method static self mark(array $atts = [], Closure(self)|string $child = null)
- * @method static self sub(array $atts = [], Closure(self)|string $child = null)
- * @method static self sup(array $atts = [], Closure(self)|string $child = null)
- * @method static self abbr(array $atts = [], Closure(self)|string $child = null)
- * @method static self dfn(array $atts = [], Closure(self)|string $child = null)
- * @method static self cite(array $atts = [], Closure(self)|string $child = null)
- * @method static self q(array $atts = [], Closure(self)|string $child = null)
- * @method static self ruby(array $atts = [], Closure(self)|string $child = null)
- * @method static self rt(array $atts = [], Closure(self)|string $child = null)
- * @method static self rp(array $atts = [], Closure(self)|string $child = null)
+ * @method static self a(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self strong(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self b(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self em(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self i(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self u(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self s(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self small(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self mark(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self sub(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self sup(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self abbr(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self dfn(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self cite(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self q(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self ruby(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self rt(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self rp(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Inline Tech & Data
- * @method static self data(array $atts = [], Closure(self)|string $child = null)
- * @method static self time(array $atts = [], Closure(self)|string $child = null)
- * @method static self code(array $atts = [], Closure(self)|string $child = null)
- * @method static self kbd(array $atts = [], Closure(self)|string $child = null)
- * @method static self samp(array $atts = [], Closure(self)|string $child = null)
- * @method static self var(array $atts = [], Closure(self)|string $child = null)
- * @method static self bdi(array $atts = [], Closure(self)|string $child = null)
- * @method static self bdo(array $atts = [], Closure(self)|string $child = null)
- * @method static self ins(array $atts = [], Closure(self)|string $child = null)
- * @method static self del(array $atts = [], Closure(self)|string $child = null)
+ * @method static self data(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self time(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self code(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self kbd(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self samp(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self var(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self bdi(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self bdo(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self ins(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self del(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Figures & Interactive
- * @method static self figure(array $atts = [], Closure(self)|string $child = null)
- * @method static self figcaption(array $atts = [], Closure(self)|string $child = null)
- * @method static self details(array $atts = [], Closure(self)|string $child = null)
- * @method static self summary(array $atts = [], Closure(self)|string $child = null)
- * @method static self dialog(array $atts = [], Closure(self)|string $child = null)
+ * @method static self figure(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self figcaption(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self details(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self summary(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self dialog(array $atts = [], Closure(self)|string|self $child = null)
  *
  * // Media & Embedded
  * @method static self img(array $atts = [])
- * @method static self picture(array $atts = [], Closure(self)|string $child = null)
- * @method static self video(array $atts = [], Closure(self)|string $child = null)
- * @method static self audio(array $atts = [], Closure(self)|string $child = null)
+ * @method static self picture(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self video(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self audio(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self source(array $atts = [])
  * @method static self track(array $atts = [])
- * @method static self iframe(array $atts = [], Closure(self)|string $child = null)
- * @method static self canvas(array $atts = [], Closure(self)|string $child = null)
- * @method static self map(array $atts = [], Closure(self)|string $child = null)
+ * @method static self iframe(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self canvas(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self map(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self area(array $atts = [])
- * @method static self object(array $atts = [], Closure(self)|string $child = null)
+ * @method static self object(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self param(array $atts = [])
  * @method static self embed(array $atts = [])
  *
  * // Miscellaneous
- * @method static self pre(array $atts = [], Closure(self)|string $child = null)
- * @method static self blockquote(array $atts = [], Closure(self)|string $child = null)
- * @method static self noscript(array $atts = [], Closure(self)|string $child = null)
- * @method static self template(array $atts = [], Closure(self)|string $child = null)
- * @method static self slot(array $atts = [], Closure(self)|string $child = null)
+ * @method static self pre(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self blockquote(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self noscript(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self template(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self slot(array $atts = [], Closure(self)|string|self $child = null)
  * @method static self base(array $atts = [])
- *
- * @internal
  */
 class Html_Element implements Stringable {
 	/**
@@ -169,7 +167,7 @@ class Html_Element implements Stringable {
 	 * List of void elements.
 	 *
 	 * @link https://developer.mozilla.org/en-US/docs/Glossary/Void_element
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private const VOID_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'param', 'source', 'track', 'wbr',
@@ -178,7 +176,7 @@ class Html_Element implements Stringable {
 	/**
 	 * List of nestable elements.
 	 *
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private const NESTABLE_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'article', 'aside', 'blockquote', 'div', 'fieldset', 'section', 'span',
@@ -187,7 +185,7 @@ class Html_Element implements Stringable {
 	/**
 	 * HTML elements that can contain flow content.
 	 *
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private const P_PARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'address', 'article', 'aside', 'blockquote', 'caption', 'div', 'dd', 'dt', 'li', 'td', 'th',
@@ -196,33 +194,9 @@ class Html_Element implements Stringable {
 	); // phpcs:enable
 
 	/**
-	 * HTML elements that can be neither the parent nor a child of a paragraph element.
-	 *
-	 * @var array<string>
-	 */
-	private const P_NONPARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'colgroup', 'hgroup', 'legend', 'dl', 'ul', 'ol', 'pre',
-		'table', 'tbody', 'tfoot', 'thead', 'tr', 'summary', 'menu', 'template',
-	); // phpcs:enable
-
-	/**
-	 * HTML elements in the phrasing content category, plus non-phrasing
-	 * content elements that can be grandchildren of a paragraph element.
-	 *
-	 * @var array<string>
-	 */
-	private const P_CHILD_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
-		'a', 'abbr', 'b', 's', 'strong', 'u', 'br', 'em', 'i', 'ins', 'kbd', 'sub', 'sup', 'small',
-		'span', 'code', 'var', 'dfn', 'mark', 'time', 'del', 'bdi', 'bdo', 'ruby', 'rp', 'rt', 'q',
-		'cite', 'img', 'noscript', 'output', 'picture', 'samp', 'slot', 'wbr', 'label', 'button',
-		'audio', 'video', 'object', 'canvas', 'embed', 'map', 'area', 'data', 'datalist', 'meter',
-		'input', 'textarea', 'progress', 'select', 'optgroup', 'option',
-	); // phpcs:enable
-
-	/**
 	 * HTML elements that can contain phrasing content.
 	 *
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private const BR_PARENT_TAGS = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'i', 'em', 's', 'u', 'strong', 'small', 'del',
@@ -234,37 +208,30 @@ class Html_Element implements Stringable {
 	/**
 	 * List of HTML elements to be ignored (not allowed to be generated).
 	 *
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private array $ignored_tags = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'html', 'head', 'title', 'link', 'meta', 'body', 'script', 'style', 'keygen',
 	); // phpcs:enable
 
 	/**
-	 * Unique list of known HTML tags.
-	 *
-	 * @var array<string>
-	 */
-	private readonly array $known_tags;
-
-	/**
 	 * Stack of open tags.
 	 *
-	 * @var array<string>
+	 * @var string[]
 	 */
 	private array $tags_stack = array();
 
 	/**
 	 * Registered tags with its alpine atts.
 	 *
-	 * @var array<string, list<string>>
+	 * @var array<string, array<string, bool>>
 	 */
 	private array $registered_tags = array();
 
 	/**
 	 * Final output buffer.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private array $output = array();
 
@@ -279,18 +246,7 @@ class Html_Element implements Stringable {
 	 * Initializes the HTML instance.
 	 */
 	public function __construct() {
-		$known_tags = array_filter(
-			array_merge(
-				self::VOID_TAGS,
-				self::P_PARENT_TAGS,
-				self::P_NONPARENT_TAGS,
-				self::P_CHILD_TAGS,
-				self::BR_PARENT_TAGS,
-			),
-			fn ( string $tag ) => ! in_array( $tag, $this->ignored_tags, true )
-		);
-
-		$this->known_tags = array_unique( $known_tags );
+		// .
 	}
 
 	/**
@@ -322,9 +278,9 @@ class Html_Element implements Stringable {
 	/**
 	 * Magic method __call to handle HTML element generation.
 	 *
-	 * @param string                                  $method The HTML element name.
-	 * @param array<array-key|string, string|Closure> $args   Arguments (attributes and child content).
-	 * @throws \BadMethodCallException If the element is not known or allowed.
+	 * @param string $method The HTML element name.
+	 * @param array  $args   Arguments (attributes and child content).
+	 * @throws \BadMethodCallException If the method name is not a valid HTML tag.
 	 * @throws \TypeError              If arguments are invalid.
 	 */
 	public static function __callStatic( string $method, array $args = array() ): void {
@@ -338,9 +294,9 @@ class Html_Element implements Stringable {
 	/**
 	 * Magic method __call to handle HTML element generation.
 	 *
-	 * @param string                                 $method The HTML element name.
-	 * @param array{atts:array,child:string|Closure} $args   Arguments (attributes and child content).
-	 * @throws \BadMethodCallException If the element is not known or allowed.
+	 * @param string $method The HTML element name.
+	 * @param array  $args   Arguments (attributes and child content).
+	 * @throws \BadMethodCallException If the method name is not a valid HTML tag.
 	 * @throws \TypeError              If arguments are invalid.
 	 * @throws \Throwable              Any exception thrown by `open_tag()`.
 	 */
@@ -657,7 +613,10 @@ class Html_Element implements Stringable {
 	}
 
 	/**
-	 * Returns the allowed HTML tags and their attributes.
+	 * Returns the dynamically built allow-list for wp_kses.
+	 *
+	 * This combines WordPress 'post' defaults, Contact Form 7 form tags,
+	 * and specifically registered Alpine.js attributes for the current instance.
 	 *
 	 * @return array<string, array<string, bool>> The allowed HTML tags and their attributes.
 	 */
@@ -717,7 +676,6 @@ class Html_Element implements Stringable {
 
 		$base_allowances = \wp_kses_allowed_html( 'post' );
 
-		// var_dump($this->registered_tags);
 		foreach ( $this->registered_tags as $tag => $alpine_events ) {
 			$allowed_tag = array();
 
@@ -791,8 +749,9 @@ class Html_Element implements Stringable {
 	/**
 	 * Registers an Alpine.js event attribute for a given tag.
 	 *
-	 * @param string $tag The tag to register.
+	 * @param string $tag  The tag to register.
 	 * @param array  $atts The attributes to register.
+	 * @internal
 	 */
 	private function allow_tag( string $tag, array $atts = array() ): void {
 		$alpine_events = array_filter(
@@ -818,10 +777,11 @@ class Html_Element implements Stringable {
 	}
 
 	/**
-	 * Returns the structure of previously registered tag.
+	 * Returns the structure of the last appended tag.
 	 *
-	 * @param string|null $tag The previous tag to search for.
-	 * @return array{string, array<string, string>} The tag and its attributes.
+	 * @param string|null $tag Optional. If set, searches back for the most recent
+	 *                         opening of this specific tag name.
+	 * @return array{string, array<string, string>} The tag name and its attributes.
 	 */
 	private function previous_tag( ?string $tag = null ): array {
 		/** @var positive-int $out_count */ // phpcs:ignore
@@ -849,9 +809,10 @@ class Html_Element implements Stringable {
 	}
 
 	/**
-	 * Returns true if the current node is a child of one of the specified tags.
+	 * Checks if the current position is nested inside any of the specified tags.
 	 *
-	 * @param string ...$tags A tag name or an array of tag names.
+	 * @param string ...$tags One or more tag names to check against the stack.
+	 * @return bool True if any of the tags are currently open in the stack.
 	 */
 	private function is_child_of( ...$tags ): bool {
 		foreach ( $this->tags_stack as $tag ) {
