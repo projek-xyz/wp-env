@@ -602,7 +602,11 @@ class Html_Element implements Stringable {
 		$atts = array();
 
 		if ( ! empty( $matches[2] ) ) {
-			preg_match_all( '/(' . self::VALID_ATTRIBUTE_NAME . ')="([^"]*)"/', $matches[2], $attr_matches );
+			preg_match_all(
+				'/(' . self::VALID_ATTRIBUTE_NAME . ')="([^"]*)"/',
+				$matches[2],
+				$attr_matches
+			);
 
 			foreach ( $attr_matches[1] as $key => $attr ) {
 				$atts[ $attr ] = $attr_matches[2][ $key ];

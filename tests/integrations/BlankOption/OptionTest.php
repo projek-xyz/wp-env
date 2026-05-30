@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 class OptionTest extends TestCase
 {
     #[Test]
-    public function should_persist_option_to_database()
+    public function shouldPersistOptionToDatabase()
     {
         $plugin = Plugin::instance();
         new Option($plugin); // Initialize the static key

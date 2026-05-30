@@ -37,7 +37,7 @@ abstract class Admin_Page {
 	 * @return void
 	 */
 	public function load(): void {
-		$screen = get_current_screen();
+		$screen = \get_current_screen();
 
 		if ( ! $screen ) {
 			return;
