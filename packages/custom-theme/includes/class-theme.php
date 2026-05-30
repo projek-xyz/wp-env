@@ -110,7 +110,7 @@ class Theme {
 		$cached_data = \get_site_transient( $cache_key );
 
 		// Return cached data if available.
-		if ( false !== $cached_data ) {
+		if ( ! empty( $cached_data ) ) {
 			return $cached_data;
 		}
 
