@@ -452,6 +452,58 @@ class HtmlElementTest extends TestCase
     }
 
     #[Test]
+    #[Group('__call')]
+    public function properlyReturnsAllowedHtmlTagsAndAtts()
+    {
+        $elm = new Html_Element();
+
+        $elm->form(
+            ['action' => '/the/url', 'class' => 'wrap', 'x-data' => '{}', '@submit.prevent' => 'some_fn'],
+            static fn ($elm) => $elm
+                ->div(
+                    ['class' => 'first-input'],
+                    static fn ($elm) => $elm
+                        ->label(['for' => 'first-text'], 'First Text')
+                        ->input(['id' => 'first-text'])
+                )
+                ->br(['x-ref' => 'devider'])
+                ->button(['type' => 'submit'], 'Submit')
+        );
+
+        $this->assertSame(
+            implode("\n", [
+                '<form action="/the/url" class="wrap" x-data="{}" @submit.prevent="some_fn">',
+                '<div class="first-input">',
+                '<label for="first-text">First Text</label>',
+                '<input id="first-text" />',
+                '</div> <!-- .first-input -->',
+                '<br x-ref="devider" />',
+                '<button type="submit">Submit</button>',
+                '</form> <!-- .wrap -->',
+            ]),
+            (string) $elm,
+        );
+
+        $allowedTags = $elm->allowed_tags();
+        $tagKeys = ['form', 'div', 'label', 'input', 'br', 'button'];
+
+        $this->assertEquals($tagKeys, array_keys($allowedTags));
+
+        foreach ($tagKeys as $key) {
+            // Every tag should always allow alpine.js attributes.
+            $this->assertArrayHasKey('x-data', $allowedTags[$key]);
+        }
+
+        // that `@submit.prevent` should only present in `form` tag.
+        $this->assertArrayHasKey('@submit.prevent', $allowedTags['form']);
+        $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['div']);
+        $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['label']);
+        $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['input']);
+        $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['br']);
+        $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['button']);
+    }
+
+    #[Test]
     #[Group('__callStatic')]
     public function echoedTheHtmlStructureWhenCalledStatically()
     {

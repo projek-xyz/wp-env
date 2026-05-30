@@ -371,22 +371,22 @@ class Html_Element implements Stringable {
 
 		$child = $args[1] ?? $args['child'] ?? null;
 
-		if ( empty( $child ) ) {
-			return $this->close_tag( $method, $atts );
-		}
-
 		if ( $child instanceof Closure ) {
 			$child_callback = new \ReflectionFunction( $child );
 
 			$child = $child_callback->invoke( $this );
 		}
 
-		if ( is_string( $child ) ) {
+		if ( $child instanceof Html_Element ) {
+			return $child->close_tag( $method, $atts );
+		}
+
+		if ( is_string( $child ) && '' !== $child ) {
 			return $this->append_text( $child )->close_tag( $method, $atts );
 		}
 
-		if ( $child instanceof Html_Element ) {
-			return $child->close_tag( $method, $atts );
+		if ( empty( $child ) ) {
+			return $this->close_tag( $method, $atts );
 		}
 
 		throw new \TypeError(
@@ -664,6 +664,81 @@ class Html_Element implements Stringable {
 	public function allowed_tags(): array {
 		$allowed_tags = array();
 
+		/**
+		 * Borrowed from Contact Form 7
+		 *
+		 * @link https://github.com/rocklobster-in/contact-form-7/blob/v6.1/includes/formatting.php#L387-L473
+		 */
+		$additional_tags_for_form = array( // phpcs:disable WordPress.Arrays
+			'form'     => array(
+				'action'   => true, 'accept'  => true, 'accept-charset' => true, 'disabled' => true,
+				'enctype'  => true, 'method'  => true, 'name'           => true, 'target'   => true,
+			),
+			'button'   => array( 'disabled' => true, 'name' => true, 'type' => true, 'value' => true ),
+			'datalist' => array(),
+			'fieldset' => array( 'disabled' => true, 'name' => true ),
+			'input'    => array(
+				'accept'    => true, 'alt'      => true, 'autocomplete' => true, 'capture'  => true,
+				'checked'   => true, 'disabled' => true, 'list'         => true, 'max'      => true,
+				'maxlength' => true, 'min'      => true, 'minlength'    => true, 'multiple' => true,
+				'name'      => true, 'pattern'  => true, 'placeholder'  => true, 'readonly' => true,
+				'required'  => true, 'size'     => true, 'step'         => true, 'type'     => true,
+				'value'     => true,
+			),
+			'label'    => array( 'for' => true ),
+			'legend'   => array(),
+			'meter'    => array(
+				'value' => true, 'min'  => true, 'max'     => true,
+				'low'   => true, 'high' => true, 'optimum' => true,
+			),
+			'optgroup' => array( 'disabled' => true, 'label' => true ),
+			'option'   => array( 'disabled' => true, 'label' => true, 'selected' => true, 'value' => true ),
+			'output'   => array( 'for'      => true, 'name'  => true ),
+			'progress' => array( 'max'      => true, 'value' => true ),
+			'select'   => array(
+				'autocomplete' => true, 'disabled'  => true, 'multiple' => true,
+				'name'         => true, 'required'  => true, 'size'     => true,
+			),
+			'textarea' => array(
+				'autocomplete' => true, 'cols'      => true, 'disabled'    => true, 'maxlength'    => true,
+				'minlength'    => true, 'name'      => true, 'placeholder' => true, 'readonly'     => true,
+				'required'     => true, 'rows'      => true, 'wrap'        => true,
+			),
+		);
+
+		$alpine_atts = array(
+			'x-data'       => true, 'x-init'       => true, 'x-show'       => true,
+			'x-bind'       => true, 'x-text'       => true, 'x-html'       => true,
+			'x-model'      => true, 'x-modelable'  => true, 'x-for'        => true,
+			'x-transition' => true, 'x-effect'     => true, 'x-ignore'     => true,
+			'x-ref'        => true, 'x-cloak'      => true, 'x-teleport'   => true,
+			'x-if'         => true, 'x-id'         => true,
+		); // phpcs:enable
+
+		$base_allowances = \wp_kses_allowed_html( 'post' );
+
+		// var_dump($this->registered_tags);
+		foreach ( $this->registered_tags as $tag => $alpine_events ) {
+			$allowed_tag = array();
+
+			if ( isset( $base_allowances[ $tag ] ) ) {
+				$allowed_tag = $base_allowances[ $tag ];
+			} elseif ( isset( $additional_tags_for_form[ $tag ] ) ) {
+				$allowed_tag = array_merge(
+					$additional_tags_for_form[ $tag ],
+					$base_allowances['div'],
+				);
+			} else {
+				$allowed_tag = $base_allowances['div'];
+			}
+
+			$allowed_tags[ $tag ] = array_merge(
+				$allowed_tag,
+				$alpine_atts,
+				$alpine_events,
+			);
+		}
+
 		return $allowed_tags;
 	}
 
@@ -720,7 +795,26 @@ class Html_Element implements Stringable {
 	 * @param array  $atts The attributes to register.
 	 */
 	private function allow_tag( string $tag, array $atts = array() ): void {
-		// .
+		$alpine_events = array_filter(
+			$atts,
+			static function ( $key ) {
+				return str_starts_with( $key, 'x-on:' )
+					|| str_starts_with( $key, '@' );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		$alpine_event_atts = array();
+		$alpine_events     = array_merge(
+			$this->registered_tags[ $tag ] ?? array(),
+			$alpine_events,
+		);
+
+		foreach ( array_keys( $alpine_events ) as $attr ) {
+			$alpine_event_atts[ $attr ] = true;
+		}
+
+		$this->registered_tags[ $tag ] = $alpine_event_atts;
 	}
 
 	/**
@@ -743,6 +837,10 @@ class Html_Element implements Stringable {
 			}
 
 			list( $prev_tag, $atts ) = $this->extract_tag_attributes( $line );
+
+			if ( $tag && $prev_tag !== $tag ) {
+				continue;  // @codeCoverageIgnore
+			}
 
 			return array( $prev_tag, $atts );
 		}
