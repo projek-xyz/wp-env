@@ -1,29 +1,33 @@
 <?php
 // phpcs:ignorefile
 
+function get_env_var(string $key, $default = null) {
+    return $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?? $default;
+}
+
 /**
  * Database credentials
  */
-define('DB_NAME', getenv('WORDPRESS_DB_NAME') ?: 'wordpress');
-define('DB_USER', getenv('WORDPRESS_DB_USER') ?: 'wordpress');
-define('DB_PASSWORD', getenv('WORDPRESS_DB_PASSWORD') ?: 'secret');
-define('DB_HOST', getenv('WORDPRESS_DB_HOST') ?: '127.0.0.1');
+define('DB_NAME', get_env_var('DB_NAME', 'wordpress'));
+define('DB_USER', get_env_var('DB_USER', 'wordpress'));
+define('DB_PASSWORD', get_env_var('DB_PASS', 'secret'));
+define('DB_HOST', get_env_var('DB_HOST', '127.0.0.1'));
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 
 /**
  * Test Site Constants
  */
-define('WP_TESTS_DOMAIN', parse_url(getenv('SITE_URL') ?: 'http://localhost', PHP_URL_HOST));
-define('WP_TESTS_EMAIL', getenv('SITE_ADMIN_EMAIL') ?: 'admin@example.com');
-define('WP_TESTS_TITLE', getenv('SITE_TITLE') ?: 'WordPress Local');
+define('WP_TESTS_DOMAIN', parse_url(get_env_var('SITE_URL', 'http://localhost'), PHP_URL_HOST));
+define('WP_TESTS_EMAIL', get_env_var('SITE_ADMIN_EMAIL', 'admin@example.com'));
+define('WP_TESTS_TITLE', get_env_var('SITE_TITLE', 'WordPress Local'));
 define('WP_PHP_BINARY', 'php');
 
 /**
  * Table Prefix & Multisite
  */
 $table_prefix = 'wp_';
-define('WP_TESTS_MULTISITE', (bool) getenv('MULTISITE_ENABLED'));
+define('WP_TESTS_MULTISITE', (bool) get_env_var('MULTISITE_ENABLED', 0));
 
 /**
  * Authentication Unique Keys and Salts.

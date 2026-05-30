@@ -227,6 +227,8 @@ jobs:
           scripts/init-wp.sh
 
       - name: Integration Test
+        env:
+          DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
         run: |
           composer test:integration --ansi
 

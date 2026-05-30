@@ -25,7 +25,7 @@ if (! defined('WP_CORE_DIR')) {
     define('WP_CORE_DIR', ABSPATH);
 }
 
-require_once BASE_PATH . '/scripts/local-env.php';
+Dotenv\Dotenv::createImmutable(BASE_PATH, ['.env.testing', '.env'])->safeLoad();
 
 // Find the library path automatically if not provided.
 $testDir = getenv('WP_PHPUNIT__DIR') ?: BASE_PATH . '/vendor/wp-phpunit/wp-phpunit';
