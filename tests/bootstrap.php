@@ -38,6 +38,17 @@ if (is_dir($testDir)) {
     // Load the test functions.
     require_once $testDir . '/includes/functions.php';
 
+    // Load our plugins during the bootstrap process.
+    tests_add_filter('muplugins_loaded', function () {
+        require_once BASE_PATH . '/packages/blank-option/blank-option.php';
+    });
+
     // Start up the WP testing environment.
     require $testDir . '/includes/bootstrap.php';
+
+
+    if (! class_exists('WP_UnitTestCase_Base')) {
+        require_once $testDir . '/includes/phpunit-adapter-testcase.php';
+        require_once $testDir . '/includes/abstract-testcase.php';
+    }
 }
