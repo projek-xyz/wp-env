@@ -48,5 +48,48 @@ abstract class TestCase extends BaseTestCase
                 return $data;
             }
         );
+
+        $commonKses = [
+            'align'  => true,
+            'popover' => true,
+            'aria-controls' => true,
+            'aria-current' => true,
+            'aria-describedby' => true,
+            'aria-details' => true,
+            'aria-expanded' => true,
+            'aria-hidden' => true,
+            'aria-label' => true,
+            'aria-labelledby' => true,
+            'aria-live' => true,
+            'class' => true,
+            'data-*' => true,
+            'dir' => true,
+            'hidden' => true,
+            'id' => true,
+            'lang' => true,
+            'style' => true,
+            'title' => true,
+            'role' => true,
+            'xml:lang' => true,
+        ];
+
+        Functions\when('wp_kses_allowed_html')->alias(
+            static function (string $context) use ($commonKses) {
+                if ($context !== 'post') {
+                    return [];
+                }
+
+                return [
+                    'a' => $commonKses,
+                    'div' => $commonKses,
+                    'h1' => $commonKses,
+                    'h4' => $commonKses,
+                    'img' => $commonKses,
+                    'p' => $commonKses,
+                    'pre' => $commonKses,
+                    'span' => $commonKses,
+                ];
+            }
+        );
     }
 }

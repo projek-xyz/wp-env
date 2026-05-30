@@ -34,28 +34,28 @@ msgstr ""
 msgid "https://feryardiant.id"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:32
 #: includes/admin/class-blank-page.php:33
+#: includes/admin/class-blank-page.php:34
 msgid "Blank Options"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:64
+#: includes/admin/class-blank-page.php:65
 msgid "Settings"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:71
+#: includes/admin/class-blank-page.php:72
 msgid "Supports"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:136
+#: includes/admin/class-blank-page.php:133
 msgid "Blank Help"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:138
+#: includes/admin/class-blank-page.php:135
 msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:152
+#: includes/admin/class-blank-page.php:149
 msgid "For more information:"
 msgstr ""
 
