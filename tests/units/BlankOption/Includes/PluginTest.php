@@ -6,7 +6,9 @@ namespace UnitTests\BlankOption\Includes;
 
 use Blank_Option\Admin;
 use Blank_Option\Plugin;
+use Blank_Option\Updater;
 use Brain\Monkey\Actions;
+use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Closure;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
@@ -94,6 +96,16 @@ class PluginTest extends TestCase
             $this->assertInstanceOf(Admin\Blank_Page::class, $callback[0]);
             $this->assertSame('menu', $callback[1]);
         });
+
+        Filters\expectAdded('update_plugins_projek-xyz.github.io')
+            ->once()
+            ->whenHappen(function ($callback) {
+                $this->assertIsArray($callback);
+
+                $this->assertInstanceOf(Updater::class, $callback[0]);
+                $this->assertSame('check_updates', $callback[1]);
+            });
+
 
         Plugin::init();
     }

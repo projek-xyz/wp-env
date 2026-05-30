@@ -9,6 +9,7 @@
  * @wordpress-plugin
  * Plugin Name: Blank Option
  * Description: Something awesome is about to come.
+ * Update URI: https://projek-xyz.github.io/wp-env
  * Text Domain: blank-option
  * Domain Path: /languages
  * Version: 0.0.1
