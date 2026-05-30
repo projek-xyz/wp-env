@@ -18,52 +18,6 @@ use ReturnTypeWillChange;
 abstract class BaseTestCase extends TestCase
 {
     /**
-     * Whether to load the package's internal autoloader.
-     */
-    protected static bool $loadAutoloader = false;
-
-    /**
-     * Sets up the class before any tests run.
-     *
-     * Handles package discovery by reading package.json and composer.json,
-     * determines the package type, and triggers the package-specific autoloading logic.
-     *
-     * @throws \PHPUnit\Framework\ExpectationFailedException If package metadata files are missing.
-     */
-    public static function setUpBeforeClass(): void
-    {
-        parent::setUpBeforeClass();
-
-        if ($name = static::packageName()) {
-            $path = static::packageFile($name);
-
-            [$packageJson, $composerJson] = array_map(
-                static function ($file) use ($path) {
-                    static::assertNotFalse(
-                        $metadata = realpath("$path/$file.json"),
-                        "Failed to locate $file.json in $path"
-                    );
-
-                    return json_decode(file_get_contents($metadata));
-                },
-                ['package', 'composer']
-            );
-
-            $type = $composerJson->type ?? null;
-
-            if ($type && str_contains($type, 'wordpress-')) {
-                $type = substr($type, 10);
-            }
-
-            $autoload = static::packageAutoload($name, $type, $packageJson->version);
-
-            if ($autoload !== false) {
-                require_once $path . '/includes/autoload.php';
-            }
-        }
-    }
-
-    /**
      * Sets up the test environment for each test.
      *
      * Mocks standard WordPress translation and escape functions, provides a stub
@@ -94,26 +48,7 @@ abstract class BaseTestCase extends TestCase
     }
 
     /**
-     * Gets the package name from the subclass PACKAGE_NAME constant.
-     *
-     * @return string|null The package name or null if not defined.
-     */
-    private static function packageName(): ?string
-    {
-        return defined(static::class . '::PACKAGE_NAME') ? static::PACKAGE_NAME : null;
-    }
-
-    /**
-     * Handles package-specific environment setup and autoloading registration.
-     *
-     * Mocks common WordPress path and URL functions based on whether the package
-     * is a plugin or a theme.
-     *
-     * @param string $name Package name.
-     * @param 'library'|'plugin'|'theme'|null $type Package type.
-     * @param string|null $version Package version.
-     *
-     * @return void|false Returns false if the internal autoloader should not be required.
+     * {@inheritdoc}
      */
     protected static function packageAutoload(string $name, ?string $type, ?string $version)
     {

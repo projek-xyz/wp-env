@@ -68,7 +68,9 @@
         "wp-cli/i18n-command": "^2.7",
         "wp-cli/media-command": "^2.2",
         "wp-cli/wp-cli": "^2.12",
-        "wp-coding-standards/wpcs": "^3.3"
+        "wp-coding-standards/wpcs": "^3.3",
+        "wp-phpunit/wp-phpunit": "^7.0",
+        "yoast/phpunit-polyfills": "^2.0"
     },
     "autoload-dev": {
         "psr-4": {
