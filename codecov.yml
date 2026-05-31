@@ -1,9 +1,22 @@
+comment:
+    layout: header, diff, flags
+
 coverage:
   status:
     project:
       blank-option:
+        target: 90%
+        threshold: 5%
+        flags:
+          - unit-tests
+          - integration-tests
         paths:
           - packages/blank-option
       custom-theme:
+        target: 90%
+        threshold: 5%
+        flags:
+          - unit-tests
+          - integration-tests
         paths:
           - packages/custom-theme

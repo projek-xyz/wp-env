@@ -141,6 +141,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: tests/reports
           env_vars: PHP_VERSION,WP_VERSION
+          flags: unit-tests
           report_type: coverage
 
       - name: Upload test results to Codecov
@@ -237,6 +238,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: tests/reports
+          flags: integration-tests
           env_vars: PHP_VERSION,WP_VERSION
           report_type: coverage
 
