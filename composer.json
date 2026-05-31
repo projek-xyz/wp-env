@@ -13,8 +13,13 @@
     ],
     "repositories": [
         {
-            "type": "vcs",
-            "url": "git@github.com:projek-xyz/wp-env.git"
+            "name": "wp-packages",
+            "type": "composer",
+            "url": "https://repo.wp-packages.org",
+            "only": [
+                "wp-plugin/*",
+                "wp-theme/*"
+            ]
         }
     ],
     "scripts": {
@@ -55,6 +60,7 @@
     },
     "require-dev": {
         "brain/monkey": "^2.7",
+        "composer/installers": "^2.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "mockery/mockery": "^1.6",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
@@ -81,6 +87,17 @@
         }
     },
     "extra": {
+        "installer-paths": {
+            "docker/volumes/wordpress/wp-content/mu-plugins/{$name}/": [
+                "type:wordpress-muplugin"
+            ],
+            "docker/volumes/wordpress/wp-content/plugins/{$name}/": [
+                "type:wordpress-plugin"
+            ],
+            "docker/volumes/wordpress/wp-content/themes/{$name}/": [
+                "type:wordpress-theme"
+            ]
+        },
         "merge-plugin": {
             "include": [
                 "packages/*/composer.json"
