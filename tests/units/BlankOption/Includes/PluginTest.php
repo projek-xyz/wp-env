@@ -206,7 +206,7 @@ class PluginTest extends TestCase
         $asset = $plugin->get_asset_url('blank.css');
 
         $this->assertIsArray($asset);
-        $this->assertSame(static::packageFile('blank-option/assets/blank.css'), $asset['dir']);
+        $this->assertSame(static::packagePath('assets/blank.css'), $asset['dir']);
         $this->assertSame('http://example.com/wp-content/plugins/blank-option/assets/blank.css', $asset['url']);
         $this->assertSame(BLANK_VERSION, $asset['version']);
     }

@@ -36,7 +36,7 @@ class FunctionsTest extends TestCase
                 $this->addToAssertionCount(2);
             });
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
     /**
      * Verifies that the 'ct_activation' action is fired when the 'after_switch_theme' hook is triggered.
@@ -56,7 +56,7 @@ class FunctionsTest extends TestCase
                 $this->addToAssertionCount(2);
             });
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     /**
@@ -77,7 +77,7 @@ class FunctionsTest extends TestCase
                 $this->addToAssertionCount(2);
             });
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     #[Test]
@@ -95,7 +95,7 @@ class FunctionsTest extends TestCase
 
         $spy->shouldNotReceive('get_updates');
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     #[Test]
@@ -118,7 +118,7 @@ class FunctionsTest extends TestCase
 
         $spy->shouldReceive('get_updates')->andReturn(false);
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     #[Test]
@@ -152,7 +152,7 @@ class FunctionsTest extends TestCase
 
         $spy->shouldReceive('get_updates')->andReturn($release);
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     #[Test]
@@ -188,7 +188,7 @@ class FunctionsTest extends TestCase
             static::PACKAGE_NAME => (object) $updates,
         ]);
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 
     #[Test]
@@ -228,6 +228,6 @@ class FunctionsTest extends TestCase
 
         $spy->shouldReceive('get_updates')->andReturn($release);
 
-        require $this->packageFile('custom-theme/functions.php');
+        require static::package('entrypoint');
     }
 }

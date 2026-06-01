@@ -7,7 +7,7 @@ namespace UnitTests\CustomTheme;
 use UnitTests\BaseTestCase;
 
 /**
- * Base Test Case for CF7 Entry Manager unit tests.
+ * Base Unit Test Case for Custom Theme.
  */
 abstract class TestCase extends BaseTestCase
 {

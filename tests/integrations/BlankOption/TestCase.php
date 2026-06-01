@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UnitTests\BlankOption;
+namespace IntegrationTests\BlankOption;
 
-use UnitTests\BaseTestCase;
+use IntegrationTests\BaseTestCase;
 
 /**
- * Base Unit Test Case for Blank Option plugin.
+ * Base Test Case for Blank Option integration tests.
  */
 abstract class TestCase extends BaseTestCase
 {

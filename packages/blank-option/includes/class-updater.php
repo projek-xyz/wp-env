@@ -95,7 +95,7 @@ class Updater {
 		);
 
 		// Handle fetch errors or non-200 responses.
-		if ( is_wp_error( $response ) || 200 !== \wp_remote_retrieve_response_code( $response ) ) {
+		if ( \is_wp_error( $response ) || 200 !== \wp_remote_retrieve_response_code( $response ) ) {
 			\set_site_transient( $cache_key, false, \HOUR_IN_SECONDS );
 
 			return false;

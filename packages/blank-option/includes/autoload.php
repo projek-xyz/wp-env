@@ -57,4 +57,8 @@ spl_autoload_register(
 			break;
 		}
 	}
-} )( array( \BLANK_OPTION_DIR, dirname( dirname( \BLANK_OPTION_DIR ) ) ) );
+
+	if ( ! function_exists( 'get_plugin_data' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+} )( array( \BLANK_OPTION_DIR, dirname( \BLANK_OPTION_DIR, 2 ) ) );

@@ -39,8 +39,4 @@
             <directory>packages/*/vendor</directory>
         </exclude>
     </source>
-
-    <php>
-        <env name="WP_TESTS_SKIP_INSTALL" value="1"/>
-    </php>
 </phpunit>

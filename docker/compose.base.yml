@@ -79,6 +79,7 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - ./volumes/mysql:/var/lib/mysql
+      - ./init-testing-db.sh:/docker-entrypoint-initdb.d/10-init-testing-db.sh
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       <<: *healthcheck

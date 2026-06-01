@@ -8,7 +8,6 @@ use Blank_Option\Plugin;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -37,7 +36,7 @@ class FunctionsTest extends TestCase
             $this->assertSame('init', $callback[1]);
         });
 
-        require $this->packageFile(static::PACKAGE_NAME . '/' . static::PACKAGE_NAME . '.php');
+        require static::package('entrypoint');
 
         $this->assertTrue(defined('BLANK_VERSION'));
         $this->assertTrue(defined('BLANK_OPTION_DIR'));
@@ -57,6 +56,6 @@ class FunctionsTest extends TestCase
             'is_met_requirements' => fn ($mock) => $mock->andReturnFalse(),
         ]);
 
-        require $this->packageFile(static::PACKAGE_NAME . '/' . static::PACKAGE_NAME . '.php');
+        require static::package('entrypoint');
     }
 }

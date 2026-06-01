@@ -13,8 +13,13 @@
     ],
     "repositories": [
         {
-            "type": "vcs",
-            "url": "git@github.com:projek-xyz/wp-env.git"
+            "name": "wp-packages",
+            "type": "composer",
+            "url": "https://repo.wp-packages.org",
+            "only": [
+                "wp-plugin/*",
+                "wp-theme/*"
+            ]
         }
     ],
     "scripts": {
@@ -39,7 +44,8 @@
             "phpcs --standard=tests/phpcs.xml"
         ],
         "test": [
-            "phpunit --coverage-text --colors=always --display-warnings"
+            "@test:unit",
+            "@test:integration"
         ],
         "test:unit": [
             "phpunit --testsuite \"Unit Tests\" --coverage-text --colors=always --display-warnings"
@@ -49,16 +55,18 @@
         ]
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "vlucas/phpdotenv": "^5.6"
     },
     "require-dev": {
         "brain/monkey": "^2.7",
+        "composer/installers": "^2.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "mockery/mockery": "^1.6",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
         "phpunit/phpunit": "^10.5",
         "squizlabs/php_codesniffer": "^3.13",
+        "symfony/polyfill-php83": "^1.38",
         "wikimedia/composer-merge-plugin": "^2.1",
         "wp-cli/config-command": "^2.4",
         "wp-cli/core-command": "^2.1",
@@ -68,16 +76,32 @@
         "wp-cli/i18n-command": "^2.7",
         "wp-cli/media-command": "^2.2",
         "wp-cli/wp-cli": "^2.12",
-        "wp-coding-standards/wpcs": "^3.3"
+        "wp-coding-standards/wpcs": "^3.3",
+        "wp-phpunit/wp-phpunit": "^7.0",
+        "yoast/phpunit-polyfills": "^2.0"
     },
     "autoload-dev": {
         "psr-4": {
             "Fixtures\\": "tests/fixtures",
             "UnitTests\\": "tests/units",
             "IntegrationTests\\": "tests/integrations"
-        }
+        },
+        "files": [
+            "tests/functions.php"
+        ]
     },
     "extra": {
+        "installer-paths": {
+            "docker/volumes/wordpress/wp-content/mu-plugins/{$name}/": [
+                "type:wordpress-muplugin"
+            ],
+            "docker/volumes/wordpress/wp-content/plugins/{$name}/": [
+                "type:wordpress-plugin"
+            ],
+            "docker/volumes/wordpress/wp-content/themes/{$name}/": [
+                "type:wordpress-theme"
+            ]
+        },
         "merge-plugin": {
             "include": [
                 "packages/*/composer.json"

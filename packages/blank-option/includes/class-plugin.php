@@ -111,9 +111,9 @@ class Plugin {
 	 * @return void
 	 */
 	public static function check_requirements( string $requirement, string $current, string $required ) {
-		if ( version_compare( $current, $required, '<' ) ) {
-			self::$is_met_requirements = false;
+		self::$is_met_requirements = version_compare( $current, $required, '>=' );
 
+		if ( ! self::$is_met_requirements ) {
 			\add_action(
 				'admin_notices',
 				static function () use ( $current, $required, $requirement ) {
@@ -123,7 +123,7 @@ class Plugin {
 						return;
 					}
 
-					$plugin = get_plugin_data( BLANK_OPTION_FILE );
+					$plugin = \get_plugin_data( BLANK_OPTION_FILE );
 
 					$message = sprintf(
 						// Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
@@ -155,7 +155,7 @@ class Plugin {
 
 		new Option( $plugin );
 
-		do_action( 'blank_option_activate' );
+		\do_action( 'blank_option_activate' );
 	}
 
 	/**
@@ -164,7 +164,7 @@ class Plugin {
 	 * @return void
 	 */
 	public static function deactivate(): void {
-		do_action( 'blank_option_deactivate' );
+		\do_action( 'blank_option_deactivate' );
 	}
 
 	/**
@@ -178,7 +178,7 @@ class Plugin {
 		/**
 		 * Checks if a update is available.
 		 */
-		add_filter(
+		\add_filter(
 			'update_plugins_projek-xyz.github.io',
 			array( new Updater( $plugin ), 'check_updates' ),
 			10,
