@@ -78,6 +78,8 @@ tests_add_filter('muplugins_loaded', function () use ($packages) {
             require_once $package['file'];
         }
     }
+
+    register_theme_directory(BASE_PATH . '/packages');
 });
 
 // Start up the WP testing environment.
