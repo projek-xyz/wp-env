@@ -15,6 +15,18 @@ use PHPUnit\Framework\Attributes\Test;
  */
 class ThemeTest extends TestCase
 {
+    public function mockUpdateResponse(array $response): array
+    {
+        $body = json_decode($response['body'], true);
+
+        // Mock release data with a newer version
+        $body[static::PACKAGE_NAME]['version'] = '0.0.2';
+
+        $response['body'] = json_encode($body);
+
+        return $response;
+    }
+
     /**
      * Diagnostic test to check if the theme is actually active.
      */
@@ -109,21 +121,14 @@ class ThemeTest extends TestCase
     #[Test]
     public function shouldHandleUpdateChecksCorrectly()
     {
-        \add_filter('http_response', static function ($response) {
-            $body = json_decode($response['body'], true);
-
-            // Mock release data with a newer version
-            $body[static::PACKAGE_NAME]['version'] = '0.0.2';
-
-            $response['body'] = json_encode($body);
-
-            return $response;
-        });
+        \add_filter('http_response', [$this, 'mockUpdateResponse']);
 
         // Act: Call get_updates
         $update = Theme::check_updates(false, ['Version' => '0.0.1'], \get_stylesheet());
 
         $this->assertNotFalse($update);
+
+        \remove_filter('http_response', [$this, 'mockUpdateResponse']);
     }
 
     /**
