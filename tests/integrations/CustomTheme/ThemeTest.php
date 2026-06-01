@@ -109,44 +109,21 @@ class ThemeTest extends TestCase
     #[Test]
     public function shouldHandleUpdateChecksCorrectly()
     {
-        $theme = \wp_get_theme();
+        \add_filter('http_response', static function ($response) {
+            $body = json_decode($response['body'], true);
 
-        if (false === $theme->version) {
-            fwrite(STDERR, "Theme Name: " . $theme->get('Name') . "\n");
-            fwrite(STDERR, "Theme Dir: " . $theme->get_stylesheet_directory() . "\n");
-            fwrite(STDERR, "Theme Errors: " . print_r($theme->errors(), true) . "\n");
-        }
+            // Mock release data with a newer version
+            $body[static::PACKAGE_NAME]['version'] = '0.0.2';
 
-        $stylesheet = $theme->get_stylesheet();
+            $response['body'] = json_encode($body);
 
-        // Mock release data with a newer version
-        $release_data = (object) [
-            'version'      => '9.9.9',
-            'download_url' => 'https://example.com/download.zip',
-            'info_url'     => 'https://example.com/info',
-            'wp_version'   => '7.0',
-            'php_version'  => '8.2',
-        ];
+            return $response;
+        });
 
-        // We can't easily mock the static get_updates() method directly in PHPUnit without specialized tools,
-        // but we can test the check_updates logic by providing mocked theme data.
+        // Act: Call get_updates
+        $update = Theme::check_updates(false, ['Version' => '0.0.1'], \get_stylesheet());
 
-        $theme_data = [
-            'Version' => $theme->version, // Current version
-        ];
-
-        // Scenario 1: Older version available (should NOT return update)
-        $old_release = (object) ['version' => '0.0.1'];
-        // Note: In a real test, you'd use a proxy or mock for Theme::get_updates()
-
-        // Scenario 2: Newer version available (should return update metadata)
-        // We'll simulate the return of Theme::check_updates by manually testing its logic path
-        // if we were able to inject the release data.
-
-        $this->assertTrue(
-            version_compare('9.9.9', $theme->version, '>'),
-            'Test sanity check: 9.9.9 should be greater than current version.'
-        );
+        $this->assertNotFalse($update);
     }
 
     /**
