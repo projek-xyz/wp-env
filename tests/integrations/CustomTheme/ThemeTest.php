@@ -23,7 +23,7 @@ class ThemeTest extends TestCase
     {
         $this->assertEquals(
             static::PACKAGE_NAME,
-            get_stylesheet(),
+            \get_stylesheet(),
             'The custom-theme should be the active stylesheet.'
         );
     }
@@ -40,11 +40,11 @@ class ThemeTest extends TestCase
         $activated = false;
         $deactivated = false;
 
-        add_action('ct_activation', function () use (&$activated) {
+        \add_action('ct_activation', function () use (&$activated) {
             $activated = true;
         });
 
-        add_action('ct_deactivation', function () use (&$deactivated) {
+        \add_action('ct_deactivation', function () use (&$deactivated) {
             $deactivated = true;
         });
 
@@ -76,12 +76,12 @@ class ThemeTest extends TestCase
         // Act: Trigger script enqueuing
         Theme::enqueue_scripts();
 
-        $theme = wp_get_theme();
+        $theme = \wp_get_theme();
         $handle = $theme->stylesheet;
 
         // Assert: Verify script is enqueued
         $this->assertTrue(
-            wp_script_is($handle, 'enqueued'),
+            \wp_script_is($handle, 'enqueued'),
             'The theme-specific script should be enqueued using the theme handle.'
         );
 
@@ -109,7 +109,7 @@ class ThemeTest extends TestCase
     #[Test]
     public function shouldHandleUpdateChecksCorrectly()
     {
-        $theme = wp_get_theme();
+        $theme = \wp_get_theme();
 
         if (false === $theme->version) {
             fwrite(STDERR, "Theme Name: " . $theme->get('Name') . "\n");
@@ -161,14 +161,14 @@ class ThemeTest extends TestCase
         $cache_key = 'custom-theme_updates';
 
         // Ensure cache is empty
-        delete_site_transient($cache_key);
+        \delete_site_transient($cache_key);
 
         // Note: Real network requests are discouraged in integration tests.
         // This scenario highlights the necessity of testing the caching mechanism.
         // A full implementation would mock wp_remote_get.
 
         $mock_update = (object) ['version' => '1.2.3'];
-        set_site_transient($cache_key, $mock_update, HOUR_IN_SECONDS);
+        \set_site_transient($cache_key, $mock_update, HOUR_IN_SECONDS);
 
         // Act: Call get_updates
         $result = Theme::get_updates();

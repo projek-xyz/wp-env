@@ -66,10 +66,10 @@ class AdminPageTest extends TestCase
         $admin_page = new Blank_Page($plugin);
 
         // Act: Mock the current screen and trigger the load method
-        set_current_screen('plugins_page_' . $plugin->get('text_domain'));
+        \set_current_screen('plugins_page_' . $plugin->get('text_domain'));
         $admin_page->load();
 
-        $screen = get_current_screen();
+        $screen = \get_current_screen();
 
         // Assert: Verify help tabs were added
         $help_tabs = $screen->get_help_tabs();
@@ -111,11 +111,11 @@ class AdminPageTest extends TestCase
 
         // Assert 1: Assets should NOT be enqueued
         $this->assertFalse(
-            wp_style_is($text_domain . '-admin-style', 'enqueued'),
+            \wp_style_is($text_domain . '-admin-style', 'enqueued'),
             'Admin styles should NOT be enqueued on unrelated pages.'
         );
         $this->assertFalse(
-            wp_script_is($text_domain . '-admin-script', 'enqueued'),
+            \wp_script_is($text_domain . '-admin-script', 'enqueued'),
             'Admin scripts should NOT be enqueued on unrelated pages.'
         );
 
@@ -124,11 +124,11 @@ class AdminPageTest extends TestCase
 
         // Assert 2: Assets SHOULD be enqueued
         $this->assertTrue(
-            wp_style_is($text_domain . '-admin-style', 'enqueued'),
+            \wp_style_is($text_domain . '-admin-style', 'enqueued'),
             'Admin styles should be enqueued on the plugin settings page.'
         );
         $this->assertTrue(
-            wp_script_is($text_domain . '-admin-script', 'enqueued'),
+            \wp_script_is($text_domain . '-admin-script', 'enqueued'),
             'Admin scripts should be enqueued on the plugin settings page.'
         );
     }

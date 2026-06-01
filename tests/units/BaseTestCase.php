@@ -55,7 +55,7 @@ abstract class BaseTestCase extends PHPUnitTestCase
 
         // Set WP version global if not available
         if (! isset($GLOBALS['wp_version'])) {
-            $GLOBALS['wp_version'] = getenv('WP_VERSION') ?: '7.0';
+            $GLOBALS['wp_version'] = env('WP_VERSION', '7.0');
 
             $this->resetWpVersion = true;
         }

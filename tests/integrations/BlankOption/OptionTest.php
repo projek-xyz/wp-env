@@ -33,7 +33,7 @@ class OptionTest extends TestCase
         $this->assertEquals('it_works', Option::get('test_integration_key'));
 
         // Verify: Check the raw WordPress database to ensure it's physically stored correctly
-        $raw_db_values = get_option('blank-option');
+        $raw_db_values = \get_option('blank-option');
         $this->assertIsArray(
             $raw_db_values,
             'Options should be stored as an array in the database.'

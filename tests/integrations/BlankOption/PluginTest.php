@@ -32,20 +32,20 @@ class PluginTest extends TestCase
 
         // Check if update checker is registered.
         $this->assertNotFalse(
-            has_filter('update_plugins_projek-xyz.github.io'),
+            \has_filter('update_plugins_projek-xyz.github.io'),
             'Update checker filter should be registered on the custom update domain.'
         );
 
         // Check if frontend asset enqueuing is registered.
         $this->assertNotFalse(
-            has_action('wp_enqueue_scripts', [Plugin::instance(), 'enqueue_scripts']),
+            \has_action('wp_enqueue_scripts', [Plugin::instance(), 'enqueue_scripts']),
             'Plugin::enqueue_scripts should be hooked to wp_enqueue_scripts.'
         );
 
         // Check if admin menu registration is registered.
         // Since add_admin_page calls add_action('admin_menu', ...), we verify that.
         $this->assertNotFalse(
-            has_action('admin_menu'),
+            \has_action('admin_menu'),
             'Admin menu registration should be hooked to admin_menu.'
         );
     }
@@ -71,7 +71,7 @@ class PluginTest extends TestCase
 
         // Verify: Admin notice action should be registered
         $this->assertNotFalse(
-            has_action('admin_notices'),
+            \has_action('admin_notices'),
             'An admin notice should be registered when requirements are not met.'
         );
     }
@@ -88,11 +88,11 @@ class PluginTest extends TestCase
         $activated = false;
         $deactivated = false;
 
-        add_action('blank_option_activate', function () use (&$activated) {
+        \add_action('blank_option_activate', function () use (&$activated) {
             $activated = true;
         });
 
-        add_action('blank_option_deactivate', function () use (&$deactivated) {
+        \add_action('blank_option_deactivate', function () use (&$deactivated) {
             $deactivated = true;
         });
 
@@ -128,9 +128,9 @@ class PluginTest extends TestCase
 
         // Mock current version in DB to be older than the plugin version
         $text_domain = Plugin::instance()->get('text_domain');
-        update_option($text_domain, ['version' => '0.0.0']);
+        \update_option($text_domain, ['version' => '0.0.0']);
 
-        add_action(
+        \add_action(
             'blank_option_upgrade',
             function ($old, $new) use (&$upgrade_triggered, &$old_v, &$new_v) {
                 $upgrade_triggered = true;
@@ -178,11 +178,11 @@ class PluginTest extends TestCase
 
         // Assert: Verify styles and scripts are in the enqueue queue
         $this->assertTrue(
-            wp_style_is($text_domain . '-style', 'enqueued'),
+            \wp_style_is($text_domain . '-style', 'enqueued'),
             'Plugin stylesheet should be enqueued.'
         );
         $this->assertTrue(
-            wp_script_is($text_domain . '-script', 'enqueued'),
+            \wp_script_is($text_domain . '-script', 'enqueued'),
             'Plugin script should be enqueued.'
         );
 

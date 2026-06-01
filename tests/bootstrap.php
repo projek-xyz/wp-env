@@ -69,17 +69,17 @@ $packages = array_reduce(
 );
 
 // Register `packages` directory as `theme_root` directory.
-tests_add_filter('theme_root', fn () => BASE_PATH . '/packages');
+\tests_add_filter('theme_root', fn () => BASE_PATH . '/packages');
 
 // Load our plugins during the bootstrap process.
-tests_add_filter('muplugins_loaded', function () use ($packages) {
+\tests_add_filter('muplugins_loaded', function () use ($packages) {
     foreach ($packages as $package) {
         if ($package['type'] === 'plugin') {
             require_once $package['file'];
         }
     }
 
-    register_theme_directory(BASE_PATH . '/packages');
+    \register_theme_directory(BASE_PATH . '/packages');
 });
 
 // Start up the WP testing environment.

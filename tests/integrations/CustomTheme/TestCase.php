@@ -16,7 +16,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function preparePackage(string $name, string $path, ?string $url, ?string $version): void
     {
-        switch_theme($name);
+        \switch_theme($name);
 
         if (!class_exists(Theme::class)) {
             require_once $path . '/functions.php';
