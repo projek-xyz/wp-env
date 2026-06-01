@@ -194,8 +194,8 @@ abstract class BaseTestCase extends PHPUnitTestCase
 
         Functions\when('plugin_dir_path')->justReturn($path);
         Functions\when('plugin_dir_url')->justReturn($url);
-        Functions\when('plugin_basename')->alias(
-            static fn (string $file) => str_replace(dirname($path), '', $file)
-        );
+        Functions\when('plugin_basename')->alias(static function (string $file) {
+            return str_replace(dirname($file, 2) . '/', '', $file);
+        });
     }
 }

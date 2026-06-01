@@ -1,11 +1,11 @@
 <?php
-// phpcs:ignorefile
+// phpcs:ignoreFile
 
 if (defined('WP_INSTALLING')) {
     $basePath = dirname(__DIR__, 2);
 
     if (!defined('ABSPATH')) {
-        define('ABSPATH', $basePath . '/docker/volumes/wordpress/');
+        define('ABSPATH', $basePath.'/docker/volumes/wordpress/');
     }
 
     require_once $basePath.'/vendor/autoload.php';
