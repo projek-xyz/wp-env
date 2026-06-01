@@ -84,7 +84,10 @@
             "Fixtures\\": "tests/fixtures",
             "UnitTests\\": "tests/units",
             "IntegrationTests\\": "tests/integrations"
-        }
+        },
+        "files": [
+            "tests/functions.php"
+        ]
     },
     "extra": {
         "installer-paths": {
