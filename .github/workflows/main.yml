@@ -231,7 +231,6 @@ jobs:
       - name: Integration Test
         env:
           DB_HOST: 127.0.0.1:${{ job.services.mysql.ports['3306'] }}
-          # WP_TESTS_SKIP_INSTALL: 1
         run: |
           composer test:integration --ansi
 
