@@ -150,6 +150,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: tests/reports
+          flags: unit-tests
           env_vars: PHP_VERSION,WP_VERSION
           report_type: test_results
 
@@ -248,5 +249,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: tests/reports
+          flags: integration-tests
           env_vars: PHP_VERSION,WP_VERSION
           report_type: test_results
