@@ -144,7 +144,6 @@ class AdminPageTest extends TestCase
     {
         $plugin = Plugin::instance();
         $admin_page = new Blank_Page($plugin);
-        $text_domain = $plugin->get('text_domain');
 
         // Act: Filter the action links
         $actions = $admin_page->action_links(
@@ -169,5 +168,30 @@ class AdminPageTest extends TestCase
             $actions,
             'Existing core action links should be preserved.'
         );
+    }
+
+    /**
+     * Verifies that the plugin admin page properly renders html ouput.
+     */
+    #[Test]
+    public function shouldRenderHtmlOutputToPluginScreen()
+    {
+        global $title;
+
+        $plugin = Plugin::instance();
+        $title = $plugin->get('name');
+
+        $this->expectOutputString(implode("\n", [
+            '<div class="wrap">',
+            '<h1 class="wp-heading-inline">Blank Option</h1> <!-- .wp-heading-inline -->',
+            '<hr class="wp-header-end" />',
+            '<div class="inner">',
+            '</div> <!-- .inner -->',
+            '</div> <!-- .wrap -->'
+        ]));
+
+        $admin_page = new Blank_Page($plugin);
+
+        $admin_page->render();
     }
 }
