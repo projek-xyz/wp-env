@@ -15,6 +15,8 @@ defined('ABSPATH') || define('ABSPATH', BASE_PATH . '/docker/volumes/wordpress/'
 
 // Any other test initialization can go here.
 
+Dotenv\Dotenv::createImmutable(BASE_PATH, ['.env.testing', '.env'])->safeLoad();
+
 // Bootstrap WordPress for integration tests.
 if (! in_array('Integration Tests', $_SERVER['argv'], true)) {
     return;
@@ -24,8 +26,6 @@ if (! in_array('Integration Tests', $_SERVER['argv'], true)) {
 if (! defined('WP_CORE_DIR')) {
     define('WP_CORE_DIR', ABSPATH);
 }
-
-Dotenv\Dotenv::createImmutable(BASE_PATH, ['.env.testing', '.env'])->safeLoad();
 
 // Find the library path automatically if not provided.
 $testDir = getenv('WP_PHPUNIT__DIR') ?: BASE_PATH . '/vendor/wp-phpunit/wp-phpunit';

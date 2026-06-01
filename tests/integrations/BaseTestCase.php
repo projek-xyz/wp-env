@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IntegrationTests;
 
+use Fixtures\PackageTestHelper;
 use Override;
 
 /**
@@ -11,6 +12,8 @@ use Override;
  */
 abstract class BaseTestCase extends \WP_UnitTestCase_Base
 {
+    use PackageTestHelper;
+
     /**
      * {@inheritdoc}
      */

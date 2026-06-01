@@ -7,7 +7,7 @@ namespace UnitTests\BlankOption;
 use UnitTests\BaseTestCase;
 
 /**
- * Base Test Case for CF7 Entry Manager unit tests.
+ * Base Unit Test Case for Blank Option plugin.
  */
 abstract class TestCase extends BaseTestCase
 {

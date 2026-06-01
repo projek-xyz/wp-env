@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UnitTests\CustomTheme;
+namespace IntegrationTests\CustomTheme;
 
-use UnitTests\BaseTestCase;
+use IntegrationTests\BaseTestCase;
 
 /**
- * Base Unit Test Case for Custom Theme.
+ * Base Test Case for Custom Theme integration tests.
  */
 abstract class TestCase extends BaseTestCase
 {
