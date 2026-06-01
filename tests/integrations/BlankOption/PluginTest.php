@@ -74,6 +74,9 @@ class PluginTest extends TestCase
             \has_action('admin_notices'),
             'An admin notice should be registered when requirements are not met.'
         );
+
+        // Tear down: Reset the requirements flag
+        Plugin::check_requirements('PHP', PHP_VERSION, PHP_VERSION);
     }
 
     /**

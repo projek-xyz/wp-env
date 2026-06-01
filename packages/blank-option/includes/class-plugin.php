@@ -111,9 +111,9 @@ class Plugin {
 	 * @return void
 	 */
 	public static function check_requirements( string $requirement, string $current, string $required ) {
-		if ( version_compare( $current, $required, '<' ) ) {
-			self::$is_met_requirements = false;
+		self::$is_met_requirements = version_compare( $current, $required, '>=' );
 
+		if ( ! self::$is_met_requirements ) {
 			\add_action(
 				'admin_notices',
 				static function () use ( $current, $required, $requirement ) {
