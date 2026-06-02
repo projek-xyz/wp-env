@@ -82,12 +82,12 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
         ?string $url,
         ?string $version
     ): void {
-        $this->preparePackage($name, $path, $url, $version);
-
         static::assertFileExists(
             "$path/functions.php",
             sprintf('Theme functions.php not found: %s', $name)
         );
+
+        $this->preparePackage($name, $path, $url, $version);
     }
 
     /**
@@ -104,11 +104,11 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
         ?string $url,
         ?string $version
     ): void {
-        $this->preparePackage($name, $path, $url, $version);
-
         static::assertFileExists(
             "$path/$name.php",
             sprintf('Plugin %1$s.php not found: %1$s', $name)
         );
+
+        $this->preparePackage($name, $path, $url, $version);
     }
 }

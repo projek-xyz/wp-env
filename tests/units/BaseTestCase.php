@@ -144,8 +144,6 @@ abstract class BaseTestCase extends PHPUnitTestCase
         ?string $url,
         ?string $version
     ): void {
-        $this->preparePackage($name, $path, $url, $version);
-
         static::assertFileExists(
             "$path/functions.php",
             sprintf('Theme functions.php not found: %s', $name)
@@ -169,6 +167,8 @@ abstract class BaseTestCase extends PHPUnitTestCase
                 return \get_stylesheet_directory_uri();
             }
         });
+
+        $this->preparePackage($name, $path, $url, $version);
     }
 
     /**
@@ -185,8 +185,6 @@ abstract class BaseTestCase extends PHPUnitTestCase
         ?string $url,
         ?string $version
     ): void {
-        $this->preparePackage($name, $path, $url, $version);
-
         static::assertFileExists(
             "$path/$name.php",
             sprintf('Plugin %1$s.php not found: %1$s', $name)
@@ -197,5 +195,7 @@ abstract class BaseTestCase extends PHPUnitTestCase
         Functions\when('plugin_basename')->alias(static function (string $file) {
             return str_replace(dirname($file, 2) . '/', '', $file);
         });
+
+        $this->preparePackage($name, $path, $url, $version);
     }
 }
