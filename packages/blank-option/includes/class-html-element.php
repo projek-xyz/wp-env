@@ -206,11 +206,11 @@ class Html_Element implements Stringable {
 	); // phpcs:enable
 
 	/**
-	 * List of HTML elements to be ignored (not allowed to be generated).
+	 * List of HTML elements to be banned (not allowed to be generated).
 	 *
 	 * @var string[]
 	 */
-	private array $ignored_tags = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
+	private array $banned_tags = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 		'html', 'head', 'title', 'link', 'meta', 'body', 'script', 'style', 'keygen',
 	); // phpcs:enable
 
@@ -616,9 +616,15 @@ class Html_Element implements Stringable {
 	 * Returns lowercase of $tag if the specified tag name is valid.
 	 *
 	 * @param string $tag The tag name to validate.
-	 * @throws \InvalidArgumentException If the tag name is invalid.
+	 * @throws \InvalidArgumentException If the tag name is invalid or banned.
 	 */
 	public function validate_tag( string $tag ): string {
+		if ( in_array( $tag, $this->banned_tags, true ) ) {
+			throw new \InvalidArgumentException(
+				sprintf( 'Banned tag name (%s) is specified.', \esc_attr( $tag ) )
+			);
+		}
+
 		if ( 1 === preg_match( '/^' . self::VALID_TAG_NAME . '$/', $tag ) ) {
 			return strtolower( $tag );
 		}

@@ -251,6 +251,8 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('open_tag')]
+    #[Group('validate_tag')]
+    #[Group('negative-value')]
     public function throwsInvalidArgumentExceptionWhenOpenTagHasInvalidName()
     {
         $this->expectException(InvalidArgumentException::class);
@@ -258,6 +260,19 @@ class HtmlElementTest extends TestCase
 
         $elm = new Html_Element();
         $elm->open_tag('$$invalid-one', []);
+    }
+
+    #[Test]
+    #[Group('open_tag')]
+    #[Group('validate_tag')]
+    #[Group('negative-value')]
+    public function throwsInvalidArgumentExceptionWhenOpenTagHasBannedName()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Banned tag name (script) is specified.');
+
+        $elm = new Html_Element();
+        $elm->open_tag('script', []);
     }
 
     #[Test]
