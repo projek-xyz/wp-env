@@ -451,7 +451,8 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('__call')]
-    public function properlyReturnsAllowedHtmlTagsAndAtts()
+    #[Group('allowed_tags')]
+    public function properlyReturnsAllowedHtmlTagsAndAttsForAForm()
     {
         $elm = new Html_Element();
 
@@ -483,7 +484,11 @@ class HtmlElementTest extends TestCase
         );
 
         $allowedTags = $elm->allowed_tags();
-        $tagKeys = ['form', 'div', 'label', 'input', 'br', 'button'];
+        $tagKeys = [
+            'form', 'div', 'label', 'input', 'br', 'button', 'datalist',
+            'fieldset', 'legend', 'meter', 'optgroup', 'option', 'output',
+            'progress', 'select', 'textarea'
+        ];
 
         $this->assertEquals($tagKeys, array_keys($allowedTags));
 
@@ -499,6 +504,23 @@ class HtmlElementTest extends TestCase
         $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['input']);
         $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['br']);
         $this->assertArrayNotHasKey('@submit.prevent', $allowedTags['button']);
+    }
+
+    #[Test]
+    #[Group('__call')]
+    #[Group('allowed_tags')]
+    public function properlyReturnsAllowedHtmlTagsAndAttsForATable()
+    {
+        $elm = new Html_Element();
+
+        $elm->table(['class' => 'wp-list-table']);
+
+        $allowedTags = $elm->allowed_tags();
+        $tagKeys = [
+            'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption', 'input', 'span', 'a', 'p'
+        ];
+
+        $this->assertEquals($tagKeys, array_keys($allowedTags));
     }
 
     #[Test]

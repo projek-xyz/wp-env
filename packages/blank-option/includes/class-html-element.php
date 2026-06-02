@@ -719,6 +719,21 @@ class Html_Element implements Stringable {
 
 		$base_allowances = \wp_kses_allowed_html( 'post' );
 
+		if ( isset( $this->registered_tags['table'] ) ) {
+			// In case of displaying `WP_List_Table` within our `call` method.
+			// So, we just need to call `allow_tag('table')` to make sure
+			// the table is rendered properly.
+			$this->allow_tag( array( 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'caption', 'input', 'span', 'a', 'p' ) );
+		}
+
+		if ( isset( $this->registered_tags['form'] ) ) {
+			// In case of we need to render external html form file within our
+			// `call` method such as using `require` or `include`, we can
+			// just call `allow_tag('form')` to make sure all inputs
+			// are rendered properly.
+			$this->allow_tag( array_keys( $additional_tags_for_form ) );
+		}
+
 		foreach ( $this->registered_tags as $tag => $alpine_events ) {
 			$allowed_tag = array();
 
@@ -741,6 +756,45 @@ class Html_Element implements Stringable {
 		}
 
 		return $allowed_tags;
+	}
+
+	/**
+	 * Registers an Alpine.js event attribute for a given tag.
+	 *
+	 * @param string|array $tag  The tag(s) to register.
+	 * @param array        $atts The attributes to register.
+	 */
+	public function allow_tag( string|array $tag, array $atts = array() ): static {
+		if ( is_array( $tag ) ) {
+			foreach ( $tag as $elm ) {
+				$this->allow_tag( $elm );
+			}
+
+			return $this;
+		}
+
+		$alpine_events = array_filter(
+			$atts,
+			static function ( $key ) {
+				return str_starts_with( $key, 'x-on:' )
+					|| str_starts_with( $key, '@' );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		$alpine_event_atts = array();
+		$alpine_events     = array_merge(
+			$this->registered_tags[ $tag ] ?? array(),
+			$alpine_events,
+		);
+
+		foreach ( array_keys( $alpine_events ) as $attr ) {
+			$alpine_event_atts[ $attr ] = true;
+		}
+
+		$this->registered_tags[ $tag ] = $alpine_event_atts;
+
+		return $this;
 	}
 
 	/**
@@ -787,36 +841,6 @@ class Html_Element implements Stringable {
 		}
 
 		return implode( ' ', $results );
-	}
-
-	/**
-	 * Registers an Alpine.js event attribute for a given tag.
-	 *
-	 * @param string $tag  The tag to register.
-	 * @param array  $atts The attributes to register.
-	 * @internal
-	 */
-	private function allow_tag( string $tag, array $atts = array() ): void {
-		$alpine_events = array_filter(
-			$atts,
-			static function ( $key ) {
-				return str_starts_with( $key, 'x-on:' )
-					|| str_starts_with( $key, '@' );
-			},
-			ARRAY_FILTER_USE_KEY
-		);
-
-		$alpine_event_atts = array();
-		$alpine_events     = array_merge(
-			$this->registered_tags[ $tag ] ?? array(),
-			$alpine_events,
-		);
-
-		foreach ( array_keys( $alpine_events ) as $attr ) {
-			$alpine_event_atts[ $attr ] = true;
-		}
-
-		$this->registered_tags[ $tag ] = $alpine_event_atts;
 	}
 
 	/**
