@@ -20,8 +20,8 @@ jobs:
     name: Archive
     runs-on: ubuntu-latest
     outputs:
-      for-release: ${{ steps.make-archive.outputs.for-release }}
-      release-version: ${{ steps.make-archive.outputs.release-version }}
+      for-release: ${{ steps.packages.outputs.for-release }}
+      release-version: ${{ steps.packages.outputs.release-version }}
 
     env:
       DB_NAME: ${{ github.repository_owner }}
@@ -84,6 +84,8 @@ jobs:
     - name: Check package releases
       id: packages
       shell: bash
+      env:
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
       run: |
         scripts/make-dist.sh --check
 
@@ -137,15 +139,10 @@ jobs:
       if: steps.packages.outputs.new-release > 0
       id: make-archive
       env:
-        COMMIT_MESSAGE: ${{ inputs.commit-message }}
         FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+        FOR_RELEASE: ${{ steps.packages.outputs.for-release }}
       run: |
-        COMMIT_MESSAGE=$(echo "$COMMIT_MESSAGE" | head -n 1)
-        FOR_RELEASE=$([[ $COMMIT_MESSAGE =~ "chore(release)" ]] && echo "1" || echo "0")
-
         scripts/make-dist.sh
-
-        echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
 
     - name: Store archive
       uses: actions/upload-artifact@v7

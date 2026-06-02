@@ -16,15 +16,20 @@ REPO=${GITHUB_REPOSITORY:-"your-user/your-repo"}
 PHP_VERSION=${PHP_VERSION:-"8.1"}
 WP_VERSION=${WP_VERSION:-"6.9"}
 
-FOR_RELEASE=${FOR_RELEASE:-"0"}
-COMMIT_MESSAGE=${COMMIT_MESSAGE:-""}
+FOR_RELEASE=${FOR_RELEASE:-0}
+COMMIT_MESSAGE=${COMMIT_MESSAGE:-}
 
 RELEASE_URL=${RELEASE_URL:-""}
 tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
 new_releases=0
 
-if [[ "$FOR_RELEASE" == "1" && "$COMMIT_MESSAGE" != "" ]]; then
-    tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
+if [[ -n "$COMMIT_MESSAGE" ]]; then
+    COMMIT_MESSAGE=$(echo "$COMMIT_MESSAGE" | head -n 1)
+    FOR_RELEASE=$([[ $COMMIT_MESSAGE =~ "chore(release)" ]] && echo "1" || echo "0")
+
+    if [[ "$FOR_RELEASE" -eq 1 ]]; then
+        tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
+    fi
 fi
 
 make_dist() {
@@ -91,7 +96,7 @@ make_dist() {
     local pkg_archive="$pkg.$pkg_version.zip"
     mv "$DIST_DIR/$pkg.zip" "$DIST_DIR/$pkg_archive"
 
-    if [[ "$FOR_RELEASE" == "1" ]]; then
+    if [[ "$FOR_RELEASE" -eq 1 ]]; then
         download_url="https://github.com/$REPO/releases/download/$tag_name/$pkg_archive"
         info_url="https://github.com/$REPO/blob/main/packages/$pkg/CHANGELOG.md"
 
@@ -105,7 +110,7 @@ make_dist() {
             \"wp_version\": \"$WP_VERSION\"
         }" "$DIST_DIR/release.json" > "$DIST_DIR/release.tmp" && mv "$DIST_DIR/release.tmp" "$DIST_DIR/release.json"
 
-        echo -e "\e[1;32mSuccess:\e[0m '\e[1;33m$pkg\e[0m' manifest updated"
+        echo -e "\e[1;32mSuccess:\e[0m '\e[1;33m$pkg\e[0m' manifest updated to \e[1;33m$pkg_version\e[0m"
     else
         echo -e "\e[1;36mInfo:\e[0m '\e[1;33m$pkg\e[0m' no manifest update"
     fi
@@ -163,12 +168,13 @@ for pkg_dir in ${sorted_pkgs[@]}; do
     make_dist "$pkg_dir" "$is_check"
 done
 
-if [[ -n "${CI:-}" && -n "${GITHUB_OUTPUT}" ]]; then
+if [[ "$is_check" -eq 1 && -n "${CI:-}" && -n "${GITHUB_OUTPUT}" ]]; then
+    echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
     echo "release-version=$tag_name" >> $GITHUB_OUTPUT
     echo "new-release=$new_releases" >> $GITHUB_OUTPUT
 fi
 
-if [[ "$FOR_RELEASE" == '1' ]]; then
+if [[ "$FOR_RELEASE" -eq 1 ]]; then
   echo -e "\e[1;32mSuccess:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
 else
   echo -e "\e[1;35mNotice:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
