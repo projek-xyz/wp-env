@@ -11,8 +11,7 @@ use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Closure;
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use ReflectionClass;
 use WP_Filesystem_Direct;
@@ -20,12 +19,11 @@ use WP_Filesystem_Direct;
 /**
  * Unit tests for the blank's `includes/class-plugin.php`.
  */
-#[RunClassInSeparateProcess]
 class PluginTest extends TestCase
 {
-    protected static bool $loadAutoloader = true;
-
     #[Test]
+    #[Group('positive-value')]
+    #[Group('requirement')]
     public function shouldDidNothingWhenRequirementsMet()
     {
         $status = Plugin::is_met_requirements();
@@ -38,6 +36,8 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('requirement')]
     public function shouldAddAdminNoticeWhenRequirementsNotMet()
     {
         Actions\expectAdded('admin_notices')->once()->whenHappen(function ($callback) {
@@ -48,6 +48,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('requirement')]
     public function shouldNotShowRequirementNoticeOnUndesiredScreens()
     {
         Functions\expect('get_current_screen')->once()->andReturnNull();
@@ -61,6 +62,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('requirement')]
     public function shouldPrintNoticeOnSpecificScreens()
     {
         $this->expectOutputString(implode('', [
@@ -81,6 +83,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('initialization')]
     public function shouldBeInitialized()
     {
         Actions\expectAdded('wp_enqueue_scripts')->once()->whenHappen(function ($callback) {
@@ -111,6 +114,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('activation')]
     public function shouldDoingActionsOnActivation()
     {
         Functions\when('get_option')->justReturn(['version' => '0.0.1']);
@@ -122,6 +126,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('deactivation')]
     public function shouldDoingActionsOnDeactivation()
     {
         Actions\doing('blank_option_deactivate');
@@ -130,6 +135,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('static-asset')]
     public function shouldEnqueueScripts()
     {
         Functions\expect('wp_enqueue_style')->once()->andReturnUsing(
@@ -160,42 +166,51 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('metadata')]
     public function shouldThrowExceptionWhenAccessingInvalidDataKey()
     {
+        $plugin = new Plugin(BLANK_OPTION_FILE);
+
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown plugin metadata: invalid_key');
 
         Functions\expect('wp_kses')->once()->andReturnFirstArg();
 
-        Plugin::instance()->get('invalid_key');
+        $plugin->get('invalid_key');
     }
 
     #[Test]
-    #[RunInSeparateProcess]
+    #[Group('activation')]
     public function shouldDoingNothingWhenPluginHaveNotBeenInstalled()
     {
+        $plugin = new Plugin(BLANK_OPTION_FILE);
+
         Functions\when('get_option')->justReturn(false);
 
         Actions\expectDone('blank_plugin_upgrade')->never();
 
-        Plugin::instance()->upgrade();
+        $plugin->upgrade();
     }
 
     #[Test]
-    #[RunInSeparateProcess]
+    #[Group('activation')]
     public function shouldDoingActionsWhenHaveUpdates()
     {
+        $plugin = new Plugin(BLANK_OPTION_FILE);
+
         Functions\when('get_option')->justReturn(['version' => '0.0.0']);
 
         Actions\doing('blank_plugin_upgrade');
 
-        Plugin::instance()->upgrade();
+        $plugin->upgrade();
     }
 
     #[Test]
+    #[Group('cached-value')]
+    #[Group('static-asset')]
     public function shouldAbleToRetrieveAnAssetMetadataArrayFromCache()
     {
-        $plugin = Plugin::instance();
+        $plugin = new Plugin(BLANK_OPTION_FILE);
 
         // First call
         $plugin->get_asset_url('blank.css');
@@ -212,6 +227,7 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('static-asset')]
     public function shouldAbleToRetrieveAnAssetMetadataBasedOnKey()
     {
         $asset_version = Plugin::instance()->get_asset_url('blank.css', 'version');
@@ -220,10 +236,10 @@ class PluginTest extends TestCase
     }
 
     #[Test]
-    #[RunInSeparateProcess]
+    #[Group('static-asset')]
     public function shouldAppendAssetFileTimeOnDebugMode()
     {
-        $plugin = Plugin::instance();
+        $plugin = new Plugin(BLANK_OPTION_FILE);
 
         defined('SCRIPT_DEBUG') || define('SCRIPT_DEBUG', true);
 
@@ -234,6 +250,8 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('static-asset')]
     public function shouldThrowInvalidArgumentExceptionForInvalidKey()
     {
         Functions\expect('wp_kses')->once()->andReturnFirstArg();
@@ -245,9 +263,11 @@ class PluginTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('static-asset')]
     public function shouldAbleToChangeAssetDirAndThrowExceptionIfNotExists()
     {
-        $plugin = Plugin::instance();
+        $plugin = new Plugin(BLANK_OPTION_FILE);
 
         $plugin->set_asset_dir('elsewhere');
 
@@ -260,10 +280,10 @@ class PluginTest extends TestCase
     }
 
     #[Test]
-    #[RunInSeparateProcess]
+    #[Group('static-asset')]
     public function shouldCacheFilesystemInstance()
     {
-        $plugin = Plugin::instance();
+        $plugin = new Plugin(BLANK_OPTION_FILE);
         $filesystem = (new ReflectionClass(Plugin::class))->getProperty('filesystem');
 
         Plugin::instance()->get_file_contents('assets/blank.css');

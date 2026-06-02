@@ -6,6 +6,7 @@ namespace IntegrationTests\BlankOption;
 
 use Blank_Option\Admin\Blank_Page;
 use Blank_Option\Plugin;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -14,6 +15,7 @@ use PHPUnit\Framework\Attributes\Test;
  * These tests verify how the plugin's admin page integrates with the
  * WordPress dashboard, including menus, help tabs, and admin-specific assets.
  */
+#[Group('admin-page')]
 class AdminPageTest extends TestCase
 {
     /**
@@ -23,6 +25,7 @@ class AdminPageTest extends TestCase
      * effectively making the plugin's configuration options unreachable.
      */
     #[Test]
+    #[Group('admin-page')]
     public function shouldRegisterAdminSubmenu()
     {
         $plugin = Plugin::instance();
@@ -60,6 +63,7 @@ class AdminPageTest extends TestCase
      * to users on how to use the specific plugin settings without leaving the dashboard.
      */
     #[Test]
+    #[Group('admin-page')]
     public function shouldAddHelpTabsOnPageLoad()
     {
         $plugin = Plugin::instance();
@@ -100,6 +104,7 @@ class AdminPageTest extends TestCase
      * This prevents conflicts with other plugins and keeps the WordPress admin fast.
      */
     #[Test]
+    #[Group('static-asset')]
     public function shouldEnqueueAdminAssetsOnlyOnPluginPage()
     {
         $plugin = Plugin::instance();
@@ -140,6 +145,7 @@ class AdminPageTest extends TestCase
      * as it allows users to quickly find the configuration page after activating the plugin.
      */
     #[Test]
+    #[Group('admin-page')]
     public function shouldAddActionLinksToPluginRow()
     {
         $plugin = Plugin::instance();
@@ -174,6 +180,7 @@ class AdminPageTest extends TestCase
      * Verifies that the plugin admin page properly renders html ouput.
      */
     #[Test]
+    #[Group('admin-page')]
     public function shouldRenderHtmlOutputToPluginScreen()
     {
         global $title;

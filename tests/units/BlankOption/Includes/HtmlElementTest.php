@@ -10,7 +10,6 @@ use Brain\Monkey\Functions;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -19,7 +18,6 @@ use TypeError;
 /**
  * Unit tests for the blank's `includes/class-html-element.php`.
  */
-#[RunClassInSeparateProcess]
 class HtmlElementTest extends TestCase
 {
     public static function htmlOpenTags(): array

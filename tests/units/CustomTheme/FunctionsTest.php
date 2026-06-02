@@ -9,12 +9,14 @@ use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Custom_Theme\Theme;
 use Mockery;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use WP_Error;
 
 /**
  * Unit tests for the custom theme's functions.php.
  */
+#[Group('entrypoint')]
 class FunctionsTest extends TestCase
 {
     /**
@@ -23,6 +25,7 @@ class FunctionsTest extends TestCase
      * @return void
      */
     #[Test]
+    #[Group('static-asset')]
     public function shouldEnqueueACustomScripts()
     {
         Functions\when('wp_register_script')->justReturn();
@@ -44,6 +47,7 @@ class FunctionsTest extends TestCase
      * @return void
      */
     #[Test]
+    #[Group('activation')]
     public function activationShouldBeTriggeredAfterSwitchTheme()
     {
         Actions\expectAdded('after_switch_theme')
@@ -65,6 +69,7 @@ class FunctionsTest extends TestCase
      * @return void
      */
     #[Test]
+    #[Group('deactivation')]
     public function deactivationShouldBeTriggeredOnSwitchTheme()
     {
         Actions\expectAdded('switch_theme')
@@ -81,6 +86,8 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('update')]
     public function shouldReturnFalseWhenCurrentlyCheckingAnotherTheme()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
@@ -99,6 +106,8 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('update')]
     public function shouldReturnsFalseWhenTheresErrorWhileCheckingUpdates()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
@@ -122,6 +131,8 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
+    #[Group('update')]
     public function shouldReturnsFalseWhenTheresNoReleaseForCurrentTheme()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
@@ -156,6 +167,8 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('cached-value')]
+    #[Group('update')]
     public function shouldReturnsArrayWhenTheresSiteTransient()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();
@@ -192,6 +205,8 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('positive-value')]
+    #[Group('update')]
     public function shouldReturnsArrayWhenTheresAnUpdateAvailable()
     {
         $spy = Mockery::spy(Theme::class)->makePartial();

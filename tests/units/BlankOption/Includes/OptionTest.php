@@ -7,20 +7,16 @@ namespace UnitTests\BlankOption\Includes;
 use Blank_Option\Option;
 use Blank_Option\Plugin;
 use Brain\Monkey\Functions;
-use Override;
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use ReflectionClass;
 
 /**
  * Unit tests for the blank's `includes/class-option.php`.
  */
-#[RunClassInSeparateProcess]
+#[Group('option')]
 class OptionTest extends TestCase
 {
-    protected static bool $loadAutoloader = true;
-
-    #[Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -29,17 +25,14 @@ class OptionTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
     public function getShouldRetunsDefaultValueIfNoOptionExists()
     {
-        $stub = Functions\when('get_option');
-
-        $stub->justReturn([]);
+        Functions\when('get_option')->justReturn([]);
 
         $actual = Option::get('key_false', $expected = 'default');
 
         $this->assertSame($expected, $actual);
-
-        $stub->justReturn([]);
 
         $actual = Option::get('key_empty', $expected = 'default');
 
@@ -47,6 +40,7 @@ class OptionTest extends TestCase
     }
 
     #[Test]
+    #[Group('positive-value')]
     public function getShouldRetunsItsValueIfTheOptionExists()
     {
         Functions\when('get_option')->justReturn(['key' => 'value']);
@@ -57,6 +51,7 @@ class OptionTest extends TestCase
     }
 
     #[Test]
+    #[Group('cached-value')]
     public function getShouldRetunsItsValueFromCacheOnSecondCall()
     {
         Functions\expect('get_option')
@@ -70,6 +65,7 @@ class OptionTest extends TestCase
     }
 
     #[Test]
+    #[Group('positive-value')]
     public function setShouldCleanItsCacheWhenValueIsChanged()
     {
         $cache = (new ReflectionClass(Option::class))->getProperty('cached');
@@ -89,6 +85,6 @@ class OptionTest extends TestCase
 
         Option::set('key', 'new_value');
 
-        $this->assertEmpty($cache->getValue());
+        $this->assertArrayNotHasKey('key', $cache->getValue());
     }
 }

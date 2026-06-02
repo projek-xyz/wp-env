@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IntegrationTests\BlankOption;
 
 use Blank_Option\Plugin;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -22,6 +23,7 @@ class PluginTest extends TestCase
      * menu registration, and update checking are properly wired into the WP lifecycle.
      */
     #[Test]
+    #[Group('initialization')]
     public function shouldRegisterCoreHooksOnInit()
     {
         // Act: Manually trigger the init method
@@ -58,6 +60,8 @@ class PluginTest extends TestCase
      * disable itself and notify the user.
      */
     #[Test]
+    #[Group('negative-value')]
+    #[Group('requirement')]
     public function shouldFlagUnmetRequirements()
     {
         // Act: Check for a requirement that is guaranteed to fail (PHP version 99.0)
@@ -86,6 +90,8 @@ class PluginTest extends TestCase
      * cleanup tasks when Blank Option is activated or deactivated.
      */
     #[Test]
+    #[Group('activation')]
+    #[Group('deactivation')]
     public function shouldTriggerLifecycleActions()
     {
         $activated = false;
@@ -123,6 +129,7 @@ class PluginTest extends TestCase
      * when the plugin is updated to a newer version.
      */
     #[Test]
+    #[Group('activation')]
     public function shouldTriggerUpgradeActionOnVersionChange()
     {
         $upgrade_triggered = false;
@@ -171,6 +178,7 @@ class PluginTest extends TestCase
      * and versioning prevents browser caching issues during updates.
      */
     #[Test]
+    #[Group('static-asset')]
     public function shouldEnqueueFrontendAssetsWithCorrectVersion()
     {
         // Act: Trigger enqueueing
