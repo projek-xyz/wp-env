@@ -280,7 +280,7 @@ class Plugin {
 	 * @throws \InvalidArgumentException If the key is unknown.
 	 */
 	public function get( string $key ): array|string {
-		if ( ! isset( $this->data[ $key ] ) || empty( $this->data[ $key ] ) ) {
+		if ( ! isset( $this->data[ $key ] ) ) {
 			throw new \InvalidArgumentException(
 				\wp_kses( "Unknown plugin metadata: $key", array() )
 			);
