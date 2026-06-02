@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.11](https://github.com/projek-xyz/wp-env/compare/v0.0.10...v0.0.11) (2026-06-02)
+
+
+### Features
+
+* **blank-option:** add plugin action links registration hook ([#37](https://github.com/projek-xyz/wp-env/issues/37)) ([062485d](https://github.com/projek-xyz/wp-env/commit/062485d47ded4a6e638209272e00cbd59fd30d06))
+* **blank-option:** init `html-element` helper class ([#42](https://github.com/projek-xyz/wp-env/issues/42)) ([0a20966](https://github.com/projek-xyz/wp-env/commit/0a20966f0090b84b359eeddbe9268825b6852ccb))
+* **blank-option:** init `updater` class ([#44](https://github.com/projek-xyz/wp-env/issues/44)) ([fc7dd6f](https://github.com/projek-xyz/wp-env/commit/fc7dd6f19a503f06bd4c413eb48c5dbe98b24179))
+* **blank-option:** initialize new starter plugin ([#33](https://github.com/projek-xyz/wp-env/issues/33)) ([cec1d50](https://github.com/projek-xyz/wp-env/commit/cec1d507c7bd5a5041f212c9d71aaa1510e0690b))
+* **init-wp:** add ability to skip media import & set option, also import media from `init-assets.txt` file ([#38](https://github.com/projek-xyz/wp-env/issues/38)) ([5965c23](https://github.com/projek-xyz/wp-env/commit/5965c236a13b7cc30aa0e823970b1503f18c4c04))
+* **init-wp:** ensure `WP_RESET` work as expected, supports for literal `latest` version and WP 7.0 ([3241177](https://github.com/projek-xyz/wp-env/commit/324117710304ae3e8ffe0265861b03e86ba5c18a))
+* **make-dist:** inject a blank `index.php` to while creating dist archive ([#36](https://github.com/projek-xyz/wp-env/issues/36)) ([ec92743](https://github.com/projek-xyz/wp-env/commit/ec927438698fc195e4dd144abed39b7fe45d364c))
+* **test:** implement integration tests ([#45](https://github.com/projek-xyz/wp-env/issues/45)) ([87b486a](https://github.com/projek-xyz/wp-env/commit/87b486a2d1f5cf885c5bf6543a901a5a1bd75339))
+* **tests:** add some utilities for base test case class ([#32](https://github.com/projek-xyz/wp-env/issues/32)) ([fd943e4](https://github.com/projek-xyz/wp-env/commit/fd943e4ffcc18929ffcda02abca9bb39137bbfeb))
+
 ## [0.0.10](https://github.com/projek-xyz/wp-env/compare/v0.0.9...v0.0.10) (2026-05-20)
 
 
