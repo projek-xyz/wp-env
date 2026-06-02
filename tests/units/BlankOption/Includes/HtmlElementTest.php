@@ -403,6 +403,49 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('__call')]
+    #[Group('dynamic-atts')]
+    public function shouldAbleToReceiveNamedArgumentsAsAttributes()
+    {
+        $elm = new Html_Element();
+
+        $elm->div(class: 'wp-list-table', id: 'my-table', data_id: 'the value', x_on_click: 'some_fn()');
+
+        $this->assertSame(
+            implode("\n", [
+                '<div class="wp-list-table" id="my-table" data-id="the value" x-on:click="some_fn()">',
+                '</div> <!-- #my-table.wp-list-table -->',
+            ]),
+            (string) $elm,
+        );
+    }
+
+    #[Test]
+    #[Group('__call')]
+    #[Group('dynamic-atts')]
+    public function shouldProperlyRenderChildWithDynamicAttributes()
+    {
+        $elm = new Html_Element();
+
+        $elm->div(
+            class: 'wp-list-table',
+            id: 'my-table',
+            data_id: 'the value',
+            x_on_click: 'some_fn()',
+            child: fn ($elm) => $elm->p(child: 'the content')
+        );
+
+        $this->assertSame(
+            implode("\n", [
+                '<div class="wp-list-table" id="my-table" data-id="the value" x-on:click="some_fn()">',
+                '<p>the content</p>',
+                '</div> <!-- #my-table.wp-list-table -->',
+            ]),
+            (string) $elm,
+        );
+    }
+
+    #[Test]
+    #[Group('__call')]
     public function shouldNotBeALegalCallsButWorks()
     {
         $elm = new Html_Element();
