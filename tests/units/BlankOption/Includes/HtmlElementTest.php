@@ -561,7 +561,7 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('call')]
-    public function shouldAppendsEchoedContentUsingCall()
+    public function callShouldAppendsEchoedContent()
     {
         $elm = new Html_Element();
 
@@ -570,6 +570,21 @@ class HtmlElementTest extends TestCase
         });
 
         $this->assertSame('the content', (string) $elm);
+    }
+
+    #[Test]
+    #[Group('call')]
+    public function callShouldAppendsItselfAndIgnoreEchoedContent()
+    {
+        $elm = new Html_Element();
+
+        $elm->call(static function ($elm) {
+            echo 'the content';
+
+            return $elm->div();
+        });
+
+        $this->assertSame("<div>\n</div>", (string) $elm);
     }
 
     #[Test]

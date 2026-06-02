@@ -559,7 +559,7 @@ class Html_Element implements Stringable {
 	/**
 	 * Appends the output of a callback to the current output.
 	 *
-	 * @template T of Closure(self, ...$args):void
+	 * @template T of Closure(self, ...$args):void|self
 	 *
 	 * @param T     $callback The callback to execute.
 	 * @param mixed ...$args  The arguments to pass to the callback.
@@ -567,9 +567,13 @@ class Html_Element implements Stringable {
 	public function call( Closure $callback, mixed ...$args ): static { // phpcs:ignore -- Squiz.Commenting.FunctionComment.IncorrectTypeHint.
 		ob_start();
 
-		$callback( $this, ...$args );
+		$return = $callback( $this, ...$args );
 
 		$output = ob_get_clean();
+
+		if ( $return instanceof self ) {
+			return $return;
+		}
 
 		if ( false !== $output ) {
 			$this->append_content( $output );
