@@ -446,6 +446,33 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('__call')]
+    #[Group('dynamic-atts')]
+    #[Group('edge-cases')]
+    public function shouldPrioritiseAttsArgumentOverVariadicOneRegardlessThePosition()
+    {
+        $elm = new Html_Element();
+
+        $elm->div(
+            class: 'foo',
+            id: 'my-elm',
+            data_id: 'the value',
+            x_on_click: 'some_fn()',
+            atts: ['class' => 'bar', 'id' => 'your-elm'],
+            child: fn ($elm) => $elm->p(child: 'the content')
+        );
+
+        $this->assertSame(
+            implode("\n", [
+                '<div class="bar" id="your-elm">',
+                '<p>the content</p>',
+                '</div> <!-- #your-elm.bar -->',
+            ]),
+            (string) $elm,
+        );
+    }
+
+    #[Test]
+    #[Group('__call')]
     public function shouldNotBeALegalCallsButWorks()
     {
         $elm = new Html_Element();

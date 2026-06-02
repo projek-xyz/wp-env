@@ -297,18 +297,14 @@ class Html_Element implements Stringable {
 		$atts = $args[0] ?? $args['atts'] ?? array();
 
 		if ( ( is_array( $atts ) && empty( $atts ) ) && count( $args ) > 0 ) {
-			foreach ( $args as $attr => $value ) {
-				if ( 'child' === $attr ) {
+			foreach ( $args as $name => $value ) {
+				if ( 'child' === $name ) {
 					continue;
 				}
 
-				$attr = str_replace( '_', '-', strtolower( $attr ) );
+				$name = str_replace( '_', '-', $name );
 
-				if ( str_starts_with( $attr, 'x-on' ) ) {
-					$attr = str_replace( 'x-on-', 'x-on:', $attr );
-				}
-
-				$atts[ $attr ] = $value;
+				$atts[ $name ] = $value;
 			}
 		}
 
@@ -377,7 +373,7 @@ class Html_Element implements Stringable {
 
 		if ( in_array( $tag, self::VOID_TAGS, true ) ) {
 			$content = ! empty( $atts )
-				? sprintf( '<%s %s />', $tag, $this->build_attributes( $atts ) )
+				? sprintf( '<%s %s />', $tag, $this->build_attributes( ...$atts ) )
 				: sprintf( '<%s />', $tag );
 
 			$this->allow_tag( $tag, $atts );
@@ -398,7 +394,7 @@ class Html_Element implements Stringable {
 		array_unshift( $this->tags_stack, $tag );
 
 		$content = ! empty( $atts )
-			? sprintf( '<%s %s>', $tag, $this->build_attributes( $atts ) )
+			? sprintf( '<%s %s>', $tag, $this->build_attributes( ...$atts ) )
 			: sprintf( '<%s>', $tag );
 
 		$this->allow_tag( $tag, $atts );
@@ -819,9 +815,9 @@ class Html_Element implements Stringable {
 	/**
 	 * Builds an HTML attribute string from an array of attributes.
 	 *
-	 * @param array<string, mixed> $atts The attributes to build.
+	 * @param array|bool|int|string ...$atts The attributes to build.
 	 */
-	private function build_attributes( array $atts ): string {
+	private function build_attributes( array|bool|int|string ...$atts ): string {
 		static $boolean_attributes = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 			'checked', 'disabled', 'inert', 'multiple', 'readonly', 'required', 'selected',
 		); // phpcs:enable
@@ -829,7 +825,13 @@ class Html_Element implements Stringable {
 		$results = array();
 
 		foreach ( $atts as $name => $value ) {
+			/** @var string $name */
 			$name = strtolower( trim( $name ) );
+
+			// Fix alpine.js event declaration when it was defined from a named-argument.
+			if ( str_starts_with( $name, 'x-on-' ) ) {
+				$name = str_replace( 'x-on-', 'x-on:', $name );
+			}
 
 			if ( ! preg_match( '/^' . self::VALID_ATTRIBUTE_NAME . '$/', $name ) ) {
 				continue;
