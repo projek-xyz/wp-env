@@ -141,6 +141,7 @@ jobs:
       env:
         FORWARD_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
         FOR_RELEASE: ${{ steps.packages.outputs.for-release }}
+        RELEASE_VERSION: ${{ steps.packages.outputs.release-version }}
       run: |
         scripts/make-dist.sh
 

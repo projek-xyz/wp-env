@@ -20,7 +20,7 @@ FOR_RELEASE=${FOR_RELEASE:-0}
 COMMIT_MESSAGE=${COMMIT_MESSAGE:-}
 
 RELEASE_URL=${RELEASE_URL:-""}
-tag_name=${GITHUB_REF_NAME:-"v0.0.0"}
+RELEASE_VERSION=${RELEASE_VERSION:-$GITHUB_REF_NAME}
 new_releases=0
 
 if [[ -n "$COMMIT_MESSAGE" ]]; then
@@ -28,7 +28,7 @@ if [[ -n "$COMMIT_MESSAGE" ]]; then
     FOR_RELEASE=$([[ $COMMIT_MESSAGE =~ "chore(release)" ]] && echo "1" || echo "0")
 
     if [[ "$FOR_RELEASE" -eq 1 ]]; then
-        tag_name=$(echo "$COMMIT_MESSAGE" | head -n 1 | sed 's/chore(release): //; s/^v//')
+        RELEASE_VERSION=$(echo "$COMMIT_MESSAGE" | sed 's/chore(release): //; s/^v//')
     fi
 fi
 
@@ -97,13 +97,13 @@ make_dist() {
     mv "$DIST_DIR/$pkg.zip" "$DIST_DIR/$pkg_archive"
 
     if [[ "$FOR_RELEASE" -eq 1 ]]; then
-        download_url="https://github.com/$REPO/releases/download/$tag_name/$pkg_archive"
+        download_url="https://github.com/$REPO/releases/download/$RELEASE_VERSION/$pkg_archive"
         info_url="https://github.com/$REPO/blob/main/packages/$pkg/CHANGELOG.md"
 
         jq ".[\"$pkg\"] = {
             \"type\": \"$pkg_type\",
             \"version\": \"$pkg_version\",
-            \"tag_name\": \"$tag_name\",
+            \"tag_name\": \"$RELEASE_VERSION\",
             \"download_url\": \"$download_url\",
             \"info_url\": \"$info_url\",
             \"php_version\": \"$PHP_VERSION\",
@@ -170,12 +170,12 @@ done
 
 if [[ "$is_check" -eq 1 && -n "${CI:-}" && -n "${GITHUB_OUTPUT}" ]]; then
     echo "for-release=$FOR_RELEASE" >> $GITHUB_OUTPUT
-    echo "release-version=$tag_name" >> $GITHUB_OUTPUT
+    echo "release-version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
     echo "new-release=$new_releases" >> $GITHUB_OUTPUT
 fi
 
 if [[ "$FOR_RELEASE" -eq 1 ]]; then
-  echo -e "\e[1;32mSuccess:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
+  echo -e "\e[1;32mSuccess:\e[0m Prepare for '\e[1;33m$RELEASE_VERSION\e[0m'"
 else
-  echo -e "\e[1;35mNotice:\e[0m Prepare for '\e[1;33m$tag_name\e[0m'"
+  echo -e "\e[1;35mNotice:\e[0m Prepare for '\e[1;33m$RELEASE_VERSION\e[0m'"
 fi
