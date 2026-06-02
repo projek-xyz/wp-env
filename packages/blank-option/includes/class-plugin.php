@@ -339,7 +339,7 @@ class Plugin {
 	 * @return string
 	 * @throws \InvalidArgumentException If the path is not found.
 	 */
-	public function directory_path( string ...$paths ): string {
+	public function get_path( string ...$paths ): string {
 		$rel_path = implode( '/', array_filter( $paths ) );
 		$realpath = realpath( "$this->directory_path/$rel_path" );
 
@@ -358,7 +358,7 @@ class Plugin {
 	 * @param string ...$paths Path segments to append.
 	 * @return string
 	 */
-	public function directory_url( string ...$paths ): string {
+	public function get_url( string ...$paths ): string {
 		$paths = array_merge( array( $this->directory_url ), $paths );
 
 		return implode( '/', array_filter( $paths ) );
@@ -400,8 +400,8 @@ class Plugin {
 		}
 
 		$asset = array(
-			'dir'     => $this->directory_path( $this->asset_dir, $path ),
-			'url'     => $this->directory_url( $this->asset_dir, $path ),
+			'dir'     => $this->get_path( $this->asset_dir, $path ),
+			'url'     => $this->get_url( $this->asset_dir, $path ),
 			'version' => $this->get( 'version' ),
 		);
 
@@ -421,7 +421,7 @@ class Plugin {
 	 * @return string|false The content of the file.
 	 */
 	public function get_file_contents( string $path ): string|false {
-		return $this->filesystem()->get_contents( $this->directory_path( $path ) );
+		return $this->filesystem()->get_contents( $this->get_path( $path ) );
 	}
 
 	/**

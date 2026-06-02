@@ -244,7 +244,7 @@ class PluginTest extends TestCase
         defined('SCRIPT_DEBUG') || define('SCRIPT_DEBUG', true);
 
         $asset_version = $plugin->get_asset_url('blank.css', 'version');
-        $filetime = (string) filemtime($plugin->directory_path('assets/blank.css'));
+        $filetime = (string) filemtime($plugin->get_path('assets/blank.css'));
 
         $this->assertSame(BLANK_VERSION . '-' . $filetime, $asset_version);
     }
