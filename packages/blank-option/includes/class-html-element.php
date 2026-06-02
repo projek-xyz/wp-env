@@ -243,13 +243,6 @@ class Html_Element implements Stringable {
 	private bool $new_line = true;
 
 	/**
-	 * Initializes the HTML instance.
-	 */
-	public function __construct() {
-		// .
-	}
-
-	/**
 	 * Returns debug information for the HTML instance.
 	 *
 	 * @codeCoverageIgnore

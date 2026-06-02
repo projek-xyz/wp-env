@@ -27,6 +27,7 @@ class Updater {
 	) {
 		// .
 	}
+
 	/**
 	 * Checks if a update is available.
 	 *
