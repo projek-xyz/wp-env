@@ -97,7 +97,7 @@ make_dist() {
     mv "$DIST_DIR/$pkg.zip" "$DIST_DIR/$pkg_archive"
 
     if [[ "$FOR_RELEASE" -eq 1 ]]; then
-        download_url="https://github.com/$REPO/releases/download/$RELEASE_VERSION/$pkg_archive"
+        download_url="https://github.com/$REPO/releases/download/v$RELEASE_VERSION/$pkg_archive"
         info_url="https://github.com/$REPO/blob/main/packages/$pkg/CHANGELOG.md"
 
         jq ".[\"$pkg\"] = {
