@@ -28,12 +28,12 @@ final class Blank_Page extends Admin_Page {
 	 * @return void
 	 */
 	public function menu(): void {
-		$page = \add_submenu_page(
+		$page                = \add_submenu_page(
 			'plugins.php',
 			\__( 'Blank Options', 'blank-option' ),
 			\__( 'Blank Options', 'blank-option' ),
 			'activate_plugins',
-			$this->plugin->get( 'text_domain' ),
+			$this->menu_slug = $this->plugin->get( 'text_domain' ),
 			array( $this, 'render' ),
 		);
 
@@ -111,6 +111,18 @@ final class Blank_Page extends Admin_Page {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function load(): void {
+		parent::load();
+
+		/**
+		 * Enqueue admin scripts and styles.
+		 */
+		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function render(): void {
 		Html_Element::div(
 			array( 'class' => 'wrap' ),
@@ -162,16 +174,5 @@ final class Blank_Page extends Admin_Page {
 		}
 
 		return $this->to_paragraphs( ...$links );
-	}
-
-	/**
-	 * Get the URL for the plugin settings page.
-	 *
-	 * @return string
-	 */
-	public function get_url(): string {
-		$base_name = $this->plugin->get( 'text_domain' );
-
-		return \esc_url( \admin_url( "plugins.php?page={$base_name}" ) );
 	}
 }

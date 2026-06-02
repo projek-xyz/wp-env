@@ -76,6 +76,16 @@ abstract class BaseTestCase extends PHPUnitTestCase
             static fn (string $path = '', string $scheme = 'admin') => "http://example.com/wp-admin/$path"
         );
 
+        Functions\when('add_query_arg')->alias(static function (array $key, string $value) {
+            $parsed = parse_url($value);
+
+            parse_str($parsed['query'], $query);
+
+            $parsed['query'] = http_build_query(array_merge($query, $key));
+
+            return sprintf('%s://%s%s?%s', $parsed['scheme'], $parsed['host'], $parsed['path'], $parsed['query'],);
+        });
+
         Functions\when('wp_parse_args')->alias(
             fn($a, $b) => array_merge($b, $a)
         );

@@ -129,6 +129,9 @@ class BlankPageTest extends TestCase
     public function actionLinksShouldPrependAdditionalLinks()
     {
         Functions\when('current_user_can')->justReturn(true);
+        Functions\when('menu_page_url')->alias(static function () {
+            return \admin_url('plugins.php?page=blank-option');
+        });
 
         $this->assertSame(
             [

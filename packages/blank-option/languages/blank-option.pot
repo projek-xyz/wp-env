@@ -47,15 +47,15 @@ msgstr ""
 msgid "Supports"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:133
+#: includes/admin/class-blank-page.php:145
 msgid "Blank Help"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:135
+#: includes/admin/class-blank-page.php:147
 msgid "This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too"
 msgstr ""
 
-#: includes/admin/class-blank-page.php:149
+#: includes/admin/class-blank-page.php:161
 msgid "For more information:"
 msgstr ""
 

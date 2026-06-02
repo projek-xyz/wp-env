@@ -20,6 +20,13 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Admin_Page {
 	/**
+	 * Admin page menu slug.
+	 *
+	 * @var string
+	 */
+	protected string $menu_slug = '';
+
+	/**
 	 * Initialize the admin page.
 	 *
 	 * @param Plugin $plugin The plugin instance.
@@ -50,11 +57,6 @@ abstract class Admin_Page {
 		if ( $sidebar_content = $this->help_sidebar() ) {
 			$screen->set_help_sidebar( $sidebar_content );
 		}
-
-		/**
-		 * Enqueue admin scripts and styles.
-		 */
-		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -63,14 +65,6 @@ abstract class Admin_Page {
 	 * @return void
 	 */
 	abstract public function menu(): void;
-
-	/**
-	 * Enqueue admin scripts and styles.
-	 *
-	 * @param string $hook The current admin page hook.
-	 * @return void
-	 */
-	abstract public function enqueue_scripts( string $hook ): void;
 
 	/**
 	 * List of help tabs available for this particular admin page.
@@ -93,10 +87,21 @@ abstract class Admin_Page {
 	/**
 	 * Render the admin page.
 	 *
-	 * @codeCoverageIgnore Not implemented just yet.
 	 * @return void
 	 */
 	abstract public function render(): void;
+
+	/**
+	 * Admin URL for the page.
+	 *
+	 * @param array $query The query arguments to add to the URL.
+	 */
+	public function get_url( array $query = array() ): string {
+		return \add_query_arg(
+			$query,
+			\menu_page_url( $this->menu_slug, false )
+		);
+	}
 
 	/**
 	 * Format array to paragraphs.
