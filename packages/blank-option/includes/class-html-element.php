@@ -825,7 +825,11 @@ class Html_Element implements Stringable {
 		$results = array();
 
 		foreach ( $atts as $name => $value ) {
-			/** @var string $name */
+			/**
+			 * The $name will always be a string.
+			 *
+			 * @var string $name
+			 */
 			$name = strtolower( trim( $name ) );
 
 			// Fix alpine.js event declaration when it was defined from a named-argument.
