@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.12](https://github.com/projek-xyz/wp-env/compare/v0.0.11...v0.0.12) (2026-06-02)
+
+
+### Bug Fixes
+
+* **ci:** release distribution not generated properly ([#47](https://github.com/projek-xyz/wp-env/issues/47)) ([f9f3dd1](https://github.com/projek-xyz/wp-env/commit/f9f3dd1fc927f7a64ae82b9accf1f50bc4a1c797))
+
 ## [0.0.11](https://github.com/projek-xyz/wp-env/compare/v0.0.10...v0.0.11) (2026-06-02)
 
 
