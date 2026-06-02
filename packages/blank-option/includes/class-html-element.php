@@ -518,6 +518,45 @@ class Html_Element implements Stringable {
 	}
 
 	/**
+	 * Append a whitespace character.
+	 *
+	 * @codeCoverageIgnore
+	 * @return self
+	 */
+	public function whitespace(): self {
+		$this->append_content( ' ' );
+
+		return $this;
+	}
+
+	/**
+	 * Append a clearing element.
+	 *
+	 * @param 'br'|'div'|'span' $mode The clearing element type.
+	 * @throws \InvalidArgumentException If an invalid mode is provided.
+	 * @return self
+	 */
+	public function clear( string $mode = 'br' ): self {
+		if ( ! in_array( $mode, array( 'br', 'div', 'span' ), true ) ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'%s::clear(): Argument #1 ($mode) must be one of "br", "div", or "span", %s given',
+					__CLASS__,
+					\esc_html( $mode )
+				)
+			);
+		}
+
+		$this->open_tag( $mode, array( 'class' => 'clear' ) );
+
+		if ( 'br' !== $mode ) {
+			$this->close_tag( $mode );
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Appends the output of a callback to the current output.
 	 *
 	 * @template T of Closure(self, ...$args):void

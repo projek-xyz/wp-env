@@ -536,6 +536,45 @@ class HtmlElementTest extends TestCase
     }
 
     #[Test]
+    #[Group('clear')]
+    #[Group('positive-value')]
+    public function clearShouldAppendsBrTagByDefault()
+    {
+        $elm = new Html_Element();
+
+        $elm->clear();
+
+        $this->assertSame('<br class="clear" />', (string) $elm);
+    }
+
+    #[Test]
+    #[Group('clear')]
+    #[Group('positive-value')]
+    public function clearShouldAutoCloseNonBrMode()
+    {
+        $elm = new Html_Element();
+
+        $elm->clear('span');
+
+        $this->assertSame('<span class="clear"></span>', (string) $elm);
+    }
+
+    #[Test]
+    #[Group('clear')]
+    #[Group('negative-value')]
+    public function clearShouldThrowExceptionForUnsupportedMode()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Blank_Option\Html_Element::clear(): Argument #1 ($mode) must be one of "br", "div", or "span", p given'
+        );
+
+        $elm = new Html_Element();
+
+        $elm->clear('p');
+    }
+
+    #[Test]
     #[Group('dump')]
     public function shouldNotDumpDebugInfoToContentOnProdEnv()
     {
