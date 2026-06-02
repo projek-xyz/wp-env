@@ -39,6 +39,15 @@ abstract class Admin_Page {
 	}
 
 	/**
+	 * Retrieve this page priority in menu registration.
+	 *
+	 * @return int
+	 */
+	final public function get_priority(): int {
+		return property_exists( $this, 'priority' ) ? $this->priority : 10;
+	}
+
+	/**
 	 * Admin page load functionalities.
 	 *
 	 * @return void

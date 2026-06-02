@@ -315,13 +315,12 @@ class Plugin {
 	 * Register an admin page.
 	 *
 	 * @param Admin_Page $page The admin page instance.
-	 * @return void
 	 */
 	public function add_admin_page( Admin_Page $page ): void {
 		/**
 		 * Register the admin menu.
 		 */
-		\add_action( 'admin_menu', array( $page, 'menu' ) );
+		\add_action( 'admin_menu', array( $page, 'menu' ), $page->get_priority() );
 
 		if ( method_exists( $page, 'action_links' ) ) {
 			/**
