@@ -7,14 +7,14 @@ namespace UnitTests\BlankOption\Includes;
 use Blank_Option\Plugin;
 use Blank_Option\Updater;
 use Brain\Monkey\Functions;
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use WP_Error;
 
 /**
  * Unit tests for the blank's `includes/class-plugin.php`.
  */
-#[RunClassInSeparateProcess]
+#[Group('update')]
 class UpdaterTest extends TestCase
 {
     private array $updates = [
@@ -32,6 +32,7 @@ class UpdaterTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
     public function shouldReturnFalseWhenCurrentlyCheckingAnotherPlugin()
     {
         $this->assertFalse(
@@ -44,6 +45,7 @@ class UpdaterTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
     public function shouldReturnsFalseWhenTheresErrorWhileCheckingUpdates()
     {
         Functions\when('get_site_transient')->justReturn(false);
@@ -61,6 +63,7 @@ class UpdaterTest extends TestCase
     }
 
     #[Test]
+    #[Group('negative-value')]
     public function shouldReturnsFalseWhenTheresNoNewReleaseAvailable()
     {
         Functions\when('get_site_transient')->justReturn(false);
@@ -81,6 +84,7 @@ class UpdaterTest extends TestCase
     }
 
     #[Test]
+    #[Group('cached-value')]
     public function shouldReturnsArrayWhenTheresSiteTransient()
     {
         Functions\when('get_site_transient')->justReturn((object) $this->updates);
@@ -100,6 +104,7 @@ class UpdaterTest extends TestCase
     }
 
     #[Test]
+    #[Group('positive-value')]
     public function shouldReturnsArrayWhenTheresAnUpdateAvailable()
     {
         Functions\when('get_site_transient')->justReturn(false);

@@ -7,16 +7,19 @@ namespace UnitTests\BlankOption;
 use Blank_Option\Plugin;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Unit tests for the blank's `blank-option.php`.
  */
+#[Group('entrypoint')]
 #[RunClassInSeparateProcess]
 class FunctionsTest extends TestCase
 {
     #[Test]
+    #[Group('initialization')]
     public function shouldBeInitializedWhenRequirementsMet()
     {
         Functions\expect('register_activation_hook')->once()->andReturnUsing(function ($_, $callback) {
@@ -44,6 +47,7 @@ class FunctionsTest extends TestCase
     }
 
     #[Test]
+    #[Group('initialization')]
     public function shouldNotBeInitializedWhenRequirementsNotMet()
     {
         Functions\expect('register_activation_hook')->never();

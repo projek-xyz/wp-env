@@ -8,7 +8,7 @@ use Blank_Option\Admin\Blank_Page;
 use Blank_Option\Plugin;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use UnitTests\BlankOption\Includes\TestCase;
 use WP_Screen;
@@ -16,17 +16,16 @@ use WP_Screen;
 /**
  * Unit tests for the blank's `includes/class-admin.php`.
  */
-#[RunClassInSeparateProcess]
+#[Group('admin-page')]
 class BlankPageTest extends TestCase
 {
-    protected static bool $loadAutoloader = true;
-
     private function page(?Plugin $plugin = null): Blank_Page
     {
         return new Blank_Page($plugin ?? Plugin::instance());
     }
 
     #[Test]
+    #[Group('static-asset')]
     public function shouldNotEnqueueAdminScriptsOnOtherAdminScreens()
     {
         Functions\expect('wp_enqueue_style')->never();
@@ -36,6 +35,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('static-asset')]
     public function shouldAbleToEnqueueAdminScriptsOnPluginScreen()
     {
         Functions\expect('wp_enqueue_style')->once()->andReturnUsing(
@@ -66,6 +66,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-menu')]
     public function shouldAbleToRegisterNewAdminPage()
     {
         Functions\expect('add_submenu_page')->once()->andReturnUsing(
@@ -102,6 +103,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-menu')]
     public function shouldNotAbleToRegisterAdminPageWhenCurrentUserDoesNotHaveTheRequiredCapability()
     {
         Functions\expect('add_submenu_page')->once()->andReturn(false);
@@ -112,6 +114,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('user-capability')]
     public function actionLinksShouldReturnEmptyOnEmptyScreen()
     {
         Functions\expect('current_user_can')->once()->andReturn(false);
@@ -122,6 +125,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('user-capability')]
     public function actionLinksShouldPrependAdditionalLinks()
     {
         Functions\when('current_user_can')->justReturn(true);
@@ -145,6 +149,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-page')]
     public function loadHookShouldDoingNothingOnEmptyScreen()
     {
         Functions\expect('get_current_screen')->once()->andReturnNull();
@@ -154,6 +159,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-page')]
     public function loadHookShouldRegisterContextualHelpTabs()
     {
         Functions\expect('get_current_screen')->once()->andReturnUsing(function () {
@@ -176,6 +182,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-page')]
     public function loadHookShouldExcludeEmailFromHelpSidebar()
     {
         Functions\expect('get_current_screen')->once()->andReturnUsing(function () {
@@ -203,6 +210,7 @@ class BlankPageTest extends TestCase
     }
 
     #[Test]
+    #[Group('admin-page')]
     public function renderShouldPrintOutputToPluginScreen()
     {
         $this->expectOutputString(implode("\n", [

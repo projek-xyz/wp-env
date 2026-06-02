@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace IntegrationTests\CustomTheme;
 
 use Custom_Theme\Theme;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -31,6 +32,7 @@ class ThemeTest extends TestCase
      * Diagnostic test to check if the theme is actually active.
      */
     #[Test]
+    #[Group('initialization')]
     public function isThemeActive()
     {
         $this->assertEquals(
@@ -47,6 +49,8 @@ class ThemeTest extends TestCase
      * setup/cleanup tasks specifically for this theme without modifying the theme core.
      */
     #[Test]
+    #[Group('activation')]
+    #[Group('deactivation')]
     public function shouldTriggerThemeLifecycleActions()
     {
         $activated = false;
@@ -83,6 +87,7 @@ class ThemeTest extends TestCase
      * work as expected and follow WordPress standards for dependency management.
      */
     #[Test]
+    #[Group('static-asset')]
     public function shouldEnqueueThemeScripts()
     {
         // Act: Trigger script enqueuing
@@ -119,6 +124,7 @@ class ThemeTest extends TestCase
      * properly interfaces with WordPress's internal update transient system.
      */
     #[Test]
+    #[Group('update')]
     public function shouldHandleUpdateChecksCorrectly()
     {
         \add_filter('http_response', [$this, 'mockUpdateResponse']);
@@ -138,6 +144,7 @@ class ThemeTest extends TestCase
      * API rate limits during standard WordPress administration.
      */
     #[Test]
+    #[Group('update')]
     public function shouldCacheUpdateInformationInTransient()
     {
         $cache_key = 'custom-theme_updates';

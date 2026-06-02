@@ -6,6 +6,7 @@ namespace IntegrationTests\BlankOption;
 
 use Blank_Option\Plugin;
 use Blank_Option\Updater;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -32,6 +33,7 @@ class UpdaterTest extends TestCase
      * properly interfaces with WordPress's internal update transient system.
      */
     #[Test]
+    #[Group('update')]
     public function shouldHandleUpdateChecksCorrectly()
     {
         \add_filter('http_response', [$this, 'mockUpdateResponse']);

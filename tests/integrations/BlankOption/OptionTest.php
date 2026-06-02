@@ -6,11 +6,13 @@ namespace IntegrationTests\BlankOption;
 
 use Blank_Option\Option;
 use Blank_Option\Plugin;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Integration tests for the Option class.
  */
+#[Group('option')]
 class OptionTest extends TestCase
 {
     /**
@@ -21,6 +23,7 @@ class OptionTest extends TestCase
      * and can be retrieved correctly, maintaining data integrity.
      */
     #[Test]
+    #[Group('database')]
     public function shouldPersistOptionToDatabase()
     {
         $plugin = Plugin::instance();
