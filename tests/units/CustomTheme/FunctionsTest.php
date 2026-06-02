@@ -20,7 +20,7 @@ use WP_Error;
 class FunctionsTest extends TestCase
 {
     /**
-     * Verifies that the 'ct_activation' action is fired when the 'after_switch_theme' hook is triggered.
+     * Verifies that the 'wp_enqueue_scripts' action is added when the plugin is initialized.
      *
      * @return void
      */
