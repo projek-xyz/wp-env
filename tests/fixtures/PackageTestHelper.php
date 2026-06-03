@@ -114,7 +114,7 @@ trait PackageTestHelper
         }
 
         self::$availablePlugins = array_reduce(
-            glob(WP_PLUGIN_DIR . '/*', GLOB_ONLYDIR),
+            glob(ABSPATH . '/wp-content/plugins/*', GLOB_ONLYDIR),
             static function ($out, $path) {
                 $name = basename($path);
                 $plugin = [];
