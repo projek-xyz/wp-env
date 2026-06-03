@@ -15,6 +15,13 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     use PackageTestHelper;
 
     /**
+     * List of activated third-party plugins during tests.
+     *
+     * @var string[]
+     */
+    private array $activatedPlugins = [];
+
+    /**
      * {@inheritdoc}
      */
     #[Override]
@@ -69,6 +76,23 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     }
 
     /**
+    * {@inheritdoc}
+    */
+    public function tear_down(): void // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    {
+        parent::tear_down();
+
+        $plugins = array_filter(array_map(
+            fn ($slug) => $this->getAvailablePlugin($slug, 'file'),
+            $this->activatedPlugins
+        ));
+
+        if (!empty($plugins)) {
+            \deactivate_plugins($plugins);
+        }
+    }
+
+    /**
      * Handles theme-specific environment setup.
      *
      * @param string $name Theme name.
@@ -110,5 +134,32 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
         );
 
         $this->preparePackage($name, $path, $url, $version);
+    }
+
+    /**
+     * Activate third-party plugin.
+     *
+     * @param string $name
+     * @return void
+     * @throws \RuntimeException
+     */
+    final protected function activatePlugin(string $name): void
+    {
+        if (! $plugin = $this->getAvailablePlugin($name, 'file')) {
+            return;
+        }
+
+        $resuls = \activate_plugin($plugin);
+
+        if ($resuls instanceof \WP_Error) {
+            $code = array_key_first($resuls->errors);
+            $message = $resuls->errors[$code][0];
+
+            throw new \RuntimeException(
+                sprintf('Unable to activate plugin "%s" due to %s: %s', $name, $code, $message)
+            );
+        }
+
+        $this->activatedPlugins[] = $name;
     }
 }
