@@ -82,12 +82,14 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     {
         parent::tear_down();
 
-        $plugins = array_map(
-            fn ($name) => $this->getAvailablePlugin($name, 'file'),
+        $plugins = array_filter(array_map(
+            fn ($slug) => $this->getAvailablePlugin($slug, 'file'),
             $this->activatedPlugins
-        );
+        ));
 
-        \deactivate_plugins(array_filter($plugins));
+        if (!empty($plugins)) {
+            \deactivate_plugins($plugins);
+        }
     }
 
     /**

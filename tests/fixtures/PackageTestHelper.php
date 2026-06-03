@@ -114,22 +114,25 @@ trait PackageTestHelper
         }
 
         self::$availablePlugins = array_reduce(
-            glob(ABSPATH . '/wp-content/plugins/*', GLOB_ONLYDIR),
+            glob(ABSPATH . '/wp-content/plugins/*', GLOB_ONLYDIR) ?: [],
             static function ($out, $path) {
                 $name = basename($path);
                 $plugin = [];
 
                 foreach (glob("$path/*.php") as $filepath) {
-                    $fd = fopen($filepath, 'r');
+                    if (false === ($fd = fopen($filepath, 'r'))) {
+                        continue;
+                    }
+
                     $filename = basename($filepath);
-                    $header = fread($fd, 200);
+                    $header = fread($fd, 320);
 
                     if (!str_contains($header, 'Plugin Name: ')) {
                         fclose($fd);
                         continue;
                     }
 
-                    preg_match('/Plugin Name: *(?<name>[\w\s()]+)/', $header, $matches);
+                    preg_match('/Plugin Name: *(?<name>[^\r\n]+)/', $header, $matches);
 
                     $plugin['name'] = $matches['name'];
                     $plugin['file'] = "$name/$filename";
@@ -151,21 +154,21 @@ trait PackageTestHelper
     /**
      * Retrieve data from available third-party plugin.
      *
-     * @param string $name Plugin name
+     * @param string $slug Plugin slug.
      * @param null|'name'|'file'|'path' $key Data key.
      * @return ($key is string ? string|null : array|null)
      */
-    final protected function getAvailablePlugin(string $name, ?string $key = null): string|array|null
+    final protected function getAvailablePlugin(string $slug, ?string $key = null): string|array|null
     {
-        if (! isset(self::$availablePlugins[$name])) {
+        if (! isset(self::$availablePlugins[$slug])) {
             return null;
         }
 
         if (null === $key) {
-            return self::$availablePlugins[$name];
+            return self::$availablePlugins[$slug];
         }
 
-        return self::$availablePlugins[$name][$key] ?? null;
+        return self::$availablePlugins[$slug][$key] ?? null;
     }
 
     /**
