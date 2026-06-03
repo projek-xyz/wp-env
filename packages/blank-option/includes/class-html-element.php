@@ -22,128 +22,128 @@ defined( 'ABSPATH' ) || exit;
  * @credit Contact Form 7's `WPCF7_HTMLFormatter` class.
  *
  * // Grouping & Text
- * @method static self div(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self p(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self span(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self br(array $atts = [])
- * @method static self wbr(array $atts = [])
- * @method static self hr(array $atts = [])
+ * @method static self div(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self p(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self span(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self br(array $atts = [], string|array ...$args)
+ * @method static self wbr(array $atts = [], string|array ...$args)
+ * @method static self hr(array $atts = [], string|array ...$args)
  *
  * // Sectioning
- * @method static self article(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self section(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self nav(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self aside(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self header(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self footer(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self main(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self address(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h1(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h2(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h3(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h4(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h5(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self h6(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self hgroup(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self article(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self section(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self nav(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self aside(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self header(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self footer(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self main(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self address(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h1(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h2(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h3(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h4(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h5(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self h6(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self hgroup(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Lists
- * @method static self ul(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self ol(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self menu(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self li(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self dl(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self dt(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self dd(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self ul(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self ol(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self menu(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self li(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self dl(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self dt(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self dd(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Tables
- * @method static self table(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self caption(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self colgroup(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self col(array $atts = [])
- * @method static self thead(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self tbody(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self tfoot(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self tr(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self th(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self td(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self table(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self caption(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self colgroup(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self col(array $atts = [], string|array ...$args)
+ * @method static self thead(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self tbody(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self tfoot(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self tr(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self th(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self td(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Forms
- * @method static self form(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self fieldset(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self legend(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self label(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self input(array $atts = [])
- * @method static self button(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self select(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self optgroup(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self option(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self textarea(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self datalist(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self output(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self progress(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self meter(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self form(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self fieldset(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self legend(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self label(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self input(array $atts = [], string|array ...$args)
+ * @method static self button(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self select(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self optgroup(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self option(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self textarea(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self datalist(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self output(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self progress(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self meter(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Inline Formatting
- * @method static self a(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self strong(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self b(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self em(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self i(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self u(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self s(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self small(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self mark(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self sub(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self sup(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self abbr(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self dfn(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self cite(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self q(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self ruby(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self rt(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self rp(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self a(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self strong(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self b(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self em(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self i(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self u(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self s(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self small(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self mark(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self sub(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self sup(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self abbr(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self dfn(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self cite(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self q(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self ruby(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self rt(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self rp(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Inline Tech & Data
- * @method static self data(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self time(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self code(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self kbd(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self samp(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self var(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self bdi(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self bdo(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self ins(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self del(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self data(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self time(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self code(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self kbd(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self samp(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self var(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self bdi(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self bdo(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self ins(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self del(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Figures & Interactive
- * @method static self figure(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self figcaption(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self details(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self summary(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self dialog(array $atts = [], Closure(self)|string|self $child = null)
+ * @method static self figure(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self figcaption(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self details(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self summary(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self dialog(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
  *
  * // Media & Embedded
- * @method static self img(array $atts = [])
- * @method static self picture(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self video(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self audio(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self source(array $atts = [])
- * @method static self track(array $atts = [])
- * @method static self iframe(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self canvas(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self map(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self area(array $atts = [])
- * @method static self object(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self param(array $atts = [])
- * @method static self embed(array $atts = [])
+ * @method static self img(array $atts = [], string|array ...$args)
+ * @method static self picture(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self video(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self audio(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self source(array $atts = [], string|array ...$args)
+ * @method static self track(array $atts = [], string|array ...$args)
+ * @method static self iframe(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self canvas(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self map(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self area(array $atts = [], string|array ...$args)
+ * @method static self object(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self param(array $atts = [], string|array ...$args)
+ * @method static self embed(array $atts = [], string|array ...$args)
  *
  * // Miscellaneous
- * @method static self pre(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self blockquote(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self noscript(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self template(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self slot(array $atts = [], Closure(self)|string|self $child = null)
- * @method static self base(array $atts = [])
+ * @method static self pre(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self blockquote(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self noscript(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self template(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self slot(array $atts = [], Closure(self)|string|self $child = null, string|array ...$args)
+ * @method static self base(array $atts = [], string|array ...$args)
  */
 class Html_Element implements Stringable {
 	/**
@@ -296,6 +296,18 @@ class Html_Element implements Stringable {
 	public function __call( string $method, array $args = array() ): self {
 		$atts = $args[0] ?? $args['atts'] ?? array();
 
+		if ( ( is_array( $atts ) && empty( $atts ) ) && count( $args ) > 0 ) {
+			foreach ( $args as $name => $value ) {
+				if ( 'child' === $name ) {
+					continue;
+				}
+
+				$name = str_replace( '_', '-', $name );
+
+				$atts[ $name ] = $value;
+			}
+		}
+
 		try {
 			$this->open_tag( $method, $atts );
 		} catch ( \InvalidArgumentException $err ) {
@@ -361,7 +373,7 @@ class Html_Element implements Stringable {
 
 		if ( in_array( $tag, self::VOID_TAGS, true ) ) {
 			$content = ! empty( $atts )
-				? sprintf( '<%s %s />', $tag, $this->build_attributes( $atts ) )
+				? sprintf( '<%s %s />', $tag, $this->build_attributes( ...$atts ) )
 				: sprintf( '<%s />', $tag );
 
 			$this->allow_tag( $tag, $atts );
@@ -382,7 +394,7 @@ class Html_Element implements Stringable {
 		array_unshift( $this->tags_stack, $tag );
 
 		$content = ! empty( $atts )
-			? sprintf( '<%s %s>', $tag, $this->build_attributes( $atts ) )
+			? sprintf( '<%s %s>', $tag, $this->build_attributes( ...$atts ) )
 			: sprintf( '<%s>', $tag );
 
 		$this->allow_tag( $tag, $atts );
@@ -803,9 +815,9 @@ class Html_Element implements Stringable {
 	/**
 	 * Builds an HTML attribute string from an array of attributes.
 	 *
-	 * @param array<string, mixed> $atts The attributes to build.
+	 * @param array|bool|int|string ...$atts The attributes to build.
 	 */
-	private function build_attributes( array $atts ): string {
+	private function build_attributes( array|bool|int|string ...$atts ): string {
 		static $boolean_attributes = array( // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.ArrayItemNoNewLine
 			'checked', 'disabled', 'inert', 'multiple', 'readonly', 'required', 'selected',
 		); // phpcs:enable
@@ -813,7 +825,17 @@ class Html_Element implements Stringable {
 		$results = array();
 
 		foreach ( $atts as $name => $value ) {
+			/**
+			 * The $name will always be a string.
+			 *
+			 * @var string $name
+			 */
 			$name = strtolower( trim( $name ) );
+
+			// Fix alpine.js event declaration when it was defined from a named-argument.
+			if ( str_starts_with( $name, 'x-on-' ) ) {
+				$name = str_replace( 'x-on-', 'x-on:', $name );
+			}
 
 			if ( ! preg_match( '/^' . self::VALID_ATTRIBUTE_NAME . '$/', $name ) ) {
 				continue;

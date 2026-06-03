@@ -125,13 +125,13 @@ final class Blank_Page extends Admin_Page {
 	 */
 	public function render(): void {
 		Html_Element::div(
-			array( 'class' => 'wrap' ),
-			static fn ( $elm ) => $elm
-			->h1( array( 'class' => 'wp-heading-inline' ), \get_admin_page_title() )
-			->hr( array( 'class' => 'wp-header-end' ) )
+			class: 'wrap',
+			child: static fn ( $elm ) => $elm
+			->h1( class: 'wp-heading-inline', child: \get_admin_page_title() )
+			->hr( class: 'wp-header-end' )
 			->div(
-				array( 'class' => 'inner' ),
-				static fn ( $elm ) => $elm
+				class: 'inner',
+				child: static fn ( $elm ) => $elm
 			)
 		);
 	}
