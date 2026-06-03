@@ -35,9 +35,13 @@ nbproject
 # --------------------------
 .agents
 .antigravitycli
+.cursor
 .gemini
+.github/copilot-instructions.md
 conductor
+CLAUDE.md
 GEMINI.md
+opencode.json
 
 # Development
 # --------------------------
