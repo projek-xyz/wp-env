@@ -16,6 +16,8 @@ abstract class TestCase extends BaseTestCase
 
     protected function preparePackage(string $name, string $path, ?string $url, ?string $version): void
     {
+        $this->activatePlugin('blocksy-companion');
+
         \switch_theme($name);
 
         if (!class_exists(Theme::class)) {
