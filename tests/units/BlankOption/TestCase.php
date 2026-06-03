@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UnitTests\BlankOption;
 
+use Override;
 use UnitTests\BaseTestCase;
 
 /**
@@ -12,4 +13,17 @@ use UnitTests\BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     protected const PACKAGE_NAME = 'blank-option';
+
+    #[Override]
+    protected function packageMetadata(): array
+    {
+        return [
+            'Name' => 'Blank Option',
+            'PluginURI' => 'https://example.com/blank-option',
+            'Description' => 'Something awesome is about to come.',
+            'Network' => false,
+            'UpdateURI' => '',
+            'RequiresPlugins' => '',
+        ];
+    }
 }

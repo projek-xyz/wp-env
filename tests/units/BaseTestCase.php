@@ -26,6 +26,25 @@ abstract class BaseTestCase extends PHPUnitTestCase
     private bool $resetWpVersion = false;
 
     /**
+     * @var array<string, string|bool>
+     */
+    protected array $defaultPluginData = [
+        'Name' => '',
+        'PluginURI' => '',
+        'Version' => '',
+        'Description' => '',
+        'Author' => 'Fery Wardiyanto',
+        'AuthorURI' => 'https://feryardiant.id',
+        'TextDomain' => '',
+        'DomainPath' => '/languages',
+        'Network' => false,
+        'RequiresWP' => '6.0',
+        'RequiresPHP' => '8.2',
+        'UpdateURI' => '',
+        'RequiresPlugins' => '',
+    ];
+
+    /**
      * Sets up the class before any tests run.
      */
     public static function setUpBeforeClass(): void
@@ -205,6 +224,25 @@ abstract class BaseTestCase extends PHPUnitTestCase
         Functions\when('plugin_basename')->alias(static function (string $file) {
             return str_replace(dirname($file, 2) . '/', '', $file);
         });
+
+        Functions\when('get_plugin_data')->alias(
+            function (string $file) use ($version) {
+                $data = $this->defaultPluginData;
+
+                foreach ($this->packageMetadata() as $key => $value) {
+                    if (isset($data[$key])) {
+                        $data[$key] = $value;
+                    }
+                }
+
+                $data['TextDomain'] = static::packageName();
+                $data['Version'] = static::package('version');
+                $data['Title'] = $data['Name'];
+                $data['AuthorName'] = $data['Author'];
+
+                return $data;
+            }
+        );
 
         $this->preparePackage($name, $path, $url, $version);
     }

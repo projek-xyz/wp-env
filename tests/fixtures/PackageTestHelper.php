@@ -112,4 +112,14 @@ trait PackageTestHelper
     {
         // doing nothing.
     }
+
+    /**
+     * Define package metadata.
+     *
+     * @return array<string, mixed>
+     */
+    protected function packageMetadata(): array
+    {
+        return [];
+    }
 }

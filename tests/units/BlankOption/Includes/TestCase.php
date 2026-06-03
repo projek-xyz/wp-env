@@ -52,33 +52,6 @@ abstract class TestCase extends BaseTestCase
             'xml:lang' => true,
         ];
 
-        Functions\when('get_plugin_data')->alias(
-            static function (string $file) use ($version) {
-                static::assertSame(BLANK_OPTION_FILE, $file);
-
-                $data = [
-                    'Name' => 'Blank Option',
-                    'PluginURI' => 'https://example.com/blank-option',
-                    'Version' => $version,
-                    'Description' => 'Something awesome is about to come.',
-                    'Author' => 'Fery Wardiyanto',
-                    'AuthorURI' => 'https://feryardiant.id',
-                    'TextDomain' => 'blank-option',
-                    'DomainPath' => '/languages',
-                    'Network' => false,
-                    'RequiresWP' => '6.0',
-                    'RequiresPHP' => '8.2',
-                    'UpdateURI' => '',
-                    'RequiresPlugins' => '',
-                ];
-
-                $data['Title'] = $data['Name'];
-                $data['AuthorName'] = $data['Author'];
-
-                return $data;
-            }
-        );
-
         Functions\when('wp_kses_allowed_html')->alias(
             static function (string $context) use ($commonKses) {
                 if ($context !== 'post') {
