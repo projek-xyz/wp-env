@@ -296,7 +296,10 @@ class Html_Element implements Stringable {
 	public function __call( string $method, array $args = array() ): self {
 		$atts = $args[0] ?? $args['atts'] ?? array();
 
-		if ( ( is_array( $atts ) && empty( $atts ) ) && count( $args ) > 0 ) {
+		if (
+			( is_array( $atts ) && empty( $atts ) ) &&
+			count( $args ) > 0 && ! isset( $args[0] )
+		) {
 			foreach ( $args as $name => $value ) {
 				if ( 'child' === $name ) {
 					continue;

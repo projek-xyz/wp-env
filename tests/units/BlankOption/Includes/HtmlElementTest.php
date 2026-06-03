@@ -473,6 +473,29 @@ class HtmlElementTest extends TestCase
 
     #[Test]
     #[Group('__call')]
+    #[Group('dynamic-atts')]
+    #[Group('edge-cases')]
+    public function shouldIgnoreAttsWhenItsEmptyAndNotUsingVariadicParam()
+    {
+        $elm = new Html_Element();
+
+        $elm->div(
+            [],
+            fn ($elm) => $elm->p(child: 'the content')
+        );
+
+        $this->assertSame(
+            implode("\n", [
+                '<div>',
+                '<p>the content</p>',
+                '</div>',
+            ]),
+            (string) $elm,
+        );
+    }
+
+    #[Test]
+    #[Group('__call')]
     public function shouldNotBeALegalCallsButWorks()
     {
         $elm = new Html_Element();
