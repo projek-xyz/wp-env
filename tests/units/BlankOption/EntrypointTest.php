@@ -16,7 +16,7 @@ use PHPUnit\Framework\Attributes\Test;
  */
 #[Group('entrypoint')]
 #[RunClassInSeparateProcess]
-class FunctionsTest extends TestCase
+class EntrypointTest extends TestCase
 {
     #[Test]
     #[Group('initialization')]

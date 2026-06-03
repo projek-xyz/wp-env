@@ -17,7 +17,7 @@ use WP_Error;
  * Unit tests for the custom theme's functions.php.
  */
 #[Group('entrypoint')]
-class FunctionsTest extends TestCase
+class EntrypointTest extends TestCase
 {
     /**
      * Verifies that the 'wp_enqueue_scripts' action is added when the plugin is initialized.
