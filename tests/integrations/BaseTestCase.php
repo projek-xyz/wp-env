@@ -78,7 +78,7 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     /**
     * {@inheritdoc}
     */
-    public function tear_down()
+    public function tear_down(): void // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     {
         parent::tear_down();
 
