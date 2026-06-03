@@ -114,7 +114,7 @@ trait PackageTestHelper
         }
 
         self::$availablePlugins = array_reduce(
-            glob(ABSPATH . '/wp-content/plugins/*', GLOB_ONLYDIR) ?: [],
+            glob(ABSPATH . 'wp-content/plugins/*', GLOB_ONLYDIR) ?: [],
             static function ($out, $path) {
                 $name = basename($path);
                 $plugin = [];
@@ -127,14 +127,12 @@ trait PackageTestHelper
                     $filename = basename($filepath);
                     $header = fread($fd, 320);
 
-                    if (!str_contains($header, 'Plugin Name: ')) {
+                    if (1 !== preg_match('/Plugin Name: *(?<name>[^\r\n]+)/', $header, $matches)) {
                         fclose($fd);
                         continue;
                     }
 
-                    preg_match('/Plugin Name: *(?<name>[^\r\n]+)/', $header, $matches);
-
-                    $plugin['name'] = $matches['name'];
+                    $plugin['name'] = trim($matches['name']);
                     $plugin['file'] = "$name/$filename";
                     $plugin['path'] = $path;
 
@@ -143,7 +141,9 @@ trait PackageTestHelper
                     break;
                 }
 
-                $out[$name] = $plugin;
+                if (!empty($plugin)) {
+                    $out[$name] = $plugin;
+                }
 
                 return $out;
             },
