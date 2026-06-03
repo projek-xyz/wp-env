@@ -906,7 +906,7 @@ class Html_Element implements Stringable {
 	 * @param string ...$tags One or more tag names to check against the stack.
 	 * @return bool True if any of the tags are currently open in the stack.
 	 */
-	private function is_child_of( ...$tags ): bool {
+	private function is_child_of( string ...$tags ): bool {
 		foreach ( $this->tags_stack as $tag ) {
 			if ( in_array( $tag, $tags, true ) ) {
 				return true;
@@ -922,7 +922,7 @@ class Html_Element implements Stringable {
 	 *
 	 * @param string ...$tags A tag name or an array of tag names.
 	 */
-	private function has_unclosed_siblings( ...$tags ): bool {
+	private function has_unclosed_siblings( string ...$tags ): bool {
 		$parent = reset( $this->tags_stack );
 
 		if ( false === $parent ) {
