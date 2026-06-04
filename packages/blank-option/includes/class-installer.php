@@ -38,6 +38,11 @@ class Installer {
 	 * @return void
 	 */
 	public static function deactivate(): void {
+		$plugin = Plugin::instance();
+		$domain = $plugin->get( 'text_domain' );
+
+		\delete_site_transient( $domain . '_updates' );
+
 		\do_action( 'blank_option_deactivate' );
 	}
 

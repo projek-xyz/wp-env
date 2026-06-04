@@ -45,6 +45,8 @@ class InstallerTest extends TestCase
     #[Group('lifecycle')]
     public function shouldFireDeactivateAction()
     {
+        Functions\expect('delete_site_transient')->once();
+
         Actions\expectDone('blank_option_deactivate')->once();
 
         Installer::deactivate();
