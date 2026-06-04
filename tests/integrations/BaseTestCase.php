@@ -22,6 +22,11 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     private array $activatedPlugins = [];
 
     /**
+     * @var array<string, array>
+     */
+    private array $optionBackups = [];
+
+    /**
      * {@inheritdoc}
      */
     #[Override]
@@ -72,6 +77,9 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
             if ('plugin' === $pkg['type']) {
                 $this->preparePlugin($name, $pkg['path'], $pkg['url'], $pkg['version']);
             }
+
+            $this->optionBackups[$name] = \get_option($name, []);
+            \update_option($name, []);
         }
     }
 
@@ -82,6 +90,7 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
     {
         parent::tear_down();
 
+        $name = static::packageName();
         $plugins = array_filter(array_map(
             fn ($slug) => $this->getAvailablePlugin($slug, 'file'),
             $this->activatedPlugins
@@ -89,6 +98,10 @@ abstract class BaseTestCase extends \WP_UnitTestCase_Base
 
         if (!empty($plugins)) {
             \deactivate_plugins($plugins);
+        }
+
+        if ($name && isset($this->optionBackups[$name])) {
+            \update_option($name, $this->optionBackups[$name]);
         }
     }
 
