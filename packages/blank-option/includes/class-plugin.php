@@ -94,6 +94,13 @@ class Plugin {
 	private static ?Plugin $instance = null;
 
 	/**
+	 * Instance of Option class.
+	 *
+	 * @var Option
+	 */
+	public readonly Option $option;
+
+	/**
 	 * Whether the plugin meets the required version of during initiation.
 	 *
 	 * @return bool
@@ -249,6 +256,8 @@ class Plugin {
 		$this->data['supports'] = $data['support'] ?? array();
 
 		self::$instance = $this;
+
+		$this->option = new Option( $this );
 	}
 
 	/**
