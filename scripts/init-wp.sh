@@ -120,6 +120,7 @@ wp_version_key=$(echo "${WP_VERSION}" | awk -F. '{printf "%s.%s", $1, $2}')
 
 wp_plugins=(${plugins_map[${wp_version_key}]:-})
 wp_themes=(${themes_map[${wp_version_key}]:-})
+wp_installed=0
 
 if ((${#wp_themes[@]} == 0 )); then
     echo -e "\e[1;31mError:\e[0m Unsupported WordPress version ${WP_VERSION}."
@@ -166,6 +167,7 @@ fi
 
 if _wp core is-installed --url="${SITE_URL}" --allow-root; then
   echo -e "\e[1;36mInfo:\e[0m WordPress is already installed."
+  wp_installed=1
 else
     e_start 'Install WordPress Core'
     _wp core install \
@@ -354,7 +356,7 @@ e_end
 for site_url in $site_urls; do
     site_title=$(_wp --url="$site_url" option get blogname)
 
-    if [[ "$SKIP_MEDIA" -eq 0 ]]; then
+    if [[ "$wp_installed" -eq 0 && "$SKIP_MEDIA" -eq 0 ]]; then
         e_start "Set up media:\e[1;0m $site_title"
 
         assets=()
