@@ -51,7 +51,7 @@ spl_autoload_register(
 
 ( static function ( ?string $plugin_dir ) {
 	if ( ! $plugin_dir ) {
-		return;
+		return; // @codeCoverageIgnore
 	}
 
 	$dirs = array( $plugin_dir, dirname( $plugin_dir, 2 ) );
@@ -65,6 +65,6 @@ spl_autoload_register(
 	}
 
 	if ( ! function_exists( 'get_plugin_data' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin.php'; // @codeCoverageIgnore
 	}
 } )( defined( 'BLANK_OPTION_DIR' ) ? BLANK_OPTION_DIR : null );
