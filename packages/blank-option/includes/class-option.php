@@ -107,6 +107,6 @@ final class Option {
 	private function all(): array {
 		$option = \get_option( $this->domain, array() );
 
-		return $option ?? array();
+		return $option ?: array();
 	}
 }
