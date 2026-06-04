@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IntegrationTests\BlankOption;
 
+use Blank_Option\Installer;
 use Blank_Option\Plugin;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -106,9 +107,9 @@ class PluginTest extends TestCase
         });
 
         // Act: Simulate activation
-        Plugin::activate();
+        Installer::activate();
         // Act: Simulate deactivation
-        Plugin::deactivate();
+        Installer::deactivate();
 
         // Assert: Verify actions were fired
         $this->assertTrue(
@@ -137,7 +138,9 @@ class PluginTest extends TestCase
         $new_v = '';
 
         // Mock current version in DB to be older than the plugin version
-        $text_domain = Plugin::instance()->get('text_domain');
+        $plugin = Plugin::instance();
+        $text_domain = $plugin->get('text_domain');
+
         \update_option($text_domain, ['version' => '0.0.0']);
 
         \add_action(
@@ -152,7 +155,7 @@ class PluginTest extends TestCase
         );
 
         // Act: Trigger upgrade logic
-        Plugin::instance()->upgrade();
+        Installer::upgrade($plugin);
 
         // Assert: Verify upgrade action was fired with correct versions
         $this->assertTrue(

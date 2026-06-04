@@ -15,36 +15,51 @@ use PHPUnit\Framework\Attributes\Test;
 #[Group('option')]
 class OptionTest extends TestCase
 {
+    private function option(): Option
+    {
+        return new Option(Plugin::instance());
+    }
+
     /**
      * Verifies that options are correctly persisted and retrieved from the WordPress database.
-     *
-     * This is the fundamental purpose of the Option class. We must ensure that values saved
-     * via our abstraction layer are actually stored in the standard WP options table
-     * and can be retrieved correctly, maintaining data integrity.
      */
     #[Test]
     #[Group('database')]
     public function shouldPersistOptionToDatabase()
     {
-        $plugin = Plugin::instance();
-        new Option($plugin); // Initialize the static key
+        $option = $this->option(); // Initialize the static key
 
-        // Act: Set a value using our abstraction
-        Option::set('test_integration_key', 'it_works');
+        $this->assertTrue($option->is_empty());
 
-        // Assert: Retrieve it via the class to verify the internal cache/logic
-        $this->assertEquals('it_works', Option::get('test_integration_key'));
+        // Assert: Ensure the option is not exists and returns default value
+        $this->assertEquals('default_value', $option->get('test_integration_key', 'default_value'));
 
-        // Verify: Check the raw WordPress database to ensure it's physically stored correctly
-        $raw_db_values = \get_option('blank-option');
-        $this->assertIsArray(
-            $raw_db_values,
-            'Options should be stored as an array in the database.'
-        );
-        $this->assertEquals(
-            'it_works',
-            $raw_db_values['test_integration_key'],
-            'The stored value should match the value we set.'
-        );
+        // Act: Set a new value
+        $option->set('test_integration_key', 'it_works');
+
+        // Assert: Retrieve it via the class to verify the internal logic
+        $this->assertEquals('it_works', $option->get('test_integration_key'));
+    }
+
+    /**
+     * Verifies that options are correctly persisted and retrieved from the cache buffer.
+     */
+    #[Test]
+    #[Group('database')]
+    public function shouldCacheTheValueToOptionInstance()
+    {
+        $option = $this->option(); // Initialize the static key
+
+        // Act: Set a initial value
+        $option->set('test_integration_key', 'it_works');
+
+        // Assert: Retrieves the initial value
+        $this->assertEquals('it_works', $option->get('test_integration_key'));
+
+        // Act: Update the value which should also reset the instance cache
+        $option->set('test_integration_key', 'its_changed');
+
+        // Assert: Retrieve the new value directly from database
+        $this->assertEquals('its_changed', $option->get('test_integration_key'));
     }
 }

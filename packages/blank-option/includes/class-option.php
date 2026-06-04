@@ -25,11 +25,30 @@ final class Option {
 	private static array $cached = array();
 
 	/**
-	 * Option key.
+	 * Option domain.
 	 *
 	 * @var string
 	 */
-	private static string $key;
+	private string $domain;
+
+	/**
+	 * Initialize the plugin option.
+	 *
+	 * @param Plugin $plugin The plugin instance.
+	 * @return void
+	 */
+	public function __construct( Plugin $plugin ) {
+		$this->domain = $plugin->get( 'text_domain' );
+	}
+
+	/**
+	 * Returns debug information for the HTML instance.
+	 *
+	 * @codeCoverageIgnore
+	 */
+	public function __debugInfo(): array {
+		return $this->all();
+	}
 
 	/**
 	 * Get an option value.
@@ -38,18 +57,18 @@ final class Option {
 	 * @param mixed|null $default Default value if option is not set.
 	 * @return mixed
 	 */
-	public static function get( string $name, mixed $default = null ): mixed {
+	public function get( string $name, mixed $default = null ): mixed {
 		if ( isset( self::$cached[ $name ] ) ) {
 			return self::$cached[ $name ];
 		}
 
-		$option = self::all();
+		$options = $this->all();
 
-		if ( ! isset( $option[ $name ] ) ) {
+		if ( ! isset( $options[ $name ] ) ) {
 			return $default;
 		}
 
-		return self::$cached[ $name ] = $option[ $name ];
+		return self::$cached[ $name ] = $options[ $name ];
 	}
 
 	/**
@@ -59,16 +78,25 @@ final class Option {
 	 * @param mixed  $value Option value.
 	 * @return void
 	 */
-	public static function set( string $name, mixed $value ): void {
-		$option = self::all();
+	public function set( string $name, mixed $value ): void {
+		$options = $this->all();
 
-		$option[ $name ] = $value;
+		$options[ $name ] = $value;
 
 		if ( isset( self::$cached[ $name ] ) ) {
 			unset( self::$cached[ $name ] );
 		}
 
-		\update_option( self::$key, $option );
+		\update_option( $this->domain, $options );
+	}
+
+	/**
+	 * Whether the plugin option is not exists in database.
+	 *
+	 * @return bool
+	 */
+	public function is_empty(): bool {
+		return empty( $this->all() );
 	}
 
 	/**
@@ -76,19 +104,9 @@ final class Option {
 	 *
 	 * @return array
 	 */
-	private static function all(): array {
-		$option = \get_option( self::$key, array() );
+	private function all(): array {
+		$option = \get_option( $this->domain, array() );
 
-		return $option ?? array();
-	}
-
-	/**
-	 * Initialize the plugin option.
-	 *
-	 * @param Plugin $plugin The plugin instance.
-	 * @return void
-	 */
-	public function __construct( Plugin $plugin ) {
-		self::$key = $plugin->get( 'text_domain' );
+		return $option ?: array();
 	}
 }

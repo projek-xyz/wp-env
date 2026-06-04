@@ -91,6 +91,10 @@ abstract class BaseTestCase extends PHPUnitTestCase
             static fn (string $path) => str_replace('\\', '/', $path)
         );
 
+        Functions\when('wp_parse_url')->alias(
+            static fn (string $url, int $component) => parse_url($url, $component)
+        );
+
         Functions\when('admin_url')->alias(
             static fn (string $path = '', string $scheme = 'admin') => "http://example.com/wp-admin/$path"
         );

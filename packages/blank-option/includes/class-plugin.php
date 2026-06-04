@@ -94,6 +94,13 @@ class Plugin {
 	private static ?Plugin $instance = null;
 
 	/**
+	 * Instance of Option class.
+	 *
+	 * @var Option
+	 */
+	public readonly Option $option;
+
+	/**
 	 * Whether the plugin meets the required version of during initiation.
 	 *
 	 * @return bool
@@ -144,30 +151,6 @@ class Plugin {
 	}
 
 	/**
-	 * Perform actions on plugin activation.
-	 *
-	 * @return void
-	 */
-	public static function activate(): void {
-		$plugin = static::instance();
-
-		$plugin->upgrade();
-
-		new Option( $plugin );
-
-		\do_action( 'blank_option_activate' );
-	}
-
-	/**
-	 * Perform actions on plugin deactivation.
-	 *
-	 * @return void
-	 */
-	public static function deactivate(): void {
-		\do_action( 'blank_option_deactivate' );
-	}
-
-	/**
 	 * Perform actions on plugin initialization.
 	 *
 	 * @return void
@@ -176,14 +159,21 @@ class Plugin {
 		$plugin = new Plugin( BLANK_OPTION_FILE );
 
 		/**
-		 * Checks if a update is available.
+		 * Ensures the plugin is up to date.
 		 */
-		\add_filter(
-			'update_plugins_projek-xyz.github.io',
-			array( new Updater( $plugin ), 'check_updates' ),
-			10,
-			3
-		);
+		Installer::upgrade( $plugin );
+
+		if ( $update_uri = $plugin->get( 'update_uri' ) ) {
+			/**
+			 * Checks if a update is available.
+			 */
+			\add_filter(
+				'update_plugins_' . \wp_parse_url( $update_uri, PHP_URL_HOST ),
+				array( Installer::class, 'check_updates' ),
+				10,
+				3
+			);
+		}
 
 		/**
 		 * Enqueue scripts and styles.
@@ -255,6 +245,8 @@ class Plugin {
 		$this->data['supports'] = $data['support'] ?? array();
 
 		self::$instance = $this;
+
+		$this->option = new Option( $this );
 	}
 
 	/**
@@ -287,28 +279,6 @@ class Plugin {
 		}
 
 		return $this->data[ $key ];
-	}
-
-	/**
-	 * Perform upgrade actions when necessary.
-	 *
-	 * @return void
-	 */
-	public function upgrade(): void {
-		$option = \get_option( $this->get( 'text_domain' ) );
-
-		if ( ! $option || ! is_array( $option ) ) {
-			// Not installed, skipping.
-			return;
-		}
-
-		$new_version = $this->get( 'version' );
-
-		if ( ! version_compare( $new_version, $option['version'], '>' ) ) {
-			return;
-		}
-
-		\do_action( 'blank_option_upgrade', $option['version'], $new_version );
 	}
 
 	/**

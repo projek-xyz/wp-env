@@ -1,6 +1,6 @@
 <?php
 /**
- * Updater class.
+ * Installer class.
  *
  * @package projek-xyz/wp-blank-option
  * @copyright Copyright (c) 2026 Fery Wardiyanto <https://feryardiant.id>
@@ -11,54 +11,88 @@ declare( strict_types = 1 );
 
 namespace Blank_Option;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
- * Class Updater.
+ * Class Installer.
  *
  * @internal
  */
-class Updater {
+class Installer {
 	/**
-	 * Initialize updater class.
+	 * Perform actions on plugin activation.
 	 *
-	 * @param Plugin $plugin The plugin instance.
+	 * @return void
 	 */
-	public function __construct(
-		private Plugin $plugin
-	) {
-		// .
+	public static function activate(): void {
+		$plugin = Plugin::instance();
+
+		self::upgrade( $plugin );
+
+		\do_action( 'blank_option_activate' );
+	}
+
+	/**
+	 * Perform actions on plugin deactivation.
+	 *
+	 * @return void
+	 */
+	public static function deactivate(): void {
+		$plugin = Plugin::instance();
+		$domain = $plugin->get( 'text_domain' );
+
+		\delete_site_transient( $domain . '_updates' );
+
+		\do_action( 'blank_option_deactivate' );
+	}
+
+	/**
+	 * Perform upgrade actions when necessary.
+	 *
+	 * @param Plugin $plugin Instance of plugin class.
+	 * @return void
+	 */
+	public static function upgrade( Plugin $plugin ): void {
+		$current_version = $plugin->get( 'version' );
+		$option          = $plugin->option;
+
+		if ( $option->is_empty() ) {
+			$option->set( 'version', $current_version );
+			return;
+		}
+
+		$installed_version = $option->get( 'version' );
+
+		if ( ! version_compare( $current_version, $installed_version, '>' ) ) {
+			return;
+		}
+
+		\do_action( 'blank_option_upgrade', $installed_version, $current_version );
+
+		$option->set( 'version', $current_version );
 	}
 
 	/**
 	 * Checks if a update is available.
 	 *
-	 * This method filters the update transient to include custom updates
-	 * from a remote manifest file.
-	 *
 	 * @param array|false $update      The update transient data.
 	 * @param array       $plugin_data Information about the current plugin.
 	 * @param string      $plugin_file The stylesheet name of the plugin being checked.
-	 *
-	 * @return array|false Updated transient data with update metadata if a new version is available,
-	 *                     otherwise the original transient data.
+	 * @return array|false Updated transient data with update metadata.
 	 */
-	public function check_updates(
-		array|false $update,
-		array $plugin_data,
-		string $plugin_file,
-	): array|false {
-		// Only handle our custom plugin.
-		if ( $this->plugin->basename !== $plugin_file ) {
+	public static function check_updates( array|false $update, array $plugin_data, string $plugin_file ): array|false {
+		$plugin = Plugin::instance();
+
+		if ( $plugin->basename !== $plugin_file ) {
 			return $update;
 		}
 
-		$release = $this->get_updates();
+		$release = self::get_updates( $plugin->get( 'text_domain' ) );
 
-		// Check if remote version is newer than current version.
 		if ( ! $release || version_compare( $release->version, $plugin_data['Version'], '<=' ) ) {
 			return $update;
 		}
 
-		// Return the update metadata for WordPress to handle the update process.
 		return array(
 			'package'      => $release->download_url,
 			'version'      => $release->version,
@@ -72,21 +106,17 @@ class Updater {
 	/**
 	 * Retrieves the latest update information from the remote repository.
 	 *
-	 * Uses site transients to cache the results for 12 hours to minimize external HTTP requests.
-	 *
-	 * @return object|false The update metadata object on success, or false if the update information
-	 *                      could not be retrieved or is unavailable.
+	 * @param string $slug The plugin slug.
+	 * @return object|false
 	 */
-	public function get_updates(): object|false {
-		$cache_key   = $this->plugin->get( 'text_domain' ) . '_updates';
+	private static function get_updates( string $slug ): object|false {
+		$cache_key   = $slug . '_updates';
 		$cached_data = \get_site_transient( $cache_key );
 
-		// Return cached data if available.
 		if ( ! empty( $cached_data ) ) {
 			return $cached_data;
 		}
 
-		// Fetch the latest release from our release manifest.
 		$response = \wp_remote_get(
 			'https://projek-xyz.github.io/wp-env/release.json',
 			array(
@@ -95,20 +125,15 @@ class Updater {
 			)
 		);
 
-		// Handle fetch errors or non-200 responses.
 		if ( \is_wp_error( $response ) || 200 !== \wp_remote_retrieve_response_code( $response ) ) {
 			\set_site_transient( $cache_key, false, \HOUR_IN_SECONDS );
-
 			return false;
 		}
 
 		$data = json_decode( \wp_remote_retrieve_body( $response ) );
-		$slug = $this->plugin->get( 'text_domain' );
 
-		// Check if our specific plugin exists in the flat manifest.
 		if ( ! isset( $data->$slug ) ) {
 			\set_site_transient( $cache_key, false, \HOUR_IN_SECONDS );
-
 			return false;
 		}
 
@@ -121,7 +146,6 @@ class Updater {
 			'php_version'  => $data->$slug->php_version ?? '',
 		);
 
-		// Cache the response data for 12 hours.
 		\set_site_transient( $cache_key, $update, 12 * \HOUR_IN_SECONDS );
 
 		return $update;

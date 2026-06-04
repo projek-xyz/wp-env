@@ -60,7 +60,7 @@ msgid "For more information:"
 msgstr ""
 
 #. Translators: %1$s is the plugin name, %2$s is the requirement, %3$s is the required version, %4$s is the current version.
-#: includes/class-plugin.php:130
+#: includes/class-plugin.php:137
 #, php-format
 msgid "The <strong>%1$s</strong> plugin requires at least version <strong>%3$s</strong> of <strong>%2$s</strong>, currently you have <strong>%4$s</strong>."
 msgstr ""

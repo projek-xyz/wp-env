@@ -6,7 +6,7 @@ namespace UnitTests\BlankOption\Includes;
 
 use Blank_Option\Admin;
 use Blank_Option\Plugin;
-use Blank_Option\Updater;
+use Blank_Option\Installer;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
@@ -105,33 +105,16 @@ class PluginTest extends TestCase
             ->whenHappen(function ($callback) {
                 $this->assertIsArray($callback);
 
-                $this->assertInstanceOf(Updater::class, $callback[0]);
+                $this->assertSame(Installer::class, $callback[0]);
                 $this->assertSame('check_updates', $callback[1]);
             });
 
+        Functions\when('get_option')->justReturn(false);
+        Functions\expect('update_option')->once();
+
+        $plugin = new Plugin(BLANK_OPTION_FILE);
 
         Plugin::init();
-    }
-
-    #[Test]
-    #[Group('activation')]
-    public function shouldDoingActionsOnActivation()
-    {
-        Functions\when('get_option')->justReturn(['version' => '0.0.1']);
-
-        Actions\expectDone('blank_option_activate')->once();
-        Actions\expectAdded('blank_option_upgrade')->never();
-
-        Plugin::activate();
-    }
-
-    #[Test]
-    #[Group('deactivation')]
-    public function shouldDoingActionsOnDeactivation()
-    {
-        Actions\doing('blank_option_deactivate');
-
-        Plugin::deactivate();
     }
 
     #[Test]
@@ -177,32 +160,6 @@ class PluginTest extends TestCase
         Functions\expect('wp_kses')->once()->andReturnFirstArg();
 
         $plugin->get('invalid_key');
-    }
-
-    #[Test]
-    #[Group('activation')]
-    public function shouldDoingNothingWhenPluginHaveNotBeenInstalled()
-    {
-        $plugin = new Plugin(BLANK_OPTION_FILE);
-
-        Functions\when('get_option')->justReturn(false);
-
-        Actions\expectDone('blank_plugin_upgrade')->never();
-
-        $plugin->upgrade();
-    }
-
-    #[Test]
-    #[Group('activation')]
-    public function shouldDoingActionsWhenHaveUpdates()
-    {
-        $plugin = new Plugin(BLANK_OPTION_FILE);
-
-        Functions\when('get_option')->justReturn(['version' => '0.0.0']);
-
-        Actions\doing('blank_plugin_upgrade');
-
-        $plugin->upgrade();
     }
 
     #[Test]

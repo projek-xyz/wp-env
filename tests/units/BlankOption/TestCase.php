@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
             'PluginURI' => 'https://example.com/blank-option',
             'Description' => 'Something awesome is about to come.',
             'Network' => false,
-            'UpdateURI' => '',
+            'UpdateURI' => 'https://projek-xyz.github.io/wp-env',
             'RequiresPlugins' => '',
         ];
     }
