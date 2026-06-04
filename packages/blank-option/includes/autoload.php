@@ -49,7 +49,13 @@ spl_autoload_register(
 	}
 );
 
-( static function ( $dirs ) {
+( static function ( ?string $plugin_dir ) {
+	if ( ! $plugin_dir ) {
+		return; // @codeCoverageIgnore
+	}
+
+	$dirs = array( $plugin_dir, dirname( $plugin_dir, 2 ) );
+
 	// Check for Composer autoloader in both the theme root and the project root.
 	foreach ( $dirs as $dir ) {
 		if ( $file = realpath( $dir . '/vendor/autoload.php' ) ) {
@@ -59,6 +65,6 @@ spl_autoload_register(
 	}
 
 	if ( ! function_exists( 'get_plugin_data' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin.php'; // @codeCoverageIgnore
 	}
-} )( array( \BLANK_OPTION_DIR, dirname( \BLANK_OPTION_DIR, 2 ) ) );
+} )( defined( 'BLANK_OPTION_DIR' ) ? BLANK_OPTION_DIR : null );
