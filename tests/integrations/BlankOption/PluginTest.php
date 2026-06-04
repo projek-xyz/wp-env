@@ -34,7 +34,7 @@ class PluginTest extends TestCase
 
         // Check if update checker is registered.
         $this->assertNotFalse(
-            \has_filter('update_plugins_projek-xyz.github.io'),
+            \has_filter('update_plugins_https://projek-xyz.github.io/wp-env'),
             'Update checker filter should be registered on the custom update domain.'
         );
 
@@ -105,10 +105,12 @@ class PluginTest extends TestCase
             $deactivated = true;
         });
 
+        $installer = new \Blank_Option\Installer(Plugin::instance());
+
         // Act: Simulate activation
-        Plugin::activate();
+        $installer->activate();
         // Act: Simulate deactivation
-        Plugin::deactivate();
+        $installer->deactivate();
 
         // Assert: Verify actions were fired
         $this->assertTrue(
@@ -151,8 +153,10 @@ class PluginTest extends TestCase
             2
         );
 
+        $installer = new \Blank_Option\Installer(Plugin::instance());
+
         // Act: Trigger upgrade logic
-        Plugin::instance()->upgrade();
+        $installer->upgrade();
 
         // Assert: Verify upgrade action was fired with correct versions
         $this->assertTrue(

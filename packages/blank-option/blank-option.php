@@ -65,12 +65,12 @@ if ( ! Plugin::is_met_requirements() ) {
 /**
  * Perform actions on plugin activation.
  */
-\register_activation_hook( BLANK_OPTION_FILE, array( Plugin::class, 'activate' ) );
+\register_activation_hook( BLANK_OPTION_FILE, array( \Blank_Option\Installer::class, 'activate' ) );
 
 /**
  * Perform actions on plugin deactivation.
  */
-\register_deactivation_hook( BLANK_OPTION_FILE, array( Plugin::class, 'deactivate' ) );
+\register_deactivation_hook( BLANK_OPTION_FILE, array( \Blank_Option\Installer::class, 'deactivate' ) );
 
 /**
  * Perform actions on plugin initialization.

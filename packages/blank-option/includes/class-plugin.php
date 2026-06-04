@@ -149,13 +149,7 @@ class Plugin {
 	 * @return void
 	 */
 	public static function activate(): void {
-		$plugin = static::instance();
-
-		$plugin->upgrade();
-
-		new Option( $plugin );
-
-		\do_action( 'blank_option_activate' );
+		Installer::activate();
 	}
 
 	/**
@@ -164,7 +158,7 @@ class Plugin {
 	 * @return void
 	 */
 	public static function deactivate(): void {
-		\do_action( 'blank_option_deactivate' );
+		Installer::deactivate();
 	}
 
 	/**
@@ -180,7 +174,7 @@ class Plugin {
 		 */
 		\add_filter(
 			'update_plugins_projek-xyz.github.io',
-			array( new Updater( $plugin ), 'check_updates' ),
+			array( new Installer( $plugin ), 'check_updates' ),
 			10,
 			3
 		);
@@ -287,28 +281,6 @@ class Plugin {
 		}
 
 		return $this->data[ $key ];
-	}
-
-	/**
-	 * Perform upgrade actions when necessary.
-	 *
-	 * @return void
-	 */
-	public function upgrade(): void {
-		$option = \get_option( $this->get( 'text_domain' ) );
-
-		if ( ! $option || ! is_array( $option ) ) {
-			// Not installed, skipping.
-			return;
-		}
-
-		$new_version = $this->get( 'version' );
-
-		if ( ! version_compare( $new_version, $option['version'], '>' ) ) {
-			return;
-		}
-
-		\do_action( 'blank_option_upgrade', $option['version'], $new_version );
 	}
 
 	/**
