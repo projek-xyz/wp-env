@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.0.13](https://github.com/projek-xyz/wp-env/compare/v0.0.12...v0.0.13) (2026-06-04)
+
+
+### Features
+
+* **blank-option:** add `clear` and `whitespace` helper to `html-element` class ([4c4bda4](https://github.com/projek-xyz/wp-env/commit/4c4bda46e6ce8e960671ce432724ae8925c3a6e1))
+* **blank-option:** add list of banned tags from `html-element` class ([c3c9fc7](https://github.com/projek-xyz/wp-env/commit/c3c9fc7a6f9b2ee59b2e9d64348afdc00e33a4ca))
+* **blank-option:** allow `Html_Element::call` method to return itself and ignore echoed content ([1716b7a](https://github.com/projek-xyz/wp-env/commit/1716b7a7c3a4e46ab9604fce0e62993d3d32cafc))
+* **blank-option:** allow admin pages to define their own priority for `admin_menu` registration ([c93680c](https://github.com/projek-xyz/wp-env/commit/c93680c05c39cbd9bec3203815306dbaa47a05df))
+* **blank-option:** allow to create assign html attributes using variadic named arguments ([#48](https://github.com/projek-xyz/wp-env/issues/48)) ([f187129](https://github.com/projek-xyz/wp-env/commit/f1871297a57abbbabf825146a52cb720ce57f8a7))
+* **blank-option:** make sure child elements of `table` and `form` are rendered properly ([eca9b9c](https://github.com/projek-xyz/wp-env/commit/eca9b9cc7db5d96dc878a5b9adc6b385298951f7))
+* **test:** allow to activate third-party plugin(s) during integration tests ([#49](https://github.com/projek-xyz/wp-env/issues/49)) ([3eb73f5](https://github.com/projek-xyz/wp-env/commit/3eb73f517d0bdf658deed62e9dfbdf9ad4de03c5))
+
+
+### Bug Fixes
+
+* **blank-option:** don't throw exception if the metadata is actually empty ([04f889e](https://github.com/projek-xyz/wp-env/commit/04f889e92ab09c813fc39094c6cf65e84a341962))
+* **blank-option:** error when passing an empty array as unnamed `atts` to element ([c85d4ed](https://github.com/projek-xyz/wp-env/commit/c85d4edc8d058eefbe42360fddf43b9ec475fdd1)), closes [#48](https://github.com/projek-xyz/wp-env/issues/48)
+* **make-dist:** invalid release download links ([0bcb1b9](https://github.com/projek-xyz/wp-env/commit/0bcb1b9041b4638eea680c9d7cd8926aa6f385f7))
+* skip media import when wordpress is already installed ([12addb2](https://github.com/projek-xyz/wp-env/commit/12addb2f2fe14aab0844b5411ab2c5c647e57520))
+
 ## [0.0.12](https://github.com/projek-xyz/wp-env/compare/v0.0.11...v0.0.12) (2026-06-02)
 
 
