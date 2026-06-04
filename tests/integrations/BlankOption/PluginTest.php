@@ -106,12 +106,10 @@ class PluginTest extends TestCase
             $deactivated = true;
         });
 
-        $installer = new \Blank_Option\Installer(Plugin::instance());
-
         // Act: Simulate activation
-        $installer->activate();
+        Installer::activate();
         // Act: Simulate deactivation
-        $installer->deactivate();
+        Installer::deactivate();
 
         // Assert: Verify actions were fired
         $this->assertTrue(

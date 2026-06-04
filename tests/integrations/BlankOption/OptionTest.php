@@ -31,13 +31,13 @@ class OptionTest extends TestCase
 
         $this->assertTrue($option->is_empty());
 
-        // Assert: Retrieves default value if option not exists
+        // Assert: Ensure the option is not exists and returns default value
         $this->assertEquals('default_value', $option->get('test_integration_key', 'default_value'));
 
-        // Act: Set a value using our abstraction
+        // Act: Set a new value
         $option->set('test_integration_key', 'it_works');
 
-        // Assert: Retrieve it via the class to verify the internal cache/logic
+        // Assert: Retrieve it via the class to verify the internal logic
         $this->assertEquals('it_works', $option->get('test_integration_key'));
     }
 
@@ -50,13 +50,16 @@ class OptionTest extends TestCase
     {
         $option = $this->option(); // Initialize the static key
 
-        // Assert: Retrieves value from previous set
-        $this->assertEquals('it_works', $option->get('test_integration_key', 'default_value'));
+        // Act: Set a initial value
+        $option->set('test_integration_key', 'it_works');
 
-        // Act: Set a value using our abstraction
+        // Assert: Retrieves the initial value
+        $this->assertEquals('it_works', $option->get('test_integration_key'));
+
+        // Act: Update the value which should also reset the instance cache
         $option->set('test_integration_key', 'its_changed');
 
-        // Assert: Retrieve it via the class to verify the internal cache/logic
+        // Assert: Retrieve the new value directly from database
         $this->assertEquals('its_changed', $option->get('test_integration_key'));
     }
 }

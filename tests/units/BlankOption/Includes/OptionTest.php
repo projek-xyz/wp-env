@@ -24,19 +24,22 @@ class OptionTest extends TestCase
 
     #[Test]
     #[Group('negative-value')]
-    public function getShouldRetunsDefaultValueIfNoOptionExists()
+    public function shouldReturnsEmptyWhenNoOptionExistsInDatabase()
     {
-        Functions\when('get_option')->justReturn([]);
+        Functions\when('get_option')->justReturn(false);
 
         $option = $this->option();
 
         $this->assertTrue($option->is_empty());
+    }
 
-        $actual = $option->get('key_false', $expected = 'default');
+    #[Test]
+    #[Group('negative-value')]
+    public function getShouldRetunsDefaultValueIfNoOptionExists()
+    {
+        Functions\when('get_option')->justReturn([]);
 
-        $this->assertSame($expected, $actual);
-
-        $actual = $option->get('key_empty', $expected = 'default');
+        $actual = $this->option()->get('key_false', $expected = 'default');
 
         $this->assertSame($expected, $actual);
     }

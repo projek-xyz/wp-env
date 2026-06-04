@@ -38,11 +38,10 @@ class InstallerTest extends TestCase
     {
         \add_filter('http_response', [$this, 'mockUpdateResponse']);
 
-        $installer = new Installer(Plugin::instance());
         $basename = \plugin_basename(static::package('entrypoint'));
 
         // Act: Call check_updates
-        $update = $installer->check_updates(false, ['Version' => '0.0.1'], $basename);
+        $update = Installer::check_updates(false, ['Version' => '0.0.1'], $basename);
 
         $this->assertNotFalse($update);
 

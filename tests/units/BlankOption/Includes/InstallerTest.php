@@ -59,7 +59,11 @@ class InstallerTest extends TestCase
         $plugin = Plugin::instance();
 
         Functions\when('get_option')->justReturn(false);
-        Functions\when('update_option')->justReturn();
+        Functions\expect('update_option')
+            ->once()
+            ->with(static::PACKAGE_NAME, \Mockery::on(function ($options) use ($plugin) {
+                return isset($options['version']) && $options['version'] === $plugin->get('version');
+            }));
 
         Installer::upgrade($plugin);
     }
