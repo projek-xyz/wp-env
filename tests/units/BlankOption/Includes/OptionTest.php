@@ -17,11 +17,9 @@ use ReflectionClass;
 #[Group('option')]
 class OptionTest extends TestCase
 {
-    public function setUp(): void
+    private function option(): Option
     {
-        parent::setUp();
-
-        new Option(Plugin::instance());
+        return new Option(Plugin::instance());
     }
 
     #[Test]
@@ -30,11 +28,15 @@ class OptionTest extends TestCase
     {
         Functions\when('get_option')->justReturn([]);
 
-        $actual = Option::get('key_false', $expected = 'default');
+        $option = $this->option();
+
+        $this->assertTrue($option->is_empty());
+
+        $actual = $option->get('key_false', $expected = 'default');
 
         $this->assertSame($expected, $actual);
 
-        $actual = Option::get('key_empty', $expected = 'default');
+        $actual = $option->get('key_empty', $expected = 'default');
 
         $this->assertSame($expected, $actual);
     }
@@ -45,7 +47,7 @@ class OptionTest extends TestCase
     {
         Functions\when('get_option')->justReturn(['key' => 'value']);
 
-        $actual = Option::get('key', 'default');
+        $actual = $this->option()->get('key', 'default');
 
         $this->assertSame('value', $actual);
     }
@@ -58,8 +60,10 @@ class OptionTest extends TestCase
             ->once()
             ->andReturn(['other' => 'value']);
 
-        $first = Option::get('other', 'default');
-        $second = Option::get('other', 'default');
+        $option = $this->option();
+
+        $first = $option->get('other', 'default');
+        $second = $option->get('other', 'default');
 
         $this->assertSame($first, $second);
     }
@@ -69,10 +73,11 @@ class OptionTest extends TestCase
     public function setShouldCleanItsCacheWhenValueIsChanged()
     {
         $cache = (new ReflectionClass(Option::class))->getProperty('cached');
+        $option = $this->option();
 
         Functions\when('get_option')->justReturn(['key' => 'old_value']);
 
-        Option::get('key');
+        $option->get('key');
 
         $this->assertArrayHasKey('key', $cache->getValue());
 
@@ -83,7 +88,7 @@ class OptionTest extends TestCase
                 $this->assertArrayHasKey('key', $option);
             });
 
-        Option::set('key', 'new_value');
+        $option->set('key', 'new_value');
 
         $this->assertArrayNotHasKey('key', $cache->getValue());
     }
