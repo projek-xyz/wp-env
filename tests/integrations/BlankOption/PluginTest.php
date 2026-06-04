@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IntegrationTests\BlankOption;
 
+use Blank_Option\Installer;
 use Blank_Option\Plugin;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -34,7 +35,7 @@ class PluginTest extends TestCase
 
         // Check if update checker is registered.
         $this->assertNotFalse(
-            \has_filter('update_plugins_https://projek-xyz.github.io/wp-env'),
+            \has_filter('update_plugins_projek-xyz.github.io'),
             'Update checker filter should be registered on the custom update domain.'
         );
 
@@ -139,7 +140,9 @@ class PluginTest extends TestCase
         $new_v = '';
 
         // Mock current version in DB to be older than the plugin version
-        $text_domain = Plugin::instance()->get('text_domain');
+        $plugin = Plugin::instance();
+        $text_domain = $plugin->get('text_domain');
+
         \update_option($text_domain, ['version' => '0.0.0']);
 
         \add_action(
@@ -153,10 +156,8 @@ class PluginTest extends TestCase
             2
         );
 
-        $installer = new \Blank_Option\Installer(Plugin::instance());
-
         // Act: Trigger upgrade logic
-        $installer->upgrade();
+        Installer::upgrade($plugin);
 
         // Assert: Verify upgrade action was fired with correct versions
         $this->assertTrue(

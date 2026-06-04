@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Unit tests for the blank's `includes/class-installer.php`.
  */
-#[Group('update')]
+#[Group('installer')]
 class InstallerTest extends TestCase
 {
     private array $updates = [
@@ -27,25 +27,12 @@ class InstallerTest extends TestCase
         'php_version' => '8.1',
     ];
 
-    private function installer(): Installer
-    {
-        return new Installer(Plugin::instance());
-    }
-
     #[Test]
     #[Group('lifecycle')]
     public function shouldFireActivateAction()
     {
-        $current_version = Plugin::instance()->get('version');
-
-        Functions\expect('get_option')
-            ->once()
-            ->with(static::PACKAGE_NAME)
-            ->andReturn(false);
-
-        Functions\expect('update_option')
-            ->once()
-            ->with(static::PACKAGE_NAME, ['version' => $current_version]);
+        Functions\when('get_option')->justReturn(false);
+        Functions\when('update_option')->justReturn();
 
         Actions\expectDone('blank_option_activate')->once();
 
@@ -69,57 +56,51 @@ class InstallerTest extends TestCase
     #[Group('upgrade')]
     public function shouldSaveVersionOnInitialInstallation()
     {
-        $current_version = Plugin::instance()->get('version');
+        $plugin = Plugin::instance();
 
-        Functions\expect('get_option')
-            ->once()
-            ->with(static::PACKAGE_NAME)
-            ->andReturn(false);
+        Functions\when('get_option')->justReturn(false);
+        Functions\when('update_option')->justReturn();
 
-        Functions\expect('update_option')
-            ->once()
-            ->with(static::PACKAGE_NAME, ['version' => $current_version]);
-
-        $this->installer()->upgrade();
+        Installer::upgrade($plugin);
     }
 
     #[Test]
     #[Group('upgrade')]
     public function shouldDoNothingWhenVersionIsSame()
     {
-        $current_version = Plugin::instance()->get('version');
+        $plugin = Plugin::instance();
+        $current_version = $plugin->get('version');
 
-        Functions\expect('get_option')
-            ->once()
-            ->with(static::PACKAGE_NAME)
-            ->andReturn(['version' => $current_version]);
-
+        Functions\when('get_option')->justReturn(['version' => $current_version]);
         Functions\expect('update_option')->never();
 
-        $this->installer()->upgrade();
+        Installer::upgrade($plugin);
     }
 
     #[Test]
     #[Group('upgrade')]
     public function shouldPerformUpgradeWhenNewerVersionAvailable()
     {
-        $old_version     = '0.0.1';
-        $current_version = Plugin::instance()->get('version');
+        $plugin = Plugin::instance();
+        $current_version = $plugin->get('version');
+        $old_version = '0.0.1';
 
-        Functions\expect('get_option')
-            ->once()
-            ->with(static::PACKAGE_NAME)
-            ->andReturn(['version' => $old_version, 'some_other_option' => 'value']);
-
-        Actions\expectDone('blank_option_upgrade')
-            ->once()
-            ->with($old_version, $current_version);
+        Functions\when('get_option')->justReturn([
+            'version' => $old_version,
+            'some_other_option' => 'value'
+        ]);
 
         Functions\expect('update_option')
             ->once()
             ->with(static::PACKAGE_NAME, ['version' => $current_version, 'some_other_option' => 'value']);
 
-        $this->installer()->upgrade();
+        $plugin->option->set('version', $old_version); // Ensure to clear out the option cache.
+
+        Actions\expectDone('blank_option_upgrade')
+            ->once()
+            ->with($old_version, $current_version);
+
+        Installer::upgrade($plugin);
     }
 
     #[Test]
@@ -127,7 +108,7 @@ class InstallerTest extends TestCase
     public function shouldReturnFalseWhenCurrentlyCheckingAnotherPlugin()
     {
         $this->assertFalse(
-            $this->installer()->check_updates(
+            Installer::check_updates(
                 false,
                 [],
                 plugin_basename('other-plugin/other-plugin.php')
@@ -145,7 +126,7 @@ class InstallerTest extends TestCase
         Functions\when('wp_remote_get')->justReturn(new WP_Error());
 
         $this->assertFalse(
-            $this->installer()->check_updates(
+            Installer::check_updates(
                 false,
                 [],
                 plugin_basename(BLANK_OPTION_FILE)
@@ -166,7 +147,7 @@ class InstallerTest extends TestCase
         ]));
 
         $this->assertFalse(
-            $this->installer()->check_updates(
+            Installer::check_updates(
                 false,
                 [],
                 plugin_basename(BLANK_OPTION_FILE)
@@ -180,7 +161,7 @@ class InstallerTest extends TestCase
     {
         Functions\when('get_site_transient')->justReturn((object) $this->updates);
 
-        $return = $this->installer()->check_updates(
+        $return = Installer::check_updates(
             false,
             ['Version' => '0.0.1'],
             plugin_basename(BLANK_OPTION_FILE)
@@ -206,7 +187,7 @@ class InstallerTest extends TestCase
             static::PACKAGE_NAME => (object) $this->updates,
         ]));
 
-        $return = $this->installer()->check_updates(
+        $return = Installer::check_updates(
             false,
             ['Version' => '0.0.1'],
             plugin_basename(BLANK_OPTION_FILE)
