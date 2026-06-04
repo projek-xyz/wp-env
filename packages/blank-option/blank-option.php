@@ -12,7 +12,7 @@
  * Update URI: https://projek-xyz.github.io/wp-env
  * Text Domain: blank-option
  * Domain Path: /languages
- * Version: 0.0.1
+ * Version: 0.0.2
  * Tested up to: 7.0
  * Requires at least: 6.0
  * Requires PHP: 8.2
