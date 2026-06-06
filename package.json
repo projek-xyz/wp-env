@@ -19,13 +19,13 @@
     "release": "bunx commit-and-tag-version -s"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.14",
-    "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^21.0.1",
+    "@biomejs/biome": "^2.4.16",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@tsconfig/bun": "^1.0.10",
     "@types/bun": "1.3.10",
-    "commit-and-tag-version": "^12.7.1",
-    "lint-staged": "^17.0.5",
+    "commit-and-tag-version": "^12.7.3",
+    "lint-staged": "^17.0.7",
     "simple-git-hooks": "^2.13.1"
   },
   "overrides": {
