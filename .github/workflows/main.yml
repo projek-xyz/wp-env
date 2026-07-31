@@ -44,7 +44,7 @@ jobs:
           tools: composer
 
       - name: Set up Composer cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ needs.prepare.outputs.composer-cache-dir }}
           key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
@@ -103,14 +103,14 @@ jobs:
           tools: composer, wp
 
       - name: Set up Composer cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ needs.prepare.outputs.composer-cache-dir }}
           key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
       - name: Set up WP-CLI cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ needs.prepare.outputs.wpcli-cache-dir }}
           key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
@@ -199,14 +199,14 @@ jobs:
           tools: composer, wp
 
       - name: Set up Composer cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ needs.prepare.outputs.composer-cache-dir }}
           key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-
 
       - name: Set up WP-CLI cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ needs.prepare.outputs.wpcli-cache-dir }}
           key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
