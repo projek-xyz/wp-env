@@ -53,13 +53,13 @@ jobs:
 
     steps:
     - name: Checkout head repo
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         ref: ${{ inputs.ref }}
         persist-credentials: false
 
     - name: Checkout actions repo
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       if: github.repository != 'projek-xyz/wp-env'
       with:
         fetch-depth: 1
@@ -167,7 +167,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Check release
       id: release
