@@ -106,7 +106,7 @@ jobs:
 
     - name: Set up Composer cache
       if: steps.packages.outputs.new-release > 0
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ${{ steps.caches.outputs.composer-dir }}
         key: composer-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
@@ -114,7 +114,7 @@ jobs:
 
     - name: Set up WP-CLI cache
       if: steps.packages.outputs.new-release > 0
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ${{ steps.caches.outputs.wpcli-dir }}
         key: wpcli-php${{ env.PHP_VERSION }}-wp${{ env.WP_VERSION }}-${{ hashFiles('**/composer.lock') }}
