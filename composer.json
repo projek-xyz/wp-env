@@ -64,21 +64,20 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "mockery/mockery": "^1.6",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "phpunit/phpunit": "^10.5",
-        "squizlabs/php_codesniffer": "^3.13",
+        "phpunit/phpunit": "^11.0",
         "symfony/polyfill-php83": "^1.38",
         "wikimedia/composer-merge-plugin": "^2.1",
-        "wp-cli/config-command": "^2.4",
-        "wp-cli/core-command": "^2.1",
-        "wp-cli/dist-archive-command": "^3.1",
-        "wp-cli/entity-command": "^2.8",
-        "wp-cli/extension-command": "^2.1",
-        "wp-cli/i18n-command": "^2.7",
-        "wp-cli/media-command": "^2.2",
-        "wp-cli/wp-cli": "^2.12",
+        "wp-cli/config-command": "^3.0",
+        "wp-cli/core-command": "^3.0",
+        "wp-cli/dist-archive-command": "^3.2",
+        "wp-cli/entity-command": "^3.0",
+        "wp-cli/extension-command": "^3.0",
+        "wp-cli/i18n-command": "^3.0",
+        "wp-cli/media-command": "^3.1",
+        "wp-cli/wp-cli": "^3.0",
         "wp-coding-standards/wpcs": "^3.3",
         "wp-phpunit/wp-phpunit": "^7.0",
-        "yoast/phpunit-polyfills": "^2.0"
+        "yoast/phpunit-polyfills": "^4.0"
     },
     "autoload-dev": {
         "psr-4": {
@@ -118,6 +117,6 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

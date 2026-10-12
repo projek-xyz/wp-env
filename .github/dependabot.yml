@@ -29,6 +29,7 @@ updates:
           - dealerdirect/phpcodesniffer-composer-installer
           - phpcompatibility/*
           - squizlabs/php_codesniffer
+          - yoast/*
       testing:
         patterns:
           - brain/monkey
@@ -54,7 +55,7 @@ updates:
       - dependency-name: '@types/node'
       - dependency-name: 'typescript'
     groups:
-      commitlint:
-        patterns: ['@commitlint/*']
+      dependencies:
+        patterns: ['*']
     labels:
       - dependencies
