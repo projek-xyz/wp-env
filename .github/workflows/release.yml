@@ -10,11 +10,11 @@ permissions:
 jobs:
   publish:
     name: Publish
-    uses: projek-xyz/actions/.github/workflows/release.yml@main
+    uses: projek-xyz/actions/.github/workflows/release.yml@429c195e277caa9fed01a9d550794dc61ad90c1f # main @ 2026-10-14
 
   update-assets:
     name: Upload assets
     needs: publish
-    uses: projek-xyz/actions/.github/workflows/uploads.yml@main
+    uses: projek-xyz/actions/.github/workflows/uploads.yml@429c195e277caa9fed01a9d550794dc61ad90c1f # main @ 2026-10-14
     with:
       workflow_name: Tests

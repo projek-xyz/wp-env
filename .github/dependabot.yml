@@ -9,10 +9,8 @@ updates:
     labels:
       - dependencies
     groups:
-      artifacts:
-        patterns: [actions/*-artifact, actions/deploy-pages]
-      runtimes:
-        patterns: [oven-sh/setup-bun, shivammathur/setup-php]
+      dependencies:
+        patterns: ['*']
 
   - package-ecosystem: composer
     directories:
@@ -23,23 +21,11 @@ updates:
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
     versioning-strategy: increase-if-necessary
-    groups:
-      linting:
-        patterns:
-          - dealerdirect/phpcodesniffer-composer-installer
-          - phpcompatibility/*
-          - squizlabs/php_codesniffer
-          - yoast/*
-      testing:
-        patterns:
-          - brain/monkey
-          - mockery/mockery
-          - phpunit/*
-          - sebastian/*
-      wp-cli:
-        patterns: ['wp-cli/*']
     labels:
       - dependencies
+    groups:
+      dependencies:
+        patterns: ['*']
 
   - package-ecosystem: bun
     directories:
@@ -54,8 +40,8 @@ updates:
       - dependency-name: '@types/bun'
       - dependency-name: '@types/node'
       - dependency-name: 'typescript'
+    labels:
+      - dependencies
     groups:
       dependencies:
         patterns: ['*']
-    labels:
-      - dependencies
